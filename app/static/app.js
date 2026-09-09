@@ -344,27 +344,46 @@
     return res;
   }
 
+  let cachedFirebaseConfig = null;
+
+  async function ensureFirebaseInitialized() {
+    if (window.firebase && firebase.apps && firebase.apps.length > 0) {
+      return true;
+    }
+    try {
+      if (!cachedFirebaseConfig || !cachedFirebaseConfig.apiKey) {
+        const resp = await fetch(`/api/config?_t=${Date.now()}`, { cache: "no-store" });
+        const config = await resp.json();
+        cachedFirebaseConfig = config.firebase;
+      }
+      if (window.firebase && cachedFirebaseConfig && cachedFirebaseConfig.apiKey) {
+        if (!firebase.apps.length) {
+          firebase.initializeApp(cachedFirebaseConfig);
+        }
+        return true;
+      }
+    } catch (e) {
+      console.error("Failed to ensure Firebase initialization:", e);
+    }
+    return false;
+  }
+
   // 1. App Initialization & Firebase Setup
   async function initApp() {
     showAuthLoading();
     try {
       const resp = await fetch(`/api/config?_t=${Date.now()}`, { cache: "no-store" });
       const config = await resp.json();
+      cachedFirebaseConfig = config.firebase || null;
       availableCategories = config.categories || [];
       if (config.geminiModel) {
         currentGeminiModel = config.geminiModel;
       }
 
-      // Populate category options
-      updateCategorySelects();
-
-      // Initialize Packing Feature
-      initPackingFeature();
-
-      // Initialize Firebase
-      if (window.firebase && config.firebase) {
+      // Initialize Firebase immediately before any DOM / UI setup
+      if (window.firebase && cachedFirebaseConfig && cachedFirebaseConfig.apiKey) {
         if (!firebase.apps.length) {
-          firebase.initializeApp(config.firebase);
+          firebase.initializeApp(cachedFirebaseConfig);
         }
 
         // Handle redirect result if needed
@@ -393,6 +412,13 @@
       } else {
         showLoginGate("Configuração do Firebase não encontrada. Entre em contato com o suporte.");
       }
+
+      // Populate category options
+      updateCategorySelects();
+
+      // Initialize Packing Feature
+      initPackingFeature();
+
     } catch (err) {
       console.error("Initialization error:", err);
       showLoginGate("Erro ao carregar a aplicação. Por favor, recarregue a página.");
@@ -407,6 +433,13 @@
     }
     try {
       if (loginErrorMessage) loginErrorMessage.classList.add("hidden");
+
+      const initialized = await ensureFirebaseInitialized();
+      if (!initialized || !firebase.apps.length) {
+        showLoginGate("Erro ao autenticar com o Google: Configuração do Firebase não carregada. Recarregue a página.");
+        return;
+      }
+
       const provider = new firebase.auth.GoogleAuthProvider();
       // DO NOT request sensitive scopes (like photoslibrary) during initial login.
       // Accounts with Google Advanced Protection Program enabled will be blocked with

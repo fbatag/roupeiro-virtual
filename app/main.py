@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from app.config import FIREBASE_CONFIG, get_firebase_config, VALID_CATEGORIES, PROJECT_ID, GEMINI_MODEL
+from app.config import get_firebase_config, VALID_CATEGORIES, PROJECT_ID, GEMINI_MODEL
 from app.auth_middleware import get_current_user
 from app.gemini_service import (
     analyze_clothing_image,
@@ -778,15 +778,15 @@ if os.path.isdir(static_dir):
 async def viagem_page():
     viagem_file = os.path.join(static_dir, "viagem.html")
     if os.path.exists(viagem_file):
-        return FileResponse(viagem_file)
-    return FileResponse(os.path.join(static_dir, "index.html"))
+        return FileResponse(viagem_file, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
+    return FileResponse(os.path.join(static_dir, "index.html"), headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
 
 @app.get("/")
 @app.head("/")
 async def root():
     index_file = os.path.join(static_dir, "index.html")
     if os.path.exists(index_file):
-        return FileResponse(index_file)
+        return FileResponse(index_file, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
     return {"message": "Roupeiro Virtual backend is running"}
 
 @app.get("/privacy")
