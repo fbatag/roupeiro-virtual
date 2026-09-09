@@ -10,16 +10,17 @@ GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
 
 FIREBASE_CONFIG = {
     "apiKey": os.getenv("FIREBASE_API_KEY", ""),
-    "authDomain": os.getenv("FIREBASE_AUTH_DOMAIN", ""),
+    "authDomain": PROJECT_ID + ".firebaseapp.com",
     "projectId": os.getenv("FIREBASE_PROJECT_ID", PROJECT_ID),
-    "storageBucket": os.getenv("FIREBASE_STORAGE_BUCKET", ""),
-    "messagingSenderId": os.getenv("FIREBASE_MESSAGING_SENDER_ID", ""),
-    "appId": os.getenv("FIREBASE_APP_ID", ""),
+    "storageBucket": os.getenv("FIREBASE_STORAGE_BUCKET", PROJECT_ID + ".firebasestorage.app"),
+    "messagingSenderId": os.getenv("FIREBASE_MESSAGING_SENDER_ID", "526939229036"),
+    "appId": os.getenv("FIREBASE_APP_ID", "1:526939229036:web:cf8186174e8923ca178149"),
     "googleClientId": GOOGLE_CLIENT_ID
 }
 
 VALID_CATEGORIES = [
-    "Camisas & Camisetas",
+    "Camisas",
+    "Camisetas",
     "Calças",
     "Casacos & Jaquetas",
     "Bermudas & Shorts",
