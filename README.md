@@ -49,19 +49,59 @@ Uma aplicação inteligente para digitalização, catalogação e gerenciamento 
 
 ---
 
-## 🌐 Implantação (Cloud Run)
+## 🌐 Implantação Automatizada no Google Cloud Run (`deploy.sh`)
 
-Defina as variáveis de ambiente necessárias (`GOOGLE_CLOUD_PROJECT`, `FIREBASE_API_KEY`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, etc.) no seu serviço do Cloud Run antes da implantação.
+O repositório inclui o script idempotente `./deploy.sh`, que automatiza tanto o **deploy inicial do zero** em um novo projeto GCP quanto o **redeploy** contínuo em um ambiente já configurado.
+
+### 1. Deploy do Zero em um Projeto Novo
+Ao executar em um projeto GCP recém-criado, o script executa automaticamente:
+- Habilitação das APIs necessárias (`run.googleapis.com`, `cloudbuild.googleapis.com`, `artifactregistry.googleapis.com`, `firestore.googleapis.com`, `storage.googleapis.com`, `secretmanager.googleapis.com`, `aiplatform.googleapis.com`).
+- Criação do banco de dados **Cloud Firestore** (`(default)`) em modo Nativo.
+- Criação do bucket no **Cloud Storage** (`gs://<PROJECT_ID>-media`).
+- Criação do repositório Docker no **Artifact Registry**.
+- Criação dos secrets `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` e `FIREBASE_API_KEY` no **Secret Manager** (inicialmente em branco para que o container suba sem falhas) e atribuição das permissões IAM (`roles/secretmanager.secretAccessor`, `roles/datastore.user`, `roles/storage.objectAdmin`, `roles/aiplatform.user`) à Service Account do Cloud Run.
+- Build da imagem via **Cloud Build** e deploy no **Cloud Run**.
+
+```bash
+chmod +x deploy.sh
+./deploy.sh --project SEU_PROJECT_ID --region us-central1
+```
+
+### 2. Configurando os Secrets no Secret Manager
+Após o primeiro deploy, preencha os valores reais dos secrets pelo Console do GCP (`Security -> Secret Manager`) ou diretamente via terminal:
+
+```bash
+echo -n "SEU_GOOGLE_CLIENT_ID"     | gcloud secrets versions add GOOGLE_CLIENT_ID     --data-file=- --project SEU_PROJECT_ID
+echo -n "SEU_GOOGLE_CLIENT_SECRET" | gcloud secrets versions add GOOGLE_CLIENT_SECRET --data-file=- --project SEU_PROJECT_ID
+echo -n "SUA_FIREBASE_API_KEY"     | gcloud secrets versions add FIREBASE_API_KEY     --data-file=- --project SEU_PROJECT_ID
+```
+
+### 3. Redeploy (Atualização de Código)
+Para implantar novas versões em um projeto já provisionado (preservando os secrets existentes e o banco de dados):
+
+```bash
+./deploy.sh --project SEU_PROJECT_ID
+```
+
+#### Opções adicionais do `deploy.sh`:
+- `-p, --project PROJECT_ID`: ID do Projeto GCP (padrão: projeto ativo no `gcloud`).
+- `-r, --region REGION`: Região do Cloud Run e Artifact Registry (padrão: `us-central1`).
+- `-s, --service SERVICE_NAME`: Nome do serviço no Cloud Run (padrão: `roupeiro-virtual`).
+- `-b, --bucket BUCKET_NAME`: Nome do bucket Cloud Storage (padrão: `<PROJECT_ID>-media`).
+- `--gemini-model MODEL`: Modelo Gemini na Vertex AI (padrão: `gemini-3.7-flash`).
 
 ---
 
 ## 💻 Execução Local
 
 ```bash
-# 1. Instalar dependências
+# 1. Copiar o template de variáveis de ambiente
+cp .env.example .env
+
+# 2. Instalar dependências
 pip install -r requirements.txt
 
-# 2. Executar o servidor FastAPI
+# 3. Executar o servidor FastAPI
 uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 ```
 Acesse em: `http://localhost:8080`
