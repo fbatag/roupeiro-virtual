@@ -239,6 +239,13 @@ log_ok "Imagem construída e enviada para ${IMAGE_URI}."
 # 7. Deploy / Redeploy no Cloud Run
 # ------------------------------------------------------------------------------
 log_info "7/7 Implantando serviço '${SERVICE_NAME}' no Cloud Run (${REGION})..."
+if gcloud run services describe "${SERVICE_NAME}" --region "${REGION}" --project "${PROJECT_ID}" >/dev/null 2>&1; then
+  gcloud run services update "${SERVICE_NAME}" \
+    --region "${REGION}" \
+    --project "${PROJECT_ID}" \
+    --clear-secrets >/dev/null 2>&1 || true
+fi
+
 gcloud run deploy "${SERVICE_NAME}" \
   --image "${IMAGE_URI}" \
   --region "${REGION}" \
@@ -248,7 +255,6 @@ gcloud run deploy "${SERVICE_NAME}" \
   --cpu 2 \
   --concurrency 20 \
   --timeout 300 \
-  --clear-secrets \
   --set-env-vars="GOOGLE_CLOUD_PROJECT=${PROJECT_ID},GCS_BUCKET_NAME=${BUCKET_NAME},GEMINI_MODEL=${GEMINI_MODEL},GOOGLE_CLOUD_LOCATION=${GEMINI_LOCATION},FIREBASE_API_KEY=${FIREBASE_API_KEY},GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}"
 
 SERVICE_URL="$(gcloud run services describe "${SERVICE_NAME}" --region "${REGION}" --project "${PROJECT_ID}" --format='value(status.url)')"
