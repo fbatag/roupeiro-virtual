@@ -3,8 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Roupeiro Virtual — Seu Guarda-Roupa Inteligente</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👔</text></svg>">
+  <title>Roupeiro Virtual — Seu Guarda-Roupa Inteligente · Google Cloud</title>
+  <link rel="icon" href="/static/assets/app-icon.svg">
+  <!-- Google Fonts for Cloud Style -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&family=Google+Sans+Text:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -13,17 +17,21 @@
         extend: {
           colors: {
             brand: {
-              50: '#eff6ff',
-              100: '#dbeafe',
-              200: '#bfdbfe',
-              300: '#93c5fd',
-              400: '#60a5fa',
-              500: '#3b82f6',
-              600: '#2563eb',
-              700: '#1d4ed8',
-              800: '#1e40af',
-              900: '#1e3a8a',
+              50: '#edf2fa',
+              100: '#d3e3fd',
+              200: '#b3d1ff',
+              300: '#8ab4f8',
+              400: '#669df6',
+              500: '#4285f4',
+              600: '#0b57d0',
+              700: '#0842a0',
+              800: '#062e6f',
+              900: '#041e49',
             }
+          },
+          fontFamily: {
+            sans: ['"Google Sans Text"', '"Google Sans"', 'Roboto', 'sans-serif'],
+            serif: ['"Google Sans"', '"Product Sans"', 'Roboto', 'sans-serif'],
           }
         }
       }
@@ -37,20 +45,31 @@
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.9.0/firebase-auth-compat.js"></script>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+<body class="bg-[#f8fafd] text-[#444746] min-h-screen flex flex-col">
 
-  <!-- TOP NAVIGATION BAR -->
-  <header class="sticky top-0 z-30 glass-panel border-b border-slate-200">
+  <!-- GOOGLE 4-COLOR SIGNATURE BAR -->
+  <div class="gc-google-signature" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+  <!-- TOP NAVIGATION BAR (Cloud Style Header) -->
+  <header class="gc-app-header">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <!-- Logo & Title -->
       <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-brand-500/20">
-          <i class="fa-solid fa-shirt text-lg"></i>
-        </div>
-        <div>
-          <h1 class="text-xl font-bold tracking-tight text-slate-900 font-serif">Roupeiro Virtual</h1>
-          <p class="text-xs text-slate-500 hidden sm:block">Powered by Gemini 3.7 & Google Cloud</p>
-        </div>
+        <a href="/" class="flex items-center gap-3 group">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0b57d0] via-[#4285f4] to-[#34a853] flex items-center justify-center text-white shadow-sm group-hover:scale-105 transition">
+            <span class="text-xl" role="img" aria-label="Roupeiro">👔</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-lg sm:text-xl font-semibold tracking-tight text-[#1f1f1f] font-serif">Roupeiro Virtual</h1>
+              <span class="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-[#edf2fa] text-[#0b57d0] border border-[#d3e3fd]">
+                <img src="/static/assets/app-icon.svg" alt="Cloud" class="w-3.5 h-3.5">
+                <span>Cloud Style</span>
+              </span>
+            </div>
+            <p class="text-xs text-[#5e5e5e] hidden sm:block">Powered by Gemini 3.7 Flash &bull; Google Cloud</p>
+          </div>
+        </a>
       </div>
 
       <!-- Navigation & User Section -->
@@ -60,7 +79,7 @@
         <div id="authContainer" class="flex items-center gap-2">
           <!-- Unauthenticated: Login button -->
           <div id="unauthControls" class="flex items-center gap-2">
-            <button id="googleLoginBtn" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white bg-slate-900 hover:bg-slate-800 shadow-sm hover:shadow transition">
+            <button id="googleLoginBtn" class="gc-btn-primary px-5 py-2 text-sm">
               <svg class="w-4 h-4" viewBox="0 0 24 24">
                 <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.7 1 4 3.5 2.2 7.1l3.7 2.8C6.8 6.9 9.2 5 12 5z"/>
                 <path fill="#4285F4" d="M22.5 12.3c0-.8-.1-1.5-.2-2.3H12v4.3h5.9c-.3 1.4-1 2.5-2.2 3.3l3.6 2.8c2.1-1.9 3.2-4.7 3.2-8.1z"/>
@@ -73,15 +92,15 @@
 
           <!-- Authenticated: User Badge & Menu -->
           <div id="authControls" class="hidden flex items-center gap-3">
-            <div class="flex items-center gap-2 pl-2 pr-3 py-1 rounded-full bg-slate-100 border border-slate-200">
-              <img id="userAvatar" src="" alt="Avatar" class="w-7 h-7 rounded-full object-cover bg-slate-300">
+            <div class="flex items-center gap-2 pl-1.5 pr-3.5 py-1 rounded-full bg-white border border-[#e0e2ec] shadow-2xs">
+              <img id="userAvatar" src="" alt="Avatar" class="w-7 h-7 rounded-full object-cover bg-slate-200">
               <div class="text-left hidden md:block">
-                <span id="userName" class="text-xs font-semibold text-slate-800 block leading-tight"></span>
-                <span id="userEmail" class="text-[10px] text-slate-500 block leading-tight truncate max-w-[140px]"></span>
+                <span id="userName" class="text-xs font-semibold text-[#1f1f1f] block leading-tight"></span>
+                <span id="userEmail" class="text-[10px] text-[#5e5e5e] block leading-tight truncate max-w-[140px]"></span>
               </div>
             </div>
-            <button id="logoutBtn" title="Sair da Conta" class="w-9 h-9 flex items-center justify-center rounded-xl text-slate-500 hover:text-red-600 hover:bg-red-50 border border-transparent hover:border-red-200 transition">
-              <i class="fa-solid fa-right-from-bracket"></i>
+            <button id="logoutBtn" title="Sair da Conta" class="w-9 h-9 flex items-center justify-center rounded-full text-rose-600 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition">
+              <span class="text-base" role="img" aria-label="Sair">🚪</span>
             </button>
           </div>
         </div>
@@ -91,102 +110,97 @@
 
   <!-- AUTH LOADING SCREEN (initial state while Firebase initializes) -->
   <div id="authLoadingScreen" class="flex-1 flex flex-col items-center justify-center p-8 text-center min-h-[60vh]">
-    <div class="w-16 h-16 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600 shadow-lg shadow-brand-500/10 mb-4 animate-bounce">
-      <i class="fa-solid fa-shirt text-2xl"></i>
+    <div class="w-16 h-16 rounded-2xl bg-[#edf2fa] border border-[#d3e3fd] flex items-center justify-center shadow-lg mb-4 animate-bounce">
+      <span class="text-3xl" role="img" aria-label="Roupeiro">👔</span>
     </div>
-    <div class="flex items-center gap-2 text-slate-700 font-medium mb-1">
-      <div class="w-4 h-4 border-2 border-brand-600 border-t-transparent rounded-full animate-spin"></div>
+    <div class="flex items-center gap-2 text-[#1f1f1f] font-medium mb-1">
+      <div class="w-4 h-4 border-2 border-[#0b57d0] border-t-transparent rounded-full animate-spin"></div>
       <span>Iniciando Roupeiro Virtual...</span>
     </div>
-    <p class="text-xs text-slate-400">Verificando autenticação Google via Firebase...</p>
+    <p class="text-xs text-[#5e5e5e]">Verificando autenticação Google via Firebase...</p>
   </div>
 
   <!-- LOGIN GATE SCREEN (shown when user is unauthenticated) -->
   <div id="loginGateScreen" class="hidden flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col justify-center">
-    <div class="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-12">
+    <div class="gc-panel overflow-hidden grid grid-cols-1 lg:grid-cols-12">
       <!-- Left side: Features & Overview -->
       <div class="lg:col-span-7 p-8 sm:p-12 space-y-6 flex flex-col justify-between">
         <div>
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-xs font-semibold mb-4">
-            <i class="fa-solid fa-lock"></i>
-            <span>Acesso Restrito &bull; Autenticação Obrigatória</span>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#edf2fa] border border-[#d3e3fd] text-[#0b57d0] text-xs font-semibold mb-4">
+            <span class="text-sm">🔐</span>
+            <span>Acesso Protegido &bull; Google Cloud Identity</span>
           </div>
-          <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight font-serif leading-tight">
-            Bem-vindo ao <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-600 to-indigo-600">Roupeiro Virtual</span>
+          <h2 class="text-3xl sm:text-4xl font-bold text-[#1f1f1f] tracking-tight font-serif leading-tight">
+            Bem-vindo ao <br><span class="text-[#0b57d0]">Roupeiro Virtual</span>
           </h2>
-          <p class="text-slate-600 text-sm sm:text-base mt-3 leading-relaxed">
-            Seu closet digital com inteligência artificial avançada. Organize suas roupas, extraia peças isoladas e crie looks personalizados.
+          <p class="text-[#444746] text-sm sm:text-base mt-3 leading-relaxed">
+            Seu closet digital com inteligência artificial avançada no estilo Google Cloud. Organize suas roupas, planeje viagens e crie looks completos.
           </p>
         </div>
 
-        <!-- Highlights -->
-        <div class="space-y-4 pt-2 border-t border-slate-100">
+        <!-- Highlights with Colorful Cheerful Icons -->
+        <div class="space-y-4 pt-2 border-t border-[#e0e2ec]">
           <div class="flex items-start gap-3">
-            <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 mt-0.5">
-              <i class="fa-solid fa-camera text-sm"></i>
+            <div class="w-9 h-9 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center shrink-0 mt-0.5 text-lg">
+              📸
             </div>
             <div>
-              <h4 class="text-xs font-bold text-slate-800">Fotos Originais Preservadas</h4>
-              <p class="text-[11px] text-slate-500">Exibe a imagem original das suas roupas com upload rápido e seguro na nuvem.</p>
+              <h4 class="text-xs font-bold text-[#1f1f1f]">Fotos Originais Preservadas</h4>
+              <p class="text-[11px] text-[#5e5e5e]">Exibe a imagem original das suas roupas com upload rápido e seguro no Google Cloud Storage.</p>
             </div>
           </div>
 
           <div class="flex items-start gap-3">
-            <div class="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center shrink-0 mt-0.5">
-              <i class="fa-solid fa-brain text-sm"></i>
+            <div class="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center shrink-0 mt-0.5 text-lg">
+              🧠
             </div>
             <div>
-              <h4 class="text-xs font-bold text-slate-800">Classificação com IA Gemini 3.7 Flash</h4>
-              <p class="text-[11px] text-slate-500">Categoriza o tipo de roupa, extrai a cor predominante em código HEX e gera descrições.</p>
+              <h4 class="text-xs font-bold text-[#1f1f1f]">Classificação com IA Gemini 3.7 Flash</h4>
+              <p class="text-[11px] text-[#5e5e5e]">Categoriza o tipo de roupa, extrai a cor predominante em código HEX e gera descrições detalhadas.</p>
             </div>
           </div>
 
           <div class="flex items-start gap-3">
-            <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 mt-0.5">
-              <i class="fa-solid fa-shield-halved text-sm"></i>
+            <div class="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0 mt-0.5 text-lg">
+              🛡️
             </div>
             <div>
-              <h4 class="text-xs font-bold text-slate-800">100% Individual e Seguro via Google</h4>
-              <p class="text-[11px] text-slate-500">Cada roupeiro é isolado e associado exclusivamente ao login da sua Conta Google.</p>
+              <h4 class="text-xs font-bold text-[#1f1f1f]">100% Individual e Seguro via Google</h4>
+              <p class="text-[11px] text-[#5e5e5e]">Cada roupeiro é isolado e associado exclusivamente ao login da sua Conta Google.</p>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Right side: Google Sign-In Card -->
-      <div class="lg:col-span-5 bg-gradient-to-br from-slate-50 to-brand-50/40 p-8 sm:p-12 flex flex-col items-center justify-center border-t lg:border-t-0 lg:border-l border-slate-200 text-center">
-        <div class="w-16 h-16 rounded-2xl bg-white shadow-md border border-slate-200 flex items-center justify-center mb-6">
-          <svg class="w-8 h-8" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-          </svg>
+      <div class="lg:col-span-5 bg-[#f0f4f9] p-8 sm:p-12 flex flex-col items-center justify-center border-t lg:border-t-0 lg:border-l border-[#e0e2ec] text-center">
+        <div class="w-16 h-16 rounded-2xl bg-white shadow-sm border border-[#e0e2ec] flex items-center justify-center mb-6">
+          <img src="/static/assets/google-cloud-logo-fullcolor.svg" alt="Google Cloud" class="h-8 w-auto">
         </div>
 
-        <h3 class="text-xl font-bold text-slate-900 mb-2">Entrar com Google</h3>
-        <p class="text-xs text-slate-500 mb-8 max-w-xs leading-relaxed">
+        <h3 class="text-xl font-semibold text-[#1f1f1f] mb-2">Entrar com Google</h3>
+        <p class="text-xs text-[#5e5e5e] mb-8 max-w-xs leading-relaxed">
           Autentique-se com sua Conta Google via Firebase para abrir seu roupeiro virtual.
         </p>
 
-        <button id="gateGoogleLoginBtn" class="w-full py-3.5 px-6 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 font-semibold text-sm border border-slate-300 shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-3 group">
-          <svg class="w-5 h-5 transition group-hover:scale-110" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+        <button id="gateGoogleLoginBtn" class="gc-btn-primary w-full py-3 px-6 text-sm">
+          <svg class="w-5 h-5" viewBox="0 0 24 24">
+            <path fill="#ffffff" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path fill="#ffffff" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path fill="#ffffff" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+            <path fill="#ffffff" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
           </svg>
-          <span class="text-slate-800 font-semibold group-hover:text-slate-900">Continuar com o Google</span>
+          <span>Continuar com o Google</span>
         </button>
 
-        <div id="loginErrorMessage" class="hidden mt-4 p-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-600 text-left"></div>
+        <div id="loginErrorMessage" class="hidden mt-4 p-3 bg-[#ffdad6] border border-[#ba1a1a]/30 rounded-xl text-xs text-[#ba1a1a] text-left"></div>
 
-        <div class="mt-6 pt-4 border-t border-slate-200/80 w-full flex flex-col items-center gap-2 text-[11px] text-slate-400">
+        <div class="mt-6 pt-4 border-t border-[#e0e2ec] w-full flex flex-col items-center gap-2 text-[11px] text-[#5e5e5e]">
           <p>Acesso seguro e protegido pelo Firebase Authentication.</p>
           <div class="flex items-center gap-3 font-medium">
-            <a href="/privacy" target="_blank" class="text-slate-500 hover:text-brand-600 transition underline">Política de Privacidade</a>
+            <a href="/privacy" target="_blank" class="text-[#0b57d0] hover:underline transition">Política de Privacidade</a>
             <span>&bull;</span>
-            <a href="/terms" target="_blank" class="text-slate-500 hover:text-brand-600 transition underline">Termos de Serviço</a>
+            <a href="/terms" target="_blank" class="text-[#0b57d0] hover:underline transition">Termos de Serviço</a>
           </div>
         </div>
       </div>
@@ -196,38 +210,38 @@
   <!-- MAIN CONTENT CONTAINER (PROTECTED: ONLY SHOWN WHEN AUTHENTICATED) -->
   <main id="appProtectedContent" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
-    <!-- HERO & UPLOAD SECTION -->
-    <section class="bg-gradient-to-b from-white to-slate-50 rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-sm relative overflow-hidden">
+    <!-- HERO & UPLOAD SECTION (Cloud Style Panel) -->
+    <section class="gc-panel p-6 sm:p-8 relative overflow-hidden">
       <!-- Decorative Backdrop Circles -->
-      <div class="absolute -right-20 -top-20 w-80 h-80 bg-brand-50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
-      <div class="absolute -left-20 -bottom-20 w-80 h-80 bg-indigo-50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+      <div class="absolute -right-20 -top-20 w-80 h-80 bg-[#edf2fa] rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+      <div class="absolute -left-20 -bottom-20 w-80 h-80 bg-blue-50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
 
       <div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         
         <!-- Left: Pitch & Upload Dropzone -->
         <div class="lg:col-span-7 space-y-5">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 border border-brand-100 text-brand-700 text-xs font-semibold">
-            <i class="fa-solid fa-sparkles"></i>
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#edf2fa] border border-[#d3e3fd] text-[#0b57d0] text-xs font-semibold">
+            <span class="text-sm">✨🌈</span>
             <span>Inteligência Artificial Gemini 3.7 Flash</span>
           </div>
 
-          <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight font-serif">
+          <h2 class="text-3xl sm:text-4xl font-semibold text-[#1f1f1f] tracking-tight font-serif">
             Digitalize seu guarda-roupa com estilo e precisão.
           </h2>
 
-          <p class="text-slate-600 text-sm sm:text-base leading-relaxed">
-            Faça upload de fotos individuais ou de uma pasta inteira. O Gemini classifica categoria, cor e descrição, enquanto o algoritmo isola a peça da imagem original com fundo transparente.
+          <p class="text-[#444746] text-sm sm:text-base leading-relaxed">
+            Faça upload de fotos individuais ou de uma pasta inteira. O Gemini classifica categoria, cor e descrição, organizando seu guarda-roupa completo na nuvem.
           </p>
 
           <!-- Upload Dropzone -->
-          <div id="dropZone" class="border-2 border-dashed border-slate-300 hover:border-brand-500 bg-white/70 hover:bg-brand-50/20 rounded-xl p-6 text-center cursor-pointer transition group">
-            <div class="w-12 h-12 mx-auto rounded-full bg-slate-100 group-hover:bg-brand-100 flex items-center justify-center text-slate-500 group-hover:text-brand-600 transition mb-3">
-              <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
+          <div id="dropZone" class="border-2 border-dashed border-[#c4c7d0] hover:border-[#0b57d0] bg-[#f8fafd] hover:bg-[#edf2fa]/50 rounded-2xl p-6 text-center cursor-pointer transition group">
+            <div class="w-12 h-12 mx-auto rounded-2xl bg-[#edf2fa] group-hover:bg-[#d3e3fd] flex items-center justify-center transition mb-3 shadow-xs">
+              <span class="text-2xl" role="img" aria-label="Upload">☁️</span>
             </div>
-            <p class="text-sm font-semibold text-slate-700 group-hover:text-brand-700">
+            <p class="text-sm font-semibold text-[#1f1f1f] group-hover:text-[#0b57d0]">
               Arraste fotos aqui ou utilize os botões abaixo
             </p>
-            <p class="text-xs text-slate-500 mt-1">
+            <p class="text-xs text-[#5e5e5e] mt-1">
               Suporta JPG, PNG, WEBP e pastas completas com sub-pastas
             </p>
           </div>
@@ -235,39 +249,39 @@
           <!-- Action Buttons Bar -->
           <div class="flex flex-wrap gap-3">
             <!-- Files Upload Button -->
-            <button id="selectFilesBtn" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 shadow-sm hover:shadow transition">
-              <i class="fa-solid fa-images"></i>
+            <button id="selectFilesBtn" class="gc-btn-primary px-5 py-2.5 text-sm">
+              <span class="text-base" role="img" aria-label="Fotos">🖼️</span>
               <span>Escolher Fotos</span>
             </button>
             <input type="file" id="fileInput" multiple accept="image/*" class="hidden">
 
             <!-- Recursive Folder Upload Button -->
-            <button id="selectFolderBtn" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 shadow-sm transition">
-              <i class="fa-solid fa-folder-tree text-amber-500"></i>
+            <button id="selectFolderBtn" class="gc-btn-secondary px-4 py-2.5 text-sm">
+              <span class="text-base" role="img" aria-label="Pasta">📁</span>
               <span>Upload Pasta Inteira</span>
             </button>
             <input type="file" id="folderInput" webkitdirectory directory multiple class="hidden">
 
             <!-- Google Photos Connect Button -->
-            <button id="openGooglePhotosBtn" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 shadow-sm transition">
-              <i class="fa-brands fa-google text-blue-500"></i>
+            <button id="openGooglePhotosBtn" class="gc-btn-secondary px-4 py-2.5 text-sm">
+              <span class="text-base" role="img" aria-label="Google Fotos">🌺</span>
               <span>Buscar no Google Fotos</span>
             </button>
 
             <!-- Generic Item Button -->
-            <button id="openGenericItemModalBtn" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 shadow-sm transition">
-              <i class="fa-solid fa-layer-group text-blue-600"></i>
+            <button id="openGenericItemModalBtn" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-medium text-[#0b57d0] bg-[#edf2fa] hover:bg-[#d3e3fd] border border-[#d3e3fd] transition">
+              <span class="text-base" role="img" aria-label="Item Genérico">🧦</span>
               <span>+ Item Genérico / Básico</span>
             </button>
           </div>
 
           <!-- Destination Category Selector for Upload -->
           <div class="flex items-center gap-2 pt-1">
-            <span class="text-xs text-slate-500 font-medium flex items-center gap-1.5">
-              <i class="fa-solid fa-folder-arrow-down text-brand-600"></i>
+            <span class="text-xs text-[#5e5e5e] font-medium flex items-center gap-1.5">
+              <span class="text-sm" role="img" aria-label="Destino">📥</span>
               <span>Destino das Fotos:</span>
             </span>
-            <select id="uploadTargetCategorySelect" class="py-1 px-2.5 text-xs bg-white border border-slate-200 rounded-xl text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-brand-500 shadow-2xs">
+            <select id="uploadTargetCategorySelect" class="py-1.5 px-3 text-xs bg-white border border-[#e0e2ec] rounded-xl text-[#1f1f1f] font-medium focus:outline-none focus:ring-2 focus:ring-[#0b57d0]">
               <option value="">Classificação Automática (IA Gemini)</option>
             </select>
           </div>
@@ -276,174 +290,174 @@
 
         <!-- Right: Summary Counters & Feature Preview -->
         <div class="lg:col-span-5 grid grid-cols-2 gap-4">
-          <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
-            <div class="flex items-center justify-between text-slate-500 mb-2">
+          <div class="bg-[#f8fafd] rounded-2xl p-5 border border-[#e0e2ec]">
+            <div class="flex items-center justify-between text-[#5e5e5e] mb-2">
               <span class="text-xs font-semibold uppercase tracking-wider">Total de Peças</span>
-              <i class="fa-solid fa-vest-patches text-brand-600 text-lg"></i>
+              <span class="text-2xl" role="img" aria-label="Peças">👕</span>
             </div>
-            <div id="statTotalItems" class="text-3xl font-bold text-slate-900">0</div>
-            <p class="text-[11px] text-slate-500 mt-1">catalogadas no roupeiro</p>
+            <div id="statTotalItems" class="text-3xl font-bold text-[#1f1f1f]">0</div>
+            <p class="text-[11px] text-[#5e5e5e] mt-1">catalogadas no roupeiro</p>
           </div>
 
-          <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
-            <div class="flex items-center justify-between text-slate-500 mb-2">
+          <div class="bg-[#f8fafd] rounded-2xl p-5 border border-[#e0e2ec]">
+            <div class="flex items-center justify-between text-[#5e5e5e] mb-2">
               <span class="text-xs font-semibold uppercase tracking-wider">Categorias</span>
-              <i class="fa-solid fa-tags text-indigo-500 text-lg"></i>
+              <span class="text-2xl" role="img" aria-label="Categorias">🏷️</span>
             </div>
-            <div id="statCategories" class="text-3xl font-bold text-slate-900">0</div>
-            <p class="text-[11px] text-slate-500 mt-1">tipos organizados</p>
+            <div id="statCategories" class="text-3xl font-bold text-[#1f1f1f]">0</div>
+            <p class="text-[11px] text-[#5e5e5e] mt-1">tipos organizados</p>
           </div>
 
-          <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
-            <div class="flex items-center justify-between text-slate-500 mb-2">
+          <div class="bg-[#f8fafd] rounded-2xl p-5 border border-[#e0e2ec]">
+            <div class="flex items-center justify-between text-[#5e5e5e] mb-2">
               <span class="text-xs font-semibold uppercase tracking-wider">Imagens</span>
-              <i class="fa-solid fa-camera text-emerald-500 text-lg"></i>
+              <span class="text-2xl" role="img" aria-label="Imagens">📸</span>
             </div>
-            <div class="text-sm font-semibold text-slate-800">Foto Original</div>
-            <p class="text-[11px] text-slate-500 mt-1">qualidade preservada</p>
+            <div class="text-sm font-semibold text-[#1f1f1f]">Foto Original</div>
+            <p class="text-[11px] text-[#5e5e5e] mt-1">qualidade preservada</p>
           </div>
 
-          <div class="bg-white rounded-xl p-5 border border-slate-200 shadow-sm">
-            <div class="flex items-center justify-between text-slate-500 mb-2">
+          <div class="bg-[#f8fafd] rounded-2xl p-5 border border-[#e0e2ec]">
+            <div class="flex items-center justify-between text-[#5e5e5e] mb-2">
               <span class="text-xs font-semibold uppercase tracking-wider">Integração</span>
-              <i class="fa-solid fa-cloud text-amber-500 text-lg"></i>
+              <span class="text-2xl" role="img" aria-label="Nuvem">🌺</span>
             </div>
-            <div class="text-sm font-semibold text-slate-800">Google Fotos</div>
-            <p class="text-[11px] text-slate-500 mt-1">importação direta</p>
+            <div class="text-sm font-semibold text-[#1f1f1f]">Google Fotos</div>
+            <p class="text-[11px] text-[#5e5e5e] mt-1">importação direta</p>
           </div>
         </div>
 
       </div>
 
       <!-- Live Upload Progress Card (shown when uploading) -->
-      <div id="uploadProgressContainer" class="hidden mt-6 pt-6 border-t border-slate-200 bg-white/90 rounded-xl p-5 shadow-sm">
+      <div id="uploadProgressContainer" class="hidden mt-6 pt-6 border-t border-[#e0e2ec] bg-[#f8fafd] rounded-2xl p-5 shadow-2xs">
         <div class="flex items-center justify-between mb-2">
           <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-lg bg-brand-100 flex items-center justify-center text-brand-600 animate-spin">
-              <i class="fa-solid fa-circle-notch"></i>
+            <div class="w-8 h-8 rounded-lg bg-[#d3e3fd] flex items-center justify-center animate-spin">
+              <span class="text-base">⏳</span>
             </div>
             <div>
-              <h4 id="progressStatusText" class="text-sm font-semibold text-slate-900">Processando foto 1 de 5...</h4>
-              <p id="progressDetailText" class="text-xs text-slate-500">Classificando com Gemini 3.7 Flash...</p>
+              <h4 id="progressStatusText" class="text-sm font-semibold text-[#1f1f1f]">Processando foto 1 de 5...</h4>
+              <p id="progressDetailText" class="text-xs text-[#5e5e5e]">Classificando com Gemini 3.7 Flash...</p>
             </div>
           </div>
-          <span id="progressPercent" class="text-sm font-bold text-brand-600">20%</span>
+          <span id="progressPercent" class="text-sm font-bold text-[#0b57d0]">20%</span>
         </div>
         <!-- Progress bar -->
-        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-          <div id="progressBar" class="bg-gradient-to-r from-brand-600 to-indigo-500 h-full rounded-full transition-all duration-300" style="width: 20%;"></div>
+        <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+          <div id="progressBar" class="bg-gradient-to-r from-[#0b57d0] to-[#34a853] h-full rounded-full transition-all duration-300" style="width: 20%;"></div>
         </div>
       </div>
 
-      <!-- Banner Faça Minha Mala (Tom Azul & Ícones Ilustrativos) -->
-      <div class="mt-6 bg-gradient-to-r from-slate-900 via-blue-900 to-sky-900 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 border border-blue-700/50">
+      <!-- Banner Faça Minha Mala (Google Cloud Style Banner) -->
+      <div class="mt-6 bg-gradient-to-r from-[#041e49] via-[#0b57d0] to-[#1a73e8] rounded-2xl p-6 text-white shadow-md relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6 border border-[#4285f4]/40">
         <div class="relative z-10 space-y-2 max-w-2xl">
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur border border-white/20 text-xs font-semibold text-sky-200">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur border border-white/20 text-xs font-semibold text-amber-200">
             <span class="text-sm">✨🤖</span>
             <span>Inteligência Artificial com Gemini 3.7</span>
           </div>
-          <h3 class="text-xl font-bold font-serif text-white flex items-center gap-2">
+          <h3 class="text-xl font-semibold font-serif text-white flex items-center gap-2">
             <span>🧳</span>
             <span>Faça Minha Mala & Roteiro Inteligente</span>
           </h3>
-          <p class="text-xs sm:text-sm text-slate-200 leading-relaxed">
+          <p class="text-xs sm:text-sm text-sky-100 leading-relaxed">
             Informe o destino e horários da sua viagem. A IA monta um roteiro dia e noite com tempos de trajeto, prevê o clima e cria looks automáticos para cada período usando as peças reais do seu roupeiro!
           </p>
         </div>
         <div class="relative z-10 flex flex-wrap gap-3 shrink-0">
-          <button id="openPackingModalBtn" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-900 font-bold text-sm shadow-lg hover:shadow-amber-500/20 transition flex items-center gap-2">
+          <button id="openPackingModalBtn" class="px-5 py-2.5 rounded-full bg-amber-400 hover:bg-amber-300 text-[#041e49] font-bold text-sm shadow-md transition flex items-center gap-2">
             <span class="text-base">🧳✈️</span>
             <span>Planejar Nova Viagem & Mala</span>
           </button>
         </div>
       </div>
 
-      <!-- SEÇÃO INLINE: GERENCIAMENTO DE PLANOS DE VESTUÁRIO & VIAGENS (Referência: guarda-roupas-virtual/admin.html) -->
-      <div id="inlineTripsSection" class="mt-6 bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-5">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+      <!-- SEÇÃO INLINE: GERENCIAMENTO DE PLANOS DE VESTUÁRIO & VIAGENS -->
+      <div id="inlineTripsSection" class="mt-6 bg-[#f8fafd] rounded-2xl border border-[#e0e2ec] p-6 space-y-5">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-[#e0e2ec] pb-4">
           <div>
-            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[11px] font-bold mb-1">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#edf2fa] text-[#0b57d0] border border-[#d3e3fd] text-[11px] font-bold mb-1">
               <span>✈️</span>
               <span>Gerenciamento de Plano de Vestuário</span>
             </div>
-            <h3 class="text-lg sm:text-xl font-bold text-slate-900 font-serif flex items-center gap-2">
+            <h3 class="text-lg sm:text-xl font-semibold text-[#1f1f1f] font-serif flex items-center gap-2">
               <span>Minhas Viagens & Roteiros Salvos</span>
-              <span id="inlineTripsCountBadge" class="px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-blue-600 text-white shadow-2xs">0</span>
+              <span id="inlineTripsCountBadge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#0b57d0] text-white">0</span>
             </h3>
-            <p class="text-xs text-slate-500 mt-0.5">
+            <p class="text-xs text-[#5e5e5e] mt-0.5">
               Acompanhe o progresso das suas malas, consulte pendências, duplique viagens ou bloqueie a edição de roteiros finalizados.
             </p>
           </div>
 
           <div class="flex items-center gap-2.5 w-full sm:w-auto flex-wrap">
             <div class="relative flex-1 sm:w-56">
-              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-              <input type="text" id="inlineTripsSearchInput" placeholder="Filtrar destino..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs">🔍</span>
+              <input type="text" id="inlineTripsSearchInput" placeholder="Filtrar destino..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-[#e0e2ec] rounded-full focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/30 transition">
             </div>
-            <button type="button" id="btnRefreshInlineTrips" class="px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-700 transition flex items-center gap-1.5 shadow-2xs" title="Atualizar lista de viagens">
-              <i class="fa-solid fa-rotate text-blue-600 text-xs"></i>
+            <button type="button" id="btnRefreshInlineTrips" class="gc-btn-secondary px-3.5 py-1.5 text-xs" title="Atualizar lista de viagens">
+              <span>🔄</span>
               <span>Atualizar</span>
             </button>
           </div>
         </div>
 
-        <!-- Quick Stats Row (Inspirado na página Gerenciamento de Planos) -->
+        <!-- Quick Stats Row -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div class="bg-blue-50/70 border border-blue-200/80 rounded-2xl p-3 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center text-lg shadow-xs shrink-0">
+          <div class="bg-white border border-[#e0e2ec] rounded-2xl p-3 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-lg shrink-0">
               🧳
             </div>
             <div>
-              <div id="inlineStatTotalTrips" class="text-lg font-extrabold text-slate-900 leading-tight">0</div>
-              <div class="text-[11px] font-semibold text-slate-500">Total de Viagens</div>
+              <div id="inlineStatTotalTrips" class="text-lg font-bold text-[#1f1f1f] leading-tight">0</div>
+              <div class="text-[11px] font-medium text-[#5e5e5e]">Total de Viagens</div>
             </div>
           </div>
 
-          <div class="bg-emerald-50/70 border border-emerald-200/80 rounded-2xl p-3 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-lg shadow-xs shrink-0">
+          <div class="bg-white border border-[#e0e2ec] rounded-2xl p-3 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-lg shrink-0">
               📍
             </div>
             <div>
-              <div id="inlineStatUniqueDest" class="text-lg font-extrabold text-slate-900 leading-tight">0</div>
-              <div class="text-[11px] font-semibold text-slate-500">Destinos Únicos</div>
+              <div id="inlineStatUniqueDest" class="text-lg font-bold text-[#1f1f1f] leading-tight">0</div>
+              <div class="text-[11px] font-medium text-[#5e5e5e]">Destinos Únicos</div>
             </div>
           </div>
 
-          <div class="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-3 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center text-lg shadow-xs shrink-0">
+          <div class="bg-white border border-[#e0e2ec] rounded-2xl p-3 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-lg shrink-0">
               📅
             </div>
             <div>
-              <div id="inlineStatAvgDays" class="text-lg font-extrabold text-slate-900 leading-tight">0 d</div>
-              <div class="text-[11px] font-semibold text-slate-500">Média de Dias</div>
+              <div id="inlineStatAvgDays" class="text-lg font-bold text-[#1f1f1f] leading-tight">0 d</div>
+              <div class="text-[11px] font-medium text-[#5e5e5e]">Média de Dias</div>
             </div>
           </div>
 
-          <div class="bg-sky-50/70 border border-sky-200/80 rounded-2xl p-3 flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-sky-600 text-white flex items-center justify-center text-lg shadow-xs shrink-0">
-              🛡️
+          <div class="bg-white border border-[#e0e2ec] rounded-2xl p-3 flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center text-lg shrink-0">
+              🔒
             </div>
             <div>
-              <div id="inlineStatLockedTrips" class="text-lg font-extrabold text-slate-900 leading-tight">0</div>
-              <div class="text-[11px] font-semibold text-slate-500">Edição Bloqueada</div>
+              <div id="inlineStatLockedTrips" class="text-lg font-bold text-[#1f1f1f] leading-tight">0</div>
+              <div class="text-[11px] font-medium text-[#5e5e5e]">Edição Bloqueada</div>
             </div>
           </div>
         </div>
 
         <!-- Trips Table / List Container -->
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto bg-white rounded-xl border border-[#e0e2ec]">
           <table class="w-full text-left border-collapse">
             <thead>
-              <tr class="border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500 bg-slate-50/80">
+              <tr class="border-b border-[#e0e2ec] text-[11px] font-bold uppercase tracking-wider text-[#5e5e5e] bg-[#f8fafd]">
                 <th class="py-3 px-4 rounded-tl-xl">Destino & Estilo</th>
                 <th class="py-3 px-4">Período & Duração</th>
                 <th class="py-3 px-4">Progresso & Status da Mala</th>
                 <th class="py-3 px-4 text-right rounded-tr-xl">Ações do Plano</th>
               </tr>
             </thead>
-            <tbody id="inlineTripsTableBody" class="divide-y divide-slate-100 text-xs">
+            <tbody id="inlineTripsTableBody" class="divide-y divide-[#e0e2ec] text-xs">
               <tr>
-                <td colspan="4" class="py-8 text-center text-slate-400">
+                <td colspan="4" class="py-8 text-center text-[#5e5e5e]">
                   Carregando viagens salvas...
                 </td>
               </tr>
@@ -460,27 +474,30 @@
         
         <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div class="flex items-center gap-2">
-            <h3 class="text-2xl font-bold text-slate-900 font-serif">Minhas Peças</h3>
-            <span id="itemsCounterBadge" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-200 text-slate-700">0</span>
+            <h3 class="text-2xl font-semibold text-[#1f1f1f] font-serif flex items-center gap-2">
+              <span>👗</span>
+              <span>Minhas Peças</span>
+            </h3>
+            <span id="itemsCounterBadge" class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-[#d3e3fd] text-[#041e49]">0</span>
           </div>
 
           <!-- Search & Filter Controls -->
           <div class="flex items-center gap-3 w-full sm:w-auto">
             <!-- Search Input -->
             <div class="relative flex-1 sm:w-64">
-              <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-              <input type="text" id="searchInput" placeholder="Buscar peça, cor, tecido..." class="w-full pl-9 pr-4 py-2 text-sm bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-xs">🔍</span>
+              <input type="text" id="searchInput" placeholder="Buscar peça, cor, tecido..." class="w-full pl-9 pr-4 py-2 text-sm bg-white border border-[#e0e2ec] rounded-full focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/30 transition">
             </div>
 
             <!-- Color Filter Dropdown -->
-            <select id="colorFilterSelect" class="py-2 px-3 text-sm bg-white border border-slate-200 rounded-xl text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition">
-              <option value="">Todas as Cores</option>
+            <select id="colorFilterSelect" class="py-2 px-3.5 text-sm bg-white border border-[#e0e2ec] rounded-full text-[#1f1f1f] focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/30 transition">
+              <option value="">🎨 Todas as Cores</option>
               <!-- Dynamically populated -->
             </select>
 
             <!-- Refresh Button -->
-            <button id="refreshBtn" title="Recarregar Roupeiro" class="p-2.5 text-slate-500 hover:text-slate-800 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition">
-              <i class="fa-solid fa-arrows-rotate"></i>
+            <button id="refreshBtn" title="Recarregar Roupeiro" class="p-2.5 text-[#0b57d0] hover:bg-[#edf2fa] bg-white border border-[#e0e2ec] rounded-full transition">
+              <span>🔄</span>
             </button>
           </div>
         </div>
@@ -490,8 +507,8 @@
           <div class="flex items-center gap-2 flex-wrap" id="categoryTabsContainer">
             <!-- Dynamically populated tabs: Todas, Camisas, Calças, etc. -->
           </div>
-          <button type="button" id="openNewCategoryModalBtn" class="shrink-0 px-3 py-1.5 rounded-xl text-xs font-semibold text-brand-700 bg-brand-50 hover:bg-brand-100 border border-brand-200 shadow-2xs transition flex items-center gap-1.5 self-start sm:self-auto" title="Criar nova categoria/tipo de peça">
-            <i class="fa-solid fa-plus text-[10px]"></i>
+          <button type="button" id="openNewCategoryModalBtn" class="gc-btn-secondary shrink-0 px-3.5 py-1.5 text-xs self-start sm:self-auto" title="Criar nova categoria/tipo de peça">
+            <span>➕🏷️</span>
             <span>Nova Categoria</span>
           </button>
         </div>
@@ -504,28 +521,28 @@
       </div>
 
       <!-- Empty State -->
-      <div id="emptyState" class="hidden text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300 p-8 space-y-4">
-        <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mx-auto text-2xl">
-          <i class="fa-solid fa-hanger"></i>
+      <div id="emptyState" class="hidden text-center py-16 gc-panel p-8 space-y-4">
+        <div class="w-16 h-16 rounded-2xl bg-[#edf2fa] border border-[#d3e3fd] flex items-center justify-center mx-auto text-3xl">
+          🧥
         </div>
         <div>
-          <h4 class="text-base font-bold text-slate-800">Seu roupeiro está vazio</h4>
-          <p class="text-sm text-slate-500 max-w-md mx-auto mt-1">
+          <h4 class="text-base font-semibold text-[#1f1f1f]">Seu roupeiro está vazio</h4>
+          <p class="text-sm text-[#5e5e5e] max-w-md mx-auto mt-1">
             Faça upload de fotos ou importe do seu Google Fotos para ver suas peças catalogadas automaticamente com IA.
           </p>
         </div>
-        <button id="emptyUploadBtn" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-brand-600 bg-brand-50 hover:bg-brand-100 rounded-xl transition">
-          <i class="fa-solid fa-plus"></i>
+        <button id="emptyUploadBtn" class="gc-btn-primary px-5 py-2.5 text-sm">
+          <span>➕✨</span>
           <span>Adicionar Peças Agora</span>
         </button>
       </div>
 
       <!-- Loading Skeleton -->
       <div id="loadingGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        <div class="bg-white rounded-2xl h-80 animate-pulse border border-slate-200"></div>
-        <div class="bg-white rounded-2xl h-80 animate-pulse border border-slate-200"></div>
-        <div class="bg-white rounded-2xl h-80 animate-pulse border border-slate-200"></div>
-        <div class="bg-white rounded-2xl h-80 animate-pulse border border-slate-200"></div>
+        <div class="bg-white rounded-2xl h-80 animate-pulse border border-[#e0e2ec]"></div>
+        <div class="bg-white rounded-2xl h-80 animate-pulse border border-[#e0e2ec]"></div>
+        <div class="bg-white rounded-2xl h-80 animate-pulse border border-[#e0e2ec]"></div>
+        <div class="bg-white rounded-2xl h-80 animate-pulse border border-[#e0e2ec]"></div>
       </div>
     </section>
 
@@ -533,15 +550,15 @@
 
   <!-- EDIT ITEM MODAL -->
   <div id="editModal" class="fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div class="bg-white rounded-2xl max-w-lg w-full border border-[#e0e2ec] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
       <!-- Header -->
-      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+      <div class="px-6 py-4 border-b border-[#e0e2ec] flex items-center justify-between bg-[#f8fafd]">
         <div class="flex items-center gap-2">
-          <i class="fa-solid fa-pen-to-square text-brand-600"></i>
-          <h3 class="text-base font-bold text-slate-900">Editar Peça de Roupa</h3>
+          <span class="text-lg" role="img" aria-label="Editar">✏️</span>
+          <h3 class="text-base font-bold text-[#1f1f1f]">Editar Peça de Roupa</h3>
         </div>
-        <button id="closeEditModalBtn" class="text-slate-400 hover:text-slate-600 text-lg">
-          <i class="fa-solid fa-xmark"></i>
+        <button id="closeEditModalBtn" class="text-[#5e5e5e] hover:text-[#1f1f1f] text-lg">
+          <span>✖️</span>
         </button>
       </div>
 
@@ -550,32 +567,32 @@
         <input type="hidden" id="editItemId">
 
         <!-- Preview Image Mini -->
-        <div class="flex items-center gap-4 p-3 bg-slate-50 rounded-xl border border-slate-200">
-          <img id="editImagePreview" src="" alt="Peça" class="w-16 h-16 object-contain bg-white rounded-lg border border-slate-100">
+        <div class="flex items-center gap-4 p-3 bg-[#f8fafd] rounded-xl border border-[#e0e2ec]">
+          <img id="editImagePreview" src="" alt="Peça" class="w-16 h-16 object-contain bg-white rounded-lg border border-[#e0e2ec]">
           <div>
-            <h4 id="editTitlePreview" class="text-sm font-bold text-slate-800"></h4>
-            <p id="editFilenamePreview" class="text-xs text-slate-500"></p>
+            <h4 id="editTitlePreview" class="text-sm font-bold text-[#1f1f1f]"></h4>
+            <p id="editFilenamePreview" class="text-xs text-[#5e5e5e]"></p>
           </div>
         </div>
 
         <!-- Tipo -->
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Tipo da Peça</label>
-          <input type="text" id="editTipo" required class="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">
+          <label class="block text-xs font-semibold text-[#1f1f1f] mb-1">Tipo da Peça</label>
+          <input type="text" id="editTipo" required class="w-full px-3 py-2 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/30">
         </div>
 
         <!-- Categoria -->
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Categoria</label>
-          <select id="editCategoria" class="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">
+          <label class="block text-xs font-semibold text-[#1f1f1f] mb-1">Categoria</label>
+          <select id="editCategoria" class="w-full px-3 py-2 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/30">
             <!-- Populated via JS -->
           </select>
         </div>
 
         <!-- Status da Peça -->
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Status da Roupa</label>
-          <select id="editStatusRoupa" class="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">
+          <label class="block text-xs font-semibold text-[#1f1f1f] mb-1">Status da Roupa</label>
+          <select id="editStatusRoupa" class="w-full px-3 py-2 text-sm border border-[#e0e2ec] rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/30">
             <option value="Ok">🟢 Ok (pronta pra uso / mala)</option>
             <option value="Passar">🟡 Passar</option>
             <option value="Lavar">🔵 Lavar</option>
@@ -588,41 +605,41 @@
         <!-- Cor Predominante & Hex -->
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Cor Predominante</label>
-            <input type="text" id="editCor" placeholder="Ex: Azul Marinho" class="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">
+            <label class="block text-xs font-semibold text-[#1f1f1f] mb-1">Cor Predominante</label>
+            <input type="text" id="editCor" placeholder="Ex: Azul Marinho" class="w-full px-3 py-2 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/30">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Tom (Cor Hex)</label>
+            <label class="block text-xs font-semibold text-[#1f1f1f] mb-1">Tom (Cor Hex)</label>
             <div class="flex items-center gap-2">
-              <input type="color" id="editCorPicker" class="w-9 h-9 p-0.5 rounded-lg border border-slate-200 cursor-pointer">
-              <input type="text" id="editCorHex" class="flex-1 px-3 py-2 text-sm border border-slate-200 rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">
+              <input type="color" id="editCorPicker" class="w-9 h-9 p-0.5 rounded-lg border border-[#e0e2ec] cursor-pointer">
+              <input type="text" id="editCorHex" class="flex-1 px-3 py-2 text-sm border border-[#e0e2ec] rounded-xl font-mono focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/30">
             </div>
           </div>
         </div>
 
         <!-- Data Aquisição -->
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">
+          <label class="block text-xs font-semibold text-[#1f1f1f] mb-1">
             Data de Aquisição
-            <span class="text-slate-400 font-normal">(opcional)</span>
+            <span class="text-[#5e5e5e] font-normal">(opcional)</span>
           </label>
-          <input type="date" id="editDataAquisicao" class="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">
+          <input type="date" id="editDataAquisicao" class="w-full px-3 py-2 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/30">
         </div>
 
         <!-- Descrição -->
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">
+          <label class="block text-xs font-semibold text-[#1f1f1f] mb-1">
             Descrição
-            <span class="text-slate-400 font-normal">(opcional)</span>
+            <span class="text-[#5e5e5e] font-normal">(opcional)</span>
           </label>
-          <textarea id="editDescricao" rows="3" placeholder="Detalhes, tecido, ocasião de uso..." class="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"></textarea>
+          <textarea id="editDescricao" rows="3" placeholder="Detalhes, tecido, ocasião de uso..." class="w-full px-3 py-2 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/30"></textarea>
         </div>
 
         <!-- Estilo & Estação -->
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Estilo</label>
-            <select id="editEstilo" class="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl">
+            <label class="block text-xs font-semibold text-[#1f1f1f] mb-1">Estilo</label>
+            <select id="editEstilo" class="w-full px-3 py-2 text-sm border border-[#e0e2ec] rounded-xl">
               <option value="Casual">Casual</option>
               <option value="Formal">Formal</option>
               <option value="Esportivo">Esportivo</option>
@@ -632,8 +649,8 @@
             </select>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Estação</label>
-            <select id="editEstacao" class="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl">
+            <label class="block text-xs font-semibold text-[#1f1f1f] mb-1">Estação</label>
+            <select id="editEstacao" class="w-full px-3 py-2 text-sm border border-[#e0e2ec] rounded-xl">
               <option value="Todas">Todas</option>
               <option value="Verão">Verão</option>
               <option value="Inverno">Inverno</option>
@@ -643,43 +660,44 @@
         </div>
 
         <!-- Configurações de Uso & Itens Genéricos -->
-        <div class="bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-3">
+        <div class="bg-[#f8fafd] border border-[#e0e2ec] rounded-xl p-3.5 space-y-3">
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
-              <input type="checkbox" id="editIsGeneric" class="w-4 h-4 rounded text-brand-600 focus:ring-brand-500 border-slate-300">
-              <label for="editIsGeneric" class="text-xs font-semibold text-slate-800 cursor-pointer">
-                Item genérico / básico <span class="text-[10px] text-slate-500 font-normal">(ex: meia, cueca, calcinha)</span>
+              <input type="checkbox" id="editIsGeneric" class="w-4 h-4 rounded text-[#0b57d0] focus:ring-[#0b57d0] border-slate-300">
+              <label for="editIsGeneric" class="text-xs font-semibold text-[#1f1f1f] cursor-pointer">
+                Item genérico / básico <span class="text-[10px] text-[#5e5e5e] font-normal">(ex: meia, cueca, calcinha)</span>
               </label>
             </div>
             <div id="editQuantidadeWrapper" class="flex items-center gap-1.5">
-              <label for="editQuantidade" class="text-xs text-slate-600 font-medium">Qtd:</label>
-              <input type="number" id="editQuantidade" min="1" max="99" value="1" class="w-16 px-2 py-1 text-xs border border-slate-200 rounded-lg bg-white text-center font-bold">
+              <label for="editQuantidade" class="text-xs text-[#444746] font-medium">Qtd:</label>
+              <input type="number" id="editQuantidade" min="1" max="99" value="1" class="w-16 px-2 py-1 text-xs border border-[#e0e2ec] rounded-lg bg-white text-center font-bold">
             </div>
           </div>
 
-          <div class="flex items-start gap-2 pt-2 border-t border-slate-200/60">
-            <input type="checkbox" id="editNaoRepetir" class="w-4 h-4 mt-0.5 rounded text-brand-600 focus:ring-brand-500 border-slate-300">
+          <div class="flex items-start gap-2 pt-2 border-t border-[#e0e2ec]">
+            <input type="checkbox" id="editNaoRepetir" class="w-4 h-4 mt-0.5 rounded text-[#0b57d0] focus:ring-[#0b57d0] border-slate-300">
             <div>
-              <label for="editNaoRepetir" class="text-xs font-semibold text-slate-800 cursor-pointer">
+              <label for="editNaoRepetir" class="text-xs font-semibold text-[#1f1f1f] cursor-pointer">
                 Não repetir em mais de um dia na mesma viagem
               </label>
-              <p class="text-[10px] text-slate-500 leading-normal mt-0.5">Ao planejar a mala ("Faça Minha Mala"), esta peça ou suas unidades não serão repetidas em dias diferentes.</p>
+              <p class="text-[10px] text-[#5e5e5e] leading-normal mt-0.5">Ao planejar a mala ("Faça Minha Mala"), esta peça ou suas unidades não serão repetidas em dias diferentes.</p>
             </div>
           </div>
         </div>
 
         <!-- Modal Footer -->
-        <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
-          <button type="button" id="modalDeleteBtn" class="px-3.5 py-2 text-xs font-semibold text-red-600 hover:text-red-700 hover:bg-red-50 rounded-xl transition flex items-center gap-1.5" title="Excluir esta peça permanentemente">
-            <i class="fa-solid fa-trash-can"></i>
+        <div class="pt-4 border-t border-[#e0e2ec] flex items-center justify-between gap-3">
+          <button type="button" id="modalDeleteBtn" class="px-3.5 py-2 text-xs font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-full transition flex items-center gap-1.5" title="Excluir esta peça permanentemente">
+            <span>🗑️</span>
             <span>Excluir Peça</span>
           </button>
           <div class="flex items-center gap-2">
-            <button type="button" id="cancelEditBtn" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-800 rounded-xl hover:bg-slate-100 transition">
+            <button type="button" id="cancelEditBtn" class="gc-btn-secondary px-4 py-2 text-sm">
               Cancelar
             </button>
-            <button type="submit" id="saveEditBtn" class="px-5 py-2 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow transition">
-              Salvar Alterações
+            <button type="submit" id="saveEditBtn" class="gc-btn-primary px-5 py-2 text-sm">
+              <span>💾</span>
+              <span>Salvar Alterações</span>
             </button>
           </div>
         </div>
@@ -689,20 +707,20 @@
 
   <!-- MODAL NOVO ITEM GENÉRICO / BÁSICO -->
   <div id="newGenericItemModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div class="bg-white rounded-3xl max-w-lg w-full border border-[#e0e2ec] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
       <!-- Header -->
-      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-blue-50 to-brand-50">
+      <div class="px-6 py-4 border-b border-[#e0e2ec] flex items-center justify-between bg-[#edf2fa]">
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-sm">
-            <i class="fa-solid fa-layer-group text-sm"></i>
+          <div class="w-9 h-9 rounded-xl bg-[#0b57d0] text-white flex items-center justify-center shadow-sm text-lg">
+            🧦
           </div>
           <div>
-            <h3 class="text-base font-bold text-slate-900 font-serif">Novo Item Genérico / Básico</h3>
-            <p class="text-xs text-slate-500">Cadastre meias, peças íntimas ou básicos com quantidade</p>
+            <h3 class="text-base font-bold text-[#1f1f1f] font-serif">Novo Item Genérico / Básico</h3>
+            <p class="text-xs text-[#5e5e5e]">Cadastre meias, peças íntimas ou básicos com quantidade</p>
           </div>
         </div>
-        <button type="button" id="closeNewGenericItemModalBtn" class="text-slate-400 hover:text-slate-600 text-lg">
-          <i class="fa-solid fa-xmark"></i>
+        <button type="button" id="closeNewGenericItemModalBtn" class="text-[#5e5e5e] hover:text-[#1f1f1f] text-lg">
+          <span>✖️</span>
         </button>
       </div>
 
@@ -710,34 +728,34 @@
       <form id="genericItemForm" class="p-6 space-y-4 overflow-y-auto flex-1 custom-scroll">
         <!-- Suggestion Chips -->
         <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1.5">Sugestões Rápidas:</label>
+          <label class="block text-xs font-semibold text-[#444746] mb-1.5">Sugestões Rápidas:</label>
           <div class="flex flex-wrap gap-1.5">
-            <button type="button" class="generic-chip px-2.5 py-1 text-xs rounded-lg bg-slate-100 hover:bg-blue-100 hover:text-blue-800 text-slate-700 transition" data-tipo="Meia Branca" data-cat="Moda Íntima" data-cor="Branco" data-hex="#FFFFFF" data-qty="5">Meia Branca (x5)</button>
-            <button type="button" class="generic-chip px-2.5 py-1 text-xs rounded-lg bg-slate-100 hover:bg-blue-100 hover:text-blue-800 text-slate-700 transition" data-tipo="Meia Invisível" data-cat="Moda Íntima" data-cor="Preto" data-hex="#000000" data-qty="5">Meia Invisível (x5)</button>
-            <button type="button" class="generic-chip px-2.5 py-1 text-xs rounded-lg bg-slate-100 hover:bg-blue-100 hover:text-blue-800 text-slate-700 transition" data-tipo="Cueca Slip" data-cat="Moda Íntima" data-cor="Preto" data-hex="#000000" data-qty="5">Cueca Slip (x5)</button>
-            <button type="button" class="generic-chip px-2.5 py-1 text-xs rounded-lg bg-slate-100 hover:bg-blue-100 hover:text-blue-800 text-slate-700 transition" data-tipo="Cueca Boxer" data-cat="Moda Íntima" data-cor="Cinza" data-hex="#64748B" data-qty="5">Cueca Boxer (x5)</button>
-            <button type="button" class="generic-chip px-2.5 py-1 text-xs rounded-lg bg-slate-100 hover:bg-blue-100 hover:text-blue-800 text-slate-700 transition" data-tipo="Calcinha Básica" data-cat="Moda Íntima" data-cor="Nude" data-hex="#F5D0C5" data-qty="5">Calcinha Básica (x5)</button>
-            <button type="button" class="generic-chip px-2.5 py-1 text-xs rounded-lg bg-slate-100 hover:bg-blue-100 hover:text-blue-800 text-slate-700 transition" data-tipo="Sunga de Praia" data-cat="Moda Praia" data-cor="Azul" data-hex="#1E3A8A" data-qty="2">Sunga de Praia (x2)</button>
-            <button type="button" class="generic-chip px-2.5 py-1 text-xs rounded-lg bg-slate-100 hover:bg-blue-100 hover:text-blue-800 text-slate-700 transition" data-tipo="Camiseta Básica Branca" data-cat="Camisas & Camisetas" data-cor="Branco" data-hex="#FFFFFF" data-qty="3">Camiseta Básica (x3)</button>
+            <button type="button" class="generic-chip px-2.5 py-1 text-xs rounded-full bg-[#f8fafd] border border-[#e0e2ec] hover:bg-[#edf2fa] hover:text-[#0b57d0] text-[#444746] transition" data-tipo="Meia Branca" data-cat="Moda Íntima" data-cor="Branco" data-hex="#FFFFFF" data-qty="5">🧦 Meia Branca (x5)</button>
+            <button type="button" class="generic-chip px-2.5 py-1 text-xs rounded-full bg-[#f8fafd] border border-[#e0e2ec] hover:bg-[#edf2fa] hover:text-[#0b57d0] text-[#444746] transition" data-tipo="Meia Invisível" data-cat="Moda Íntima" data-cor="Preto" data-hex="#000000" data-qty="5">🧦 Meia Invisível (x5)</button>
+            <button type="button" class="generic-chip px-2.5 py-1 text-xs rounded-full bg-[#f8fafd] border border-[#e0e2ec] hover:bg-[#edf2fa] hover:text-[#0b57d0] text-[#444746] transition" data-tipo="Cueca Slip" data-cat="Moda Íntima" data-cor="Preto" data-hex="#000000" data-qty="5">🩲 Cueca Slip (x5)</button>
+            <button type="button" class="generic-chip px-2.5 py-1 text-xs rounded-full bg-[#f8fafd] border border-[#e0e2ec] hover:bg-[#edf2fa] hover:text-[#0b57d0] text-[#444746] transition" data-tipo="Cueca Boxer" data-cat="Moda Íntima" data-cor="Cinza" data-hex="#64748B" data-qty="5">🩲 Cueca Boxer (x5)</button>
+            <button type="button" class="generic-chip px-2.5 py-1 text-xs rounded-full bg-[#f8fafd] border border-[#e0e2ec] hover:bg-[#edf2fa] hover:text-[#0b57d0] text-[#444746] transition" data-tipo="Calcinha Básica" data-cat="Moda Íntima" data-cor="Nude" data-hex="#F5D0C5" data-qty="5">👙 Calcinha Básica (x5)</button>
+            <button type="button" class="generic-chip px-2.5 py-1 text-xs rounded-full bg-[#f8fafd] border border-[#e0e2ec] hover:bg-[#edf2fa] hover:text-[#0b57d0] text-[#444746] transition" data-tipo="Sunga de Praia" data-cat="Moda Praia" data-cor="Azul" data-hex="#1E3A8A" data-qty="2">🏖️ Sunga de Praia (x2)</button>
+            <button type="button" class="generic-chip px-2.5 py-1 text-xs rounded-full bg-[#f8fafd] border border-[#e0e2ec] hover:bg-[#edf2fa] hover:text-[#0b57d0] text-[#444746] transition" data-tipo="Camiseta Básica Branca" data-cat="Camisas & Camisetas" data-cor="Branco" data-hex="#FFFFFF" data-qty="3">👕 Camiseta Básica (x3)</button>
           </div>
         </div>
 
         <!-- Tipo / Nome -->
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Nome / Tipo da Peça *</label>
-          <input type="text" id="genericItemTipo" required placeholder="Ex: Meia Branca, Cueca Slip, Camiseta Básica..." class="w-full px-3.5 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+          <label class="block text-xs font-bold text-[#1f1f1f] mb-1">Nome / Tipo da Peça *</label>
+          <input type="text" id="genericItemTipo" required placeholder="Ex: Meia Branca, Cueca Slip, Camiseta Básica..." class="w-full px-3.5 py-2 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/30">
         </div>
 
         <!-- Categoria com botão inline para nova categoria -->
         <div>
           <div class="flex items-center justify-between mb-1">
-            <label class="text-xs font-bold text-slate-700">Categoria *</label>
-            <button type="button" id="btnInlineNewCategory" class="text-[11px] text-blue-600 hover:underline font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-plus text-[9px]"></i>
+            <label class="text-xs font-bold text-[#1f1f1f]">Categoria *</label>
+            <button type="button" id="btnInlineNewCategory" class="text-[11px] text-[#0b57d0] hover:underline font-semibold flex items-center gap-1">
+              <span>➕</span>
               <span>Nova Categoria</span>
             </button>
           </div>
-          <select id="genericItemCategoria" required class="w-full px-3.5 py-2 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+          <select id="genericItemCategoria" required class="w-full px-3.5 py-2 text-sm border border-[#e0e2ec] rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/30">
             <!-- Populated via JS -->
           </select>
         </div>
@@ -745,27 +763,27 @@
         <!-- Quantidade & Cor -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Quantidade de Itens *</label>
-            <div class="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-white">
-              <button type="button" id="btnQtyMinus" class="w-10 py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold transition select-none">-</button>
+            <label class="block text-xs font-bold text-[#1f1f1f] mb-1">Quantidade de Itens *</label>
+            <div class="flex items-center border border-[#e0e2ec] rounded-xl overflow-hidden bg-white">
+              <button type="button" id="btnQtyMinus" class="w-10 py-2 bg-[#f8fafd] hover:bg-[#edf2fa] text-[#444746] font-bold transition select-none">-</button>
               <input type="number" id="genericItemQuantidade" min="1" max="99" value="5" required class="flex-1 py-2 text-center text-sm font-bold border-0 focus:ring-0 focus:outline-none">
-              <button type="button" id="btnQtyPlus" class="w-10 py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 font-bold transition select-none">+</button>
+              <button type="button" id="btnQtyPlus" class="w-10 py-2 bg-[#f8fafd] hover:bg-[#edf2fa] text-[#444746] font-bold transition select-none">+</button>
             </div>
-            <p class="text-[10px] text-slate-400 mt-1">Ex: 5 unidades disponíveis no roupeiro</p>
+            <p class="text-[10px] text-[#5e5e5e] mt-1">Ex: 5 unidades disponíveis no roupeiro</p>
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-700 mb-1">Cor Predominante</label>
+            <label class="block text-xs font-bold text-[#1f1f1f] mb-1">Cor Predominante</label>
             <div class="flex items-center gap-2">
-              <input type="color" id="genericItemCorPicker" value="#FFFFFF" class="w-9 h-9 p-0.5 rounded-lg border border-slate-200 cursor-pointer">
-              <input type="text" id="genericItemCor" value="Branco" placeholder="Ex: Branco" class="flex-1 px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+              <input type="color" id="genericItemCorPicker" value="#FFFFFF" class="w-9 h-9 p-0.5 rounded-lg border border-[#e0e2ec] cursor-pointer">
+              <input type="text" id="genericItemCor" value="Branco" placeholder="Ex: Branco" class="flex-1 px-3 py-2 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/30">
             </div>
           </div>
         </div>
 
         <!-- Checkbox Não Repetir -->
         <div class="p-3.5 bg-amber-50/70 border border-amber-200 rounded-2xl flex items-start gap-2.5">
-          <input type="checkbox" id="genericItemNaoRepetir" checked class="w-4 h-4 mt-0.5 rounded text-brand-600 focus:ring-brand-500 border-amber-300">
+          <input type="checkbox" id="genericItemNaoRepetir" checked class="w-4 h-4 mt-0.5 rounded text-[#0b57d0] focus:ring-[#0b57d0] border-amber-300">
           <div>
             <label for="genericItemNaoRepetir" class="text-xs font-bold text-amber-950 cursor-pointer">
               Não repetir em mais de um dia na mesma viagem
@@ -778,20 +796,20 @@
 
         <!-- Descrição -->
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">
+          <label class="block text-xs font-semibold text-[#1f1f1f] mb-1">
             Descrição / Tecido / Detalhes
-            <span class="text-slate-400 font-normal">(opcional)</span>
+            <span class="text-[#5e5e5e] font-normal">(opcional)</span>
           </label>
-          <input type="text" id="genericItemDescricao" placeholder="Ex: 100% Algodão, cano curto, sem costura..." class="w-full px-3.5 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500">
+          <input type="text" id="genericItemDescricao" placeholder="Ex: 100% Algodão, cano curto, sem costura..." class="w-full px-3.5 py-2 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/30">
         </div>
 
         <!-- Modal Footer -->
-        <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-2">
-          <button type="button" id="cancelGenericItemBtn" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 rounded-xl hover:bg-slate-100 transition">
+        <div class="pt-4 border-t border-[#e0e2ec] flex items-center justify-end gap-2">
+          <button type="button" id="cancelGenericItemBtn" class="gc-btn-secondary px-4 py-2 text-xs">
             Cancelar
           </button>
-          <button type="submit" id="saveGenericItemBtn" class="px-5 py-2 text-xs font-bold text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-xl shadow transition flex items-center gap-1.5">
-            <i class="fa-solid fa-plus"></i>
+          <button type="submit" id="saveGenericItemBtn" class="gc-btn-primary px-5 py-2 text-xs">
+            <span>➕✨</span>
             <span>Adicionar ao Roupeiro</span>
           </button>
         </div>
@@ -801,31 +819,31 @@
 
   <!-- MODAL CRIAR NOVA CATEGORIA -->
   <div id="newCategoryModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-sm w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col">
-      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+    <div class="bg-white rounded-3xl max-w-sm w-full border border-[#e0e2ec] shadow-2xl overflow-hidden flex flex-col">
+      <div class="px-6 py-4 border-b border-[#e0e2ec] flex items-center justify-between bg-[#f8fafd]">
         <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center">
-            <i class="fa-solid fa-tags text-sm"></i>
+          <div class="w-8 h-8 rounded-lg bg-[#edf2fa] text-[#0b57d0] flex items-center justify-center text-base">
+            🏷️
           </div>
-          <h4 class="text-sm font-bold text-slate-900 font-serif">Nova Categoria</h4>
+          <h4 class="text-sm font-bold text-[#1f1f1f] font-serif">Nova Categoria</h4>
         </div>
-        <button type="button" id="closeNewCategoryModalBtn" class="text-slate-400 hover:text-slate-600 text-base">
-          <i class="fa-solid fa-xmark"></i>
+        <button type="button" id="closeNewCategoryModalBtn" class="text-[#5e5e5e] hover:text-[#1f1f1f] text-base">
+          <span>✖️</span>
         </button>
       </div>
 
       <form id="newCategoryForm" class="p-6 space-y-4">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1.5">Nome da Categoria / Tipo</label>
-          <input type="text" id="newCategoryNameInput" required placeholder="Ex: Roupas de Ginástica, Pijamas, Ternos..." class="w-full px-3.5 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">
+          <label class="block text-xs font-bold text-[#1f1f1f] mb-1.5">Nome da Categoria / Tipo</label>
+          <input type="text" id="newCategoryNameInput" required placeholder="Ex: Roupas de Ginástica, Pijamas, Ternos..." class="w-full px-3.5 py-2 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/30">
         </div>
 
         <div class="pt-2 flex items-center justify-end gap-2">
-          <button type="button" id="cancelNewCategoryBtn" class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 rounded-xl transition">
+          <button type="button" id="cancelNewCategoryBtn" class="gc-btn-secondary px-3.5 py-2 text-xs">
             Cancelar
           </button>
-          <button type="submit" id="saveNewCategoryBtn" class="px-4 py-2 text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow transition flex items-center gap-1.5">
-            <i class="fa-solid fa-check"></i>
+          <button type="submit" id="saveNewCategoryBtn" class="gc-btn-primary px-4 py-2 text-xs">
+            <span>✅</span>
             <span>Salvar Categoria</span>
           </button>
         </div>
@@ -835,32 +853,32 @@
 
   <!-- MODAL RENOMEAR CATEGORIA -->
   <div id="renameCategoryModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-sm w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col">
-      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+    <div class="bg-white rounded-3xl max-w-sm w-full border border-[#e0e2ec] shadow-2xl overflow-hidden flex flex-col">
+      <div class="px-6 py-4 border-b border-[#e0e2ec] flex items-center justify-between bg-[#f8fafd]">
         <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center">
-            <i class="fa-solid fa-pen-to-square text-sm"></i>
+          <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-base">
+            ✏️
           </div>
-          <h4 class="text-sm font-bold text-slate-900 font-serif">Renomear Categoria</h4>
+          <h4 class="text-sm font-bold text-[#1f1f1f] font-serif">Renomear Categoria</h4>
         </div>
-        <button type="button" id="closeRenameCategoryModalBtn" class="text-slate-400 hover:text-slate-600 text-base">
-          <i class="fa-solid fa-xmark"></i>
+        <button type="button" id="closeRenameCategoryModalBtn" class="text-[#5e5e5e] hover:text-[#1f1f1f] text-base">
+          <span>✖️</span>
         </button>
       </div>
 
       <form id="renameCategoryForm" class="p-6 space-y-4">
         <input type="hidden" id="renameCategoryOldNameInput">
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1.5">Novo Nome da Categoria</label>
-          <input type="text" id="renameCategoryNewNameInput" required placeholder="Novo nome da categoria..." class="w-full px-3.5 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">
+          <label class="block text-xs font-bold text-[#1f1f1f] mb-1.5">Novo Nome da Categoria</label>
+          <input type="text" id="renameCategoryNewNameInput" required placeholder="Novo nome da categoria..." class="w-full px-3.5 py-2 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/30">
         </div>
 
         <div class="pt-2 flex items-center justify-end gap-2">
-          <button type="button" id="cancelRenameCategoryBtn" class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 rounded-xl transition">
+          <button type="button" id="cancelRenameCategoryBtn" class="gc-btn-secondary px-3.5 py-2 text-xs">
             Cancelar
           </button>
-          <button type="submit" id="saveRenameCategoryBtn" class="px-4 py-2 text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow transition flex items-center gap-1.5">
-            <i class="fa-solid fa-check"></i>
+          <button type="submit" id="saveRenameCategoryBtn" class="gc-btn-primary px-4 py-2 text-xs">
+            <span>✅</span>
             <span>Salvar Alteração</span>
           </button>
         </div>
@@ -869,58 +887,58 @@
   </div>
 
   <!-- BATCH ACTIONS FLOATING BAR -->
-  <div id="batchActionBar" class="fixed bottom-6 inset-x-0 mx-auto max-w-xl z-40 bg-slate-900/95 text-white px-5 py-3 rounded-2xl shadow-2xl backdrop-blur border border-slate-700 hidden flex items-center justify-between gap-3 transition-all duration-300">
+  <div id="batchActionBar" class="fixed bottom-6 inset-x-0 mx-auto max-w-xl z-40 bg-[#041e49] text-white px-5 py-3 rounded-full shadow-2xl backdrop-blur border border-[#4285f4]/40 hidden flex items-center justify-between gap-3 transition-all duration-300">
     <div class="flex items-center gap-2 text-xs font-semibold">
-      <span class="w-6 h-6 rounded-full bg-brand-600 flex items-center justify-center text-[11px] font-bold" id="batchSelectedCount">0</span>
+      <span class="w-6 h-6 rounded-full bg-[#4285f4] flex items-center justify-center text-[11px] font-bold" id="batchSelectedCount">0</span>
       <span class="hidden sm:inline">peças selecionadas</span>
     </div>
     <div class="flex items-center gap-2">
-      <button type="button" id="btnBatchSelectAll" class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition">
+      <button type="button" id="btnBatchSelectAll" class="px-2.5 py-1.5 rounded-full text-xs font-medium text-sky-200 hover:text-white hover:bg-white/10 transition">
         Todas
       </button>
-      <button type="button" id="btnBatchMoveModal" class="px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
-        <i class="fa-solid fa-arrow-right-arrow-left text-[11px]"></i>
+      <button type="button" id="btnBatchMoveModal" class="px-3.5 py-1.5 rounded-full bg-[#0b57d0] hover:bg-[#0842a0] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+        <span>🔀</span>
         <span>Mover Categoria</span>
       </button>
-      <button type="button" id="btnBatchDelete" class="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
-        <i class="fa-solid fa-trash-can text-[11px]"></i>
+      <button type="button" id="btnBatchDelete" class="px-3.5 py-1.5 rounded-full bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+        <span>🗑️</span>
         <span>Excluir</span>
       </button>
-      <button type="button" id="btnBatchClear" class="w-7 h-7 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 flex items-center justify-center transition ml-1" title="Limpar seleção">
-        <i class="fa-solid fa-xmark text-sm"></i>
+      <button type="button" id="btnBatchClear" class="w-7 h-7 rounded-full text-slate-300 hover:text-white hover:bg-white/10 flex items-center justify-center transition ml-1" title="Limpar seleção">
+        <span>✖️</span>
       </button>
     </div>
   </div>
 
   <!-- MODAL MOVER PEÇAS EM LOTE -->
   <div id="batchMoveModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-sm w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col">
-      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+    <div class="bg-white rounded-3xl max-w-sm w-full border border-[#e0e2ec] shadow-2xl overflow-hidden flex flex-col">
+      <div class="px-6 py-4 border-b border-[#e0e2ec] flex items-center justify-between bg-[#f8fafd]">
         <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center">
-            <i class="fa-solid fa-arrow-right-arrow-left text-sm"></i>
+          <div class="w-8 h-8 rounded-lg bg-[#edf2fa] text-[#0b57d0] flex items-center justify-center text-base">
+            🔀
           </div>
-          <h4 class="text-sm font-bold text-slate-900 font-serif">Mover Peças</h4>
+          <h4 class="text-sm font-bold text-[#1f1f1f] font-serif">Mover Peças</h4>
         </div>
-        <button type="button" id="closeBatchMoveModalBtn" class="text-slate-400 hover:text-slate-600 text-base">
-          <i class="fa-solid fa-xmark"></i>
+        <button type="button" id="closeBatchMoveModalBtn" class="text-[#5e5e5e] hover:text-[#1f1f1f] text-base">
+          <span>✖️</span>
         </button>
       </div>
 
       <div class="p-6 space-y-4">
-        <p class="text-xs text-slate-600">
+        <p class="text-xs text-[#444746]">
           Mover <strong id="batchMoveCountText">0</strong> peça(s) selecionada(s) para a categoria:
         </p>
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1.5">Categoria de Destino</label>
-          <select id="batchMoveCategorySelect" class="w-full px-3.5 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-slate-800"></select>
+          <label class="block text-xs font-bold text-[#1f1f1f] mb-1.5">Categoria de Destino</label>
+          <select id="batchMoveCategorySelect" class="w-full px-3.5 py-2 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0] bg-white font-medium text-[#1f1f1f]"></select>
         </div>
         <div class="pt-2 flex items-center justify-end gap-2">
-          <button type="button" id="cancelBatchMoveBtn" class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 rounded-xl transition">
+          <button type="button" id="cancelBatchMoveBtn" class="gc-btn-secondary px-3.5 py-2 text-xs">
             Cancelar
           </button>
-          <button type="button" id="confirmBatchMoveBtn" class="px-4 py-2 text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow transition flex items-center gap-1.5">
-            <i class="fa-solid fa-check"></i>
+          <button type="button" id="confirmBatchMoveBtn" class="gc-btn-primary px-4 py-2 text-xs flex items-center gap-1.5">
+            <span>✅</span>
             <span>Confirmar Mudança</span>
           </button>
         </div>
@@ -930,34 +948,34 @@
 
   <!-- GOOGLE PHOTOS SELECTOR MODAL -->
   <div id="googlePhotosModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-4xl w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div class="bg-white rounded-2xl max-w-4xl w-full border border-[#e0e2ec] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
       <!-- Header -->
-      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+      <div class="px-6 py-4 border-b border-[#e0e2ec] flex items-center justify-between bg-[#f8fafd]">
         <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
-            <i class="fa-brands fa-google text-base"></i>
+          <div class="w-9 h-9 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-lg shadow-sm">
+            📸
           </div>
           <div>
-            <h3 class="text-base font-bold text-slate-900">Buscar no Google Fotos</h3>
-            <p class="text-xs text-slate-500">Selecione as fotos da sua conta para catalogar no Roupeiro</p>
+            <h3 class="text-base font-bold text-[#1f1f1f]">Buscar no Google Fotos</h3>
+            <p class="text-xs text-[#444746]">Selecione as fotos da sua conta para catalogar no Roupeiro</p>
           </div>
         </div>
-        <button id="closeGooglePhotosModalBtn" class="text-slate-400 hover:text-slate-600 text-lg">
-          <i class="fa-solid fa-xmark"></i>
+        <button id="closeGooglePhotosModalBtn" class="text-slate-400 hover:text-slate-600 text-lg font-bold">
+          ❌
         </button>
       </div>
 
       <!-- Subheader: Selection counter & Quick Select -->
-      <div class="px-6 py-3 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs">
+      <div class="px-6 py-3 bg-[#f1f4f9] border-b border-[#e0e2ec] flex items-center justify-between text-xs">
         <div class="flex items-center gap-3">
-          <span class="font-semibold text-slate-700">
-            Selecionadas: <span id="photosSelectedCount" class="text-brand-600 font-bold">0</span>
+          <span class="font-semibold text-[#1f1f1f]">
+            Selecionadas: <span id="photosSelectedCount" class="text-[#0b57d0] font-bold">0</span>
           </span>
-          <button id="selectAllPhotosBtn" class="text-brand-600 hover:underline font-medium">Selecionar Todas</button>
-          <button id="clearPhotosSelectionBtn" class="text-slate-500 hover:underline">Limpar</button>
+          <button id="selectAllPhotosBtn" class="text-[#0b57d0] hover:underline font-semibold">Selecionar Todas</button>
+          <button id="clearPhotosSelectionBtn" class="text-[#444746] hover:underline">Limpar</button>
         </div>
-        <div id="googlePhotosAuthBadge" class="flex items-center gap-1.5 text-emerald-600 font-medium">
-          <i class="fa-solid fa-circle-check text-[10px]"></i>
+        <div id="googlePhotosAuthBadge" class="flex items-center gap-1.5 text-emerald-700 font-semibold">
+          <span>🟢</span>
           <span>Conta Conectada</span>
         </div>
       </div>
@@ -967,7 +985,7 @@
         <!-- Re-authenticate banner if needed -->
         <div id="photosReauthBanner" class="hidden mb-4 p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-center justify-between">
           <div class="flex items-center gap-2">
-            <i class="fa-solid fa-triangle-exclamation text-amber-500 text-base"></i>
+            <span>⚠️</span>
             <span>Para acessar o Google Fotos, autorize o acesso à sua galeria.</span>
           </div>
           <button id="photosReauthBtn" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-semibold transition">
@@ -977,8 +995,8 @@
 
         <!-- Photos Loading Spinner -->
         <div id="photosLoadingSpinner" class="text-center py-16 space-y-3">
-          <div class="w-10 h-10 border-3 border-brand-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p class="text-xs text-slate-500">Buscando fotos da sua conta Google...</p>
+          <div class="w-10 h-10 border-3 border-[#0b57d0] border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p class="text-xs text-[#444746]">Buscando fotos da sua conta Google...</p>
         </div>
 
         <!-- Photos Grid -->
@@ -986,22 +1004,22 @@
           <!-- Populated dynamically -->
         </div>
 
-        <div id="photosEmptyNotice" class="hidden text-center py-12 text-slate-400 text-sm">
+        <div id="photosEmptyNotice" class="hidden text-center py-12 text-[#444746] text-sm">
           Nenhuma foto encontrada no Google Fotos da conta conectada.
         </div>
       </div>
 
       <!-- Footer: Actions -->
-      <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
-        <span class="text-xs text-slate-500">
-          As fotos selecionadas serão recortadas e analisadas pelo Gemini.
+      <div class="px-6 py-4 bg-[#f8fafd] border-t border-[#e0e2ec] flex items-center justify-between">
+        <span class="text-xs text-[#444746]">
+          As fotos selecionadas serão recortadas e analisadas pelo Gemini ✨
         </span>
         <div class="flex items-center gap-3">
-          <button type="button" id="cancelPhotosImportBtn" class="px-4 py-2 text-sm font-semibold text-slate-600 hover:text-slate-800 rounded-xl hover:bg-slate-200 transition">
+          <button type="button" id="cancelPhotosImportBtn" class="gc-btn-secondary px-4 py-2 text-sm">
             Cancelar
           </button>
-          <button type="button" id="confirmPhotosImportBtn" disabled class="px-5 py-2 text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 disabled:bg-slate-300 disabled:cursor-not-allowed rounded-xl shadow transition flex items-center gap-2">
-            <i class="fa-solid fa-cloud-arrow-down"></i>
+          <button type="button" id="confirmPhotosImportBtn" disabled class="gc-btn-primary px-5 py-2 text-sm disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2">
+            <span>☁️</span>
             <span>Importar para o Roupeiro</span>
           </button>
         </div>
@@ -1011,57 +1029,57 @@
 
   <!-- LOOK BUILDER MODAL (Montador de Looks) -->
   <div id="lookBuilderModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-3xl w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+    <div class="bg-white rounded-2xl max-w-3xl w-full border border-[#e0e2ec] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div class="px-6 py-4 border-b border-[#e0e2ec] flex items-center justify-between bg-[#f8fafd]">
         <div class="flex items-center gap-2">
-          <i class="fa-solid fa-wand-magic-sparkles text-brand-600"></i>
-          <h3 class="text-base font-bold text-slate-900">Montador de Looks — Roupeiro Virtual</h3>
+          <span class="text-lg">🪄</span>
+          <h3 class="text-base font-bold text-[#1f1f1f]">Montador de Looks — Roupeiro Virtual</h3>
         </div>
-        <button id="closeLookBuilderBtn" class="text-slate-400 hover:text-slate-600 text-lg">
-          <i class="fa-solid fa-xmark"></i>
+        <button id="closeLookBuilderBtn" class="text-slate-400 hover:text-slate-600 text-lg font-bold">
+          ❌
         </button>
       </div>
 
       <div class="p-6 overflow-y-auto flex-1 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
         <!-- Mannequin / Canvas Area -->
-        <div class="md:col-span-6 bg-slate-100/70 rounded-2xl p-6 flex flex-col items-center justify-center space-y-4 min-h-[380px] garment-card-backdrop border border-slate-200">
-          <div id="lookSlotTop" class="w-36 h-36 border-2 border-dashed border-slate-300 rounded-xl flex items-center justify-center text-slate-400 p-2 text-center relative group">
-            <span class="text-xs">Topo (Camisa / Casaco)</span>
+        <div class="md:col-span-6 bg-[#f8fafd] rounded-2xl p-6 flex flex-col items-center justify-center space-y-4 min-h-[380px] garment-card-backdrop border border-[#e0e2ec]">
+          <div id="lookSlotTop" class="w-36 h-36 border-2 border-dashed border-[#c4c7c5] rounded-xl flex items-center justify-center text-[#444746] p-2 text-center relative group">
+            <span class="text-xs">👕 Topo (Camisa / Casaco)</span>
           </div>
-          <div id="lookSlotBottom" class="w-36 h-36 border-2 border-dashed border-slate-300 rounded-xl flex items-center justify-center text-slate-400 p-2 text-center relative group">
-            <span class="text-xs">Parte Inferior (Calça / Saia)</span>
+          <div id="lookSlotBottom" class="w-36 h-36 border-2 border-dashed border-[#c4c7c5] rounded-xl flex items-center justify-center text-[#444746] p-2 text-center relative group">
+            <span class="text-xs">👖 Parte Inferior (Calça / Saia)</span>
           </div>
-          <div id="lookSlotShoes" class="w-36 h-24 border-2 border-dashed border-slate-300 rounded-xl flex items-center justify-center text-slate-400 p-2 text-center relative group">
-            <span class="text-xs">Calçados</span>
+          <div id="lookSlotShoes" class="w-36 h-24 border-2 border-dashed border-[#c4c7c5] rounded-xl flex items-center justify-center text-[#444746] p-2 text-center relative group">
+            <span class="text-xs">👟 Calçados</span>
           </div>
         </div>
 
         <!-- Selection Controls for each Slot -->
         <div class="md:col-span-6 space-y-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Parte Superior (Camisas, Casacos)</label>
-            <select id="selectLookTop" class="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl">
+            <label class="block text-xs font-semibold text-[#1f1f1f] mb-1">👕 Parte Superior (Camisas, Casacos)</label>
+            <select id="selectLookTop" class="w-full px-3 py-2 text-sm border border-[#e0e2ec] rounded-xl bg-white">
               <option value="">Selecione uma peça superior...</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Parte Inferior (Calças, Bermudas, Saias)</label>
-            <select id="selectLookBottom" class="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl">
+            <label class="block text-xs font-semibold text-[#1f1f1f] mb-1">👖 Parte Inferior (Calças, Bermudas, Saias)</label>
+            <select id="selectLookBottom" class="w-full px-3 py-2 text-sm border border-[#e0e2ec] rounded-xl bg-white">
               <option value="">Selecione uma peça inferior...</option>
             </select>
           </div>
 
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Calçados</label>
-            <select id="selectLookShoes" class="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl">
+            <label class="block text-xs font-semibold text-[#1f1f1f] mb-1">👟 Calçados</label>
+            <select id="selectLookShoes" class="w-full px-3 py-2 text-sm border border-[#e0e2ec] rounded-xl bg-white">
               <option value="">Selecione um calçado...</option>
             </select>
           </div>
 
           <div class="pt-4">
-            <button id="randomizeLookBtn" class="w-full py-2.5 px-4 bg-brand-50 hover:bg-brand-100 text-brand-700 rounded-xl font-semibold text-sm transition flex items-center justify-center gap-2">
-              <i class="fa-solid fa-shuffle"></i>
+            <button id="randomizeLookBtn" class="gc-btn-secondary w-full py-2.5 px-4 text-sm flex items-center justify-center gap-2">
+              <span>🔀</span>
               <span>Combinar Aleatoriamente</span>
             </button>
           </div>
@@ -1072,20 +1090,20 @@
 
   <!-- MODAL FAÇA MINHA MALA (INPUT) -->
   <div id="packingModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-xl w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col relative">
+    <div class="bg-white rounded-3xl max-w-xl w-full border border-[#e0e2ec] shadow-2xl overflow-hidden flex flex-col relative">
       <!-- Header -->
-      <div class="px-6 py-5 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50">
+      <div class="px-6 py-5 border-b border-[#e0e2ec] flex items-center justify-between bg-[#f8fafd]">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white shadow-md">
-            <i class="fa-solid fa-suitcase-rolling text-lg"></i>
+          <div class="w-10 h-10 rounded-xl bg-[#edf2fa] border border-[#c2d7fa] flex items-center justify-center text-xl shadow-sm">
+            🧳
           </div>
           <div>
-            <h3 class="text-base font-bold text-slate-900 font-serif">Faça Minha Mala</h3>
-            <p class="text-xs text-slate-500">Planejamento de roteiro e looks com Gemini 3.7 Flash</p>
+            <h3 class="text-base font-bold text-[#1f1f1f]">Faça Minha Mala</h3>
+            <p class="text-xs text-[#444746]">Planejamento de roteiro e looks com Gemini 3.7 Flash ✨</p>
           </div>
         </div>
-        <button id="closePackingModalBtn" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition">
-          <i class="fa-solid fa-xmark text-sm"></i>
+        <button id="closePackingModalBtn" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition font-bold">
+          ❌
         </button>
       </div>
 
@@ -1093,53 +1111,53 @@
       <form id="packingForm" class="p-6 space-y-4">
         <!-- Destino -->
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Destino da Viagem</label>
+          <label class="block text-xs font-semibold text-[#1f1f1f] mb-1">📍 Destino da Viagem</label>
           <div class="relative">
-            <i class="fa-solid fa-location-dot absolute left-3.5 top-3 text-slate-400 text-sm"></i>
-            <input type="text" id="packingDestination" required placeholder="Ex: Paris, França ou Gramado, RS" class="w-full pl-9 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">
+            <span class="absolute left-3.5 top-2.5 text-sm">📍</span>
+            <input type="text" id="packingDestination" required placeholder="Ex: Paris, França ou Gramado, RS" class="w-full pl-9 pr-4 py-2.5 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/20 focus:border-[#0b57d0]">
           </div>
         </div>
 
         <!-- Ida: Data e Horário de Chegada -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Data de Ida / Chegada</label>
-            <input type="date" id="packingArrivalDate" required class="w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">
+            <label class="block text-xs font-semibold text-[#1f1f1f] mb-1">🗓️ Data de Ida / Chegada</label>
+            <input type="date" id="packingArrivalDate" required class="w-full px-3.5 py-2.5 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/20 focus:border-[#0b57d0]">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Horário Previsto de Chegada</label>
-            <input type="time" id="packingArrivalTime" value="13:30" required class="w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">
+            <label class="block text-xs font-semibold text-[#1f1f1f] mb-1">🕒 Horário Previsto de Chegada</label>
+            <input type="time" id="packingArrivalTime" value="13:30" required class="w-full px-3.5 py-2.5 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/20 focus:border-[#0b57d0]">
           </div>
         </div>
 
         <!-- Volta: Data e Horário de Partida -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Data de Retorno / Partida</label>
-            <input type="date" id="packingDepartureDate" required class="w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">
+            <label class="block text-xs font-semibold text-[#1f1f1f] mb-1">🗓️ Data de Retorno / Partida</label>
+            <input type="date" id="packingDepartureDate" required class="w-full px-3.5 py-2.5 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/20 focus:border-[#0b57d0]">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Horário Previsto de Partida</label>
-            <input type="time" id="packingDepartureTime" value="18:00" required class="w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">
+            <label class="block text-xs font-semibold text-[#1f1f1f] mb-1">🕒 Horário Previsto de Partida</label>
+            <input type="time" id="packingDepartureTime" value="18:00" required class="w-full px-3.5 py-2.5 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/20 focus:border-[#0b57d0]">
           </div>
         </div>
 
         <!-- Preferências / Observações -->
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">
-            Preferências & Ocasiões Especiais
-            <span class="text-slate-400 font-normal">(opcional)</span>
+          <label class="block text-xs font-semibold text-[#1f1f1f] mb-1">
+            📝 Preferências & Ocasiões Especiais
+            <span class="text-[#444746] font-normal">(opcional)</span>
           </label>
-          <textarea id="packingNotes" rows="2" placeholder="Ex: Viagem cultural e gastronômica, caminharemos bastante durante o dia e temos um jantar elegante no sábado..." class="w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500"></textarea>
+          <textarea id="packingNotes" rows="2" placeholder="Ex: Viagem cultural e gastronômica, caminharemos bastante durante o dia e temos um jantar elegante no sábado..." class="w-full px-3.5 py-2.5 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/20 focus:border-[#0b57d0]"></textarea>
         </div>
 
         <!-- Botão Submit -->
-        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-3">
-          <button type="button" id="cancelPackingBtn" class="px-4 py-2.5 text-sm font-semibold text-slate-600 hover:text-slate-800 rounded-xl hover:bg-slate-100 transition">
+        <div class="pt-3 border-t border-[#e0e2ec] flex items-center justify-end gap-3">
+          <button type="button" id="cancelPackingBtn" class="gc-btn-secondary px-4 py-2.5 text-sm">
             Cancelar
           </button>
-          <button type="submit" id="submitPackingBtn" class="px-6 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 rounded-xl shadow-md hover:shadow-lg transition flex items-center gap-2">
-            <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+          <button type="submit" id="submitPackingBtn" class="gc-btn-primary px-6 py-2.5 text-sm flex items-center gap-2">
+            <span>🪄</span>
             <span>Fazer Minha Mala 🧳</span>
           </button>
         </div>
@@ -1147,15 +1165,15 @@
 
       <!-- Loading Overlay -->
       <div id="packingLoadingOverlay" class="absolute inset-0 bg-white/95 backdrop-blur-sm hidden flex flex-col items-center justify-center p-6 text-center z-20">
-        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center text-2xl shadow-xl shadow-brand-500/20 mb-4 animate-bounce">
-          <i class="fa-solid fa-suitcase-rolling"></i>
+        <div class="w-16 h-16 rounded-2xl bg-[#edf2fa] border border-[#c2d7fa] flex items-center justify-center text-3xl shadow-md mb-4 animate-bounce">
+          🧳
         </div>
-        <h4 class="text-base font-bold text-slate-900 mb-1 font-serif">O Gemini 3.7 Flash está montando sua mala...</h4>
-        <p class="text-xs text-slate-500 max-w-sm leading-relaxed mb-4">
+        <h4 class="text-base font-bold text-[#1f1f1f] mb-1">O Gemini 3.7 Flash está montando sua mala...</h4>
+        <p class="text-xs text-[#444746] max-w-sm leading-relaxed mb-4">
           Pesquisando locais, calculando trajetos de deslocamento, prevendo o clima para cada período e selecionando os melhores looks do seu roupeiro!
         </p>
-        <div class="flex items-center gap-2 text-xs font-semibold text-brand-600 bg-brand-50 px-3.5 py-1.5 rounded-full border border-brand-200">
-          <div class="w-3.5 h-3.5 border-2 border-brand-600 border-t-transparent rounded-full animate-spin"></div>
+        <div class="flex items-center gap-2 text-xs font-semibold text-[#0b57d0] bg-[#edf2fa] px-3.5 py-1.5 rounded-full border border-[#c2d7fa]">
+          <div class="w-3.5 h-3.5 border-2 border-[#0b57d0] border-t-transparent rounded-full animate-spin"></div>
           <span>Consultando seu guarda-roupa...</span>
         </div>
       </div>
@@ -1164,57 +1182,57 @@
 
   <!-- MODAL VISUALIZADOR DA VIAGEM & MALA -->
   <div id="tripViewerModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-2 sm:p-5">
-    <div class="bg-white rounded-3xl max-w-6xl w-full h-[94vh] border border-slate-200 shadow-2xl overflow-hidden flex flex-col">
+    <div class="bg-white rounded-3xl max-w-6xl w-full h-[94vh] border border-[#e0e2ec] shadow-2xl overflow-hidden flex flex-col">
       <!-- Modal Header -->
-      <div class="px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50 shrink-0">
+      <div class="px-6 py-4 border-b border-[#e0e2ec] flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-[#f8fafd] shrink-0">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white shadow-md shrink-0">
-            <i class="fa-solid fa-plane-departure text-base"></i>
+          <div class="w-10 h-10 rounded-xl bg-[#edf2fa] border border-[#c2d7fa] flex items-center justify-center text-xl shadow-sm shrink-0">
+            ✈️
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <h3 id="tripViewerDestination" class="text-lg font-bold text-slate-900 font-serif leading-tight">Destino</h3>
-              <span id="tripViewerDaysBadge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-brand-100 text-brand-700">0 Dias</span>
+              <h3 id="tripViewerDestination" class="text-lg font-bold text-[#1f1f1f] leading-tight">Destino</h3>
+              <span id="tripViewerDaysBadge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#edf2fa] text-[#0b57d0] border border-[#c2d7fa]">0 Dias</span>
             </div>
-            <p id="tripViewerDates" class="text-xs text-slate-500"></p>
+            <p id="tripViewerDates" class="text-xs text-[#444746]"></p>
           </div>
         </div>
 
         <!-- Tabs Navigation -->
         <div class="flex items-center gap-2">
-          <div class="flex bg-slate-200/80 p-1 rounded-xl">
-            <button id="tabBtnItinerary" class="trip-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-900 shadow-sm transition flex items-center gap-1.5">
-              <i class="fa-solid fa-map-location-dot text-brand-600"></i>
+          <div class="flex bg-[#e0e2ec]/70 p-1 rounded-full">
+            <button id="tabBtnItinerary" class="trip-tab-btn px-3 py-1.5 rounded-full text-xs font-semibold bg-white text-[#1f1f1f] shadow-sm transition flex items-center gap-1.5">
+              <span>🗺️</span>
               <span>Roteiro & Looks</span>
             </button>
-            <button id="tabBtnChecklist" class="trip-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5">
-              <i class="fa-solid fa-clipboard-check text-emerald-600"></i>
+            <button id="tabBtnChecklist" class="trip-tab-btn px-3 py-1.5 rounded-full text-xs font-semibold text-[#444746] hover:text-[#1f1f1f] transition flex items-center gap-1.5">
+              <span>📋</span>
               <span>Mala Pronta</span>
             </button>
-            <button id="tabBtnSavedTrips" class="trip-tab-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5">
-              <i class="fa-solid fa-clock-rotate-left text-indigo-600"></i>
+            <button id="tabBtnSavedTrips" class="trip-tab-btn px-3 py-1.5 rounded-full text-xs font-semibold text-[#444746] hover:text-[#1f1f1f] transition flex items-center gap-1.5">
+              <span>🕒</span>
               <span>Minhas Viagens</span>
             </button>
           </div>
 
-          <button id="closeTripViewerBtn" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 flex items-center justify-center transition ml-1">
-            <i class="fa-solid fa-xmark text-sm"></i>
+          <button id="closeTripViewerBtn" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 flex items-center justify-center transition ml-1 font-bold">
+            ❌
           </button>
         </div>
       </div>
 
       <!-- Tab Content Area -->
-      <div class="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50/50 space-y-6">
+      <div class="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#f8fafd] space-y-6">
         <!-- TAB 1: ROTEIRO & LOOKS -->
         <div id="tabContentItinerary" class="space-y-6">
           <!-- Summary Card -->
-          <div class="bg-gradient-to-r from-brand-50 to-indigo-50 border border-brand-100 rounded-2xl p-4 sm:p-5 flex items-start gap-4">
-            <div class="w-9 h-9 rounded-xl bg-white text-brand-600 shadow-sm flex items-center justify-center shrink-0 mt-0.5">
-              <i class="fa-solid fa-quote-left text-sm"></i>
+          <div class="bg-[#edf2fa] border border-[#c2d7fa] rounded-2xl p-4 sm:p-5 flex items-start gap-4">
+            <div class="w-9 h-9 rounded-xl bg-white text-lg shadow-sm flex items-center justify-center shrink-0 mt-0.5">
+              💬
             </div>
             <div class="flex-1">
-              <h4 class="text-xs font-bold uppercase tracking-wider text-brand-700 mb-1">Resumo da Viagem</h4>
-              <p id="tripViewerSummary" class="text-xs sm:text-sm text-slate-700 leading-relaxed font-serif italic"></p>
+              <h4 class="text-xs font-bold uppercase tracking-wider text-[#0b57d0] mb-1">Resumo da Viagem</h4>
+              <p id="tripViewerSummary" class="text-xs sm:text-sm text-[#1f1f1f] leading-relaxed"></p>
             </div>
           </div>
 
@@ -1226,17 +1244,17 @@
 
         <!-- TAB 2: CHECKLIST DA MALA -->
         <div id="tabContentChecklist" class="hidden space-y-6">
-          <div class="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <div class="bg-white border border-[#e0e2ec] rounded-2xl p-6 shadow-sm space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#e0e2ec] pb-4">
               <div>
-                <h4 class="text-base font-bold text-slate-900 font-serif flex items-center gap-2">
-                  <i class="fa-solid fa-suitcase-rolling text-brand-600"></i>
+                <h4 class="text-base font-bold text-[#1f1f1f] flex items-center gap-2">
+                  <span>🧳</span>
                   <span>Peças para colocar na Mala</span>
                 </h4>
-                <p class="text-xs text-slate-500">Checklist inteligente baseado nos looks sugeridos pelo Gemini para sua viagem.</p>
+                <p class="text-xs text-[#444746]">Checklist inteligente baseado nos looks sugeridos pelo Gemini para sua viagem.</p>
               </div>
-              <button id="printChecklistBtn" class="px-3.5 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-700 transition flex items-center gap-1.5 self-start">
-                <i class="fa-solid fa-print text-slate-500"></i>
+              <button id="printChecklistBtn" class="gc-btn-secondary px-3.5 py-1.5 text-xs flex items-center gap-1.5 self-start">
+                <span>🖨️</span>
                 <span>Imprimir Checklist</span>
               </button>
             </div>
@@ -1247,20 +1265,20 @@
             </div>
 
             <!-- Essentials & Tips Box -->
-            <div class="mt-6 pt-6 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="mt-6 pt-6 border-t border-[#e0e2ec] grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="bg-amber-50/80 border border-amber-200/80 rounded-xl p-4">
                 <h5 class="text-xs font-bold text-amber-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                  <span>💡</span>
                   <span>Dicas de Estilo & Embalagem</span>
                 </h5>
                 <p id="tripPackingTips" class="text-xs text-amber-800 leading-relaxed"></p>
               </div>
-              <div class="bg-indigo-50/80 border border-indigo-200/80 rounded-xl p-4">
-                <h5 class="text-xs font-bold text-indigo-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <i class="fa-solid fa-list-check text-indigo-500"></i>
+              <div class="bg-[#edf2fa] border border-[#c2d7fa] rounded-xl p-4">
+                <h5 class="text-xs font-bold text-[#0b57d0] uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <span>📋</span>
                   <span>Itens Essenciais Recomendados</span>
                 </h5>
-                <ul id="tripEssentialsList" class="text-xs text-indigo-800 space-y-1 list-disc list-inside"></ul>
+                <ul id="tripEssentialsList" class="text-xs text-[#1f1f1f] space-y-1 list-disc list-inside"></ul>
               </div>
             </div>
           </div>
@@ -1269,9 +1287,9 @@
         <!-- TAB 3: MINHAS VIAGENS SALVAS -->
         <div id="tabContentSavedTrips" class="hidden space-y-4">
           <div class="flex items-center justify-between">
-            <h4 class="text-sm font-bold text-slate-900">Histórico de Viagens Planejadas</h4>
-            <button id="startNewTripBtn" class="px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-xs transition flex items-center gap-1.5">
-              <i class="fa-solid fa-plus"></i>
+            <h4 class="text-sm font-bold text-[#1f1f1f]">Histórico de Viagens Planejadas</h4>
+            <button id="startNewTripBtn" class="gc-btn-primary px-3.5 py-1.5 text-xs flex items-center gap-1.5">
+              <span>➕</span>
               <span>Nova Viagem</span>
             </button>
           </div>
@@ -1285,59 +1303,59 @@
 
   <!-- MODAL EDITAR LOOK COM IA (TEXTO OU VOZ) -->
   <div id="editLookAiModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col relative">
-      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-blue-50 to-brand-50">
+    <div class="bg-white rounded-3xl max-w-lg w-full border border-[#e0e2ec] shadow-2xl overflow-hidden flex flex-col relative">
+      <div class="px-6 py-4 border-b border-[#e0e2ec] flex items-center justify-between bg-[#f8fafd]">
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-brand-600 text-white flex items-center justify-center shadow">
-            <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
+          <div class="w-9 h-9 rounded-xl bg-[#edf2fa] border border-[#c2d7fa] flex items-center justify-center text-lg shadow-sm">
+            🪄
           </div>
           <div>
-            <h4 class="text-sm font-bold text-slate-900 font-serif">Editar Look com IA</h4>
-            <p id="editLookContextSubtitle" class="text-xs text-slate-500">Dia 1 &bull; Período da Noite</p>
+            <h4 class="text-sm font-bold text-[#1f1f1f]">Editar Look com IA</h4>
+            <p id="editLookContextSubtitle" class="text-xs text-[#444746]">Dia 1 &bull; Período da Noite</p>
           </div>
         </div>
-        <button id="closeEditLookAiModalBtn" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition">
-          <i class="fa-solid fa-xmark text-sm"></i>
+        <button id="closeEditLookAiModalBtn" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center transition font-bold">
+          ❌
         </button>
       </div>
 
       <div class="p-6 space-y-4">
         <!-- Weather & Context Chip -->
-        <div id="editLookContextChip" class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs space-y-1">
+        <div id="editLookContextChip" class="p-3 bg-[#f8fafd] border border-[#e0e2ec] rounded-xl text-xs space-y-1">
           <!-- Populated by JS -->
         </div>
 
         <!-- Prompt Textarea with Voice Dictation Button -->
         <div>
           <div class="flex items-center justify-between mb-1">
-            <label class="block text-xs font-semibold text-slate-700">Como você quer ajustar este look?</label>
+            <label class="block text-xs font-semibold text-[#1f1f1f]">Como você quer ajustar este look?</label>
             <!-- Voice Recognition Button -->
-            <button type="button" id="voicePromptBtn" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition flex items-center gap-1.5" title="Falar pelo microfone">
-              <i class="fa-solid fa-microphone text-brand-600" id="voiceMicIcon"></i>
+            <button type="button" id="voicePromptBtn" class="px-2.5 py-1 rounded-full bg-[#edf2fa] hover:bg-[#e0e9f8] text-[#0b57d0] text-xs font-semibold transition flex items-center gap-1.5" title="Falar pelo microfone">
+              <span id="voiceMicIcon">🎤</span>
               <span id="voicePromptStatusText">Falar por voz</span>
             </button>
           </div>
-          <textarea id="aiPromptInput" rows="3" placeholder="Ex: 'Quero um look mais formal com casaco escuro para um jantar sofisticado' ou 'Prefiro peças mais quentes porque sinto muito frio à noite'..." class="w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 leading-relaxed"></textarea>
+          <textarea id="aiPromptInput" rows="3" placeholder="Ex: 'Quero um look mais formal com casaco escuro para um jantar sofisticado' ou 'Prefiro peças mais quentes porque sinto muito frio à noite'..." class="w-full px-3.5 py-2.5 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/20 focus:border-[#0b57d0] leading-relaxed"></textarea>
         </div>
 
         <!-- Quick Prompt Chips -->
         <div class="space-y-1.5">
-          <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Sugestões Rápidas:</span>
+          <span class="text-[11px] font-semibold text-[#444746] uppercase tracking-wider">Sugestões Rápidas:</span>
           <div class="flex flex-wrap gap-1.5">
-            <button type="button" class="quick-prompt-chip text-[11px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition">Mais quentinho / com casaco</button>
-            <button type="button" class="quick-prompt-chip text-[11px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition">Mais elegante / formal</button>
-            <button type="button" class="quick-prompt-chip text-[11px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition">Super confortável para caminhar</button>
-            <button type="button" class="quick-prompt-chip text-[11px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition">Estilo casual despojado</button>
+            <button type="button" class="quick-prompt-chip text-[11px] px-2.5 py-1 rounded-full bg-[#f1f4f9] hover:bg-[#e0e2ec] text-[#1f1f1f] transition">🧥 Mais quentinho / com casaco</button>
+            <button type="button" class="quick-prompt-chip text-[11px] px-2.5 py-1 rounded-full bg-[#f1f4f9] hover:bg-[#e0e2ec] text-[#1f1f1f] transition">✨ Mais elegante / formal</button>
+            <button type="button" class="quick-prompt-chip text-[11px] px-2.5 py-1 rounded-full bg-[#f1f4f9] hover:bg-[#e0e2ec] text-[#1f1f1f] transition">👟 Super confortável para caminhar</button>
+            <button type="button" class="quick-prompt-chip text-[11px] px-2.5 py-1 rounded-full bg-[#f1f4f9] hover:bg-[#e0e2ec] text-[#1f1f1f] transition">😎 Estilo casual despojado</button>
           </div>
         </div>
 
         <!-- Footer Buttons -->
-        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-          <button type="button" id="cancelEditLookAiBtn" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 rounded-xl transition">
+        <div class="pt-3 border-t border-[#e0e2ec] flex items-center justify-end gap-2">
+          <button type="button" id="cancelEditLookAiBtn" class="gc-btn-secondary px-4 py-2 text-xs">
             Cancelar
           </button>
-          <button type="button" id="submitEditLookAiBtn" class="px-5 py-2 text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 rounded-xl shadow transition flex items-center gap-1.5">
-            <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+          <button type="button" id="submitEditLookAiBtn" class="gc-btn-primary px-5 py-2 text-xs flex items-center gap-1.5">
+            <span>🪄</span>
             <span>Recriar Look com Gemini</span>
           </button>
         </div>
@@ -1345,33 +1363,33 @@
 
       <!-- Loading State -->
       <div id="editLookLoadingOverlay" class="absolute inset-0 bg-white/95 backdrop-blur-sm hidden flex flex-col items-center justify-center p-6 text-center z-20">
-        <div class="w-12 h-12 border-3 border-brand-600 border-t-transparent rounded-full animate-spin mb-3"></div>
-        <h5 class="text-sm font-bold text-slate-900 font-serif">Consultando seu roupeiro...</h5>
-        <p class="text-xs text-slate-500 max-w-xs mt-1">O Gemini está selecionando as peças ideais de acordo com sua instrução.</p>
+        <div class="w-12 h-12 border-3 border-[#0b57d0] border-t-transparent rounded-full animate-spin mb-3"></div>
+        <h5 class="text-sm font-bold text-[#1f1f1f]">Consultando seu roupeiro...</h5>
+        <p class="text-xs text-[#444746] max-w-xs mt-1">O Gemini está selecionando as peças ideais de acordo com sua instrução ✨</p>
       </div>
     </div>
   </div>
 
   <!-- MODAL TROCAR PEÇA MANUALMENTE -->
   <div id="swapPieceModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-3xl w-full h-[82vh] border border-slate-200 shadow-2xl overflow-hidden flex flex-col">
-      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
+    <div class="bg-white rounded-3xl max-w-3xl w-full h-[82vh] border border-[#e0e2ec] shadow-2xl overflow-hidden flex flex-col">
+      <div class="px-6 py-4 border-b border-[#e0e2ec] flex items-center justify-between bg-[#f8fafd] shrink-0">
         <div>
-          <h4 class="text-sm font-bold text-slate-900 font-serif">Escolher Peça do Roupeiro</h4>
-          <p id="swapPieceSubtitle" class="text-xs text-slate-500">Selecione uma peça para substituir ou adicionar ao look</p>
+          <h4 class="text-sm font-bold text-[#1f1f1f]">Escolher Peça do Roupeiro</h4>
+          <p id="swapPieceSubtitle" class="text-xs text-[#444746]">Selecione uma peça para substituir ou adicionar ao look</p>
         </div>
-        <button id="closeSwapPieceModalBtn" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 flex items-center justify-center transition">
-          <i class="fa-solid fa-xmark text-sm"></i>
+        <button id="closeSwapPieceModalBtn" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 flex items-center justify-center transition font-bold">
+          ❌
         </button>
       </div>
 
       <!-- Search & Filters -->
-      <div class="p-4 border-b border-slate-100 bg-white flex flex-col sm:flex-row gap-2 shrink-0">
+      <div class="p-4 border-b border-[#e0e2ec] bg-white flex flex-col sm:flex-row gap-2 shrink-0">
         <div class="relative flex-1">
-          <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-          <input type="text" id="swapSearchInput" placeholder="Buscar por tipo, cor, estilo..." class="w-full pl-8 pr-3 py-1.5 text-xs border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">
+          <span class="absolute left-3 top-2 text-xs">🔍</span>
+          <input type="text" id="swapSearchInput" placeholder="Buscar por tipo, cor, estilo..." class="w-full pl-8 pr-3 py-1.5 text-xs border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/20 focus:border-[#0b57d0]">
         </div>
-        <select id="swapCategoryFilter" class="px-3 py-1.5 text-xs border border-slate-200 rounded-xl bg-white text-slate-700">
+        <select id="swapCategoryFilter" class="px-3 py-1.5 text-xs border border-[#e0e2ec] rounded-xl bg-white text-[#1f1f1f]">
           <option value="">Todas as Categorias</option>
         </select>
       </div>
@@ -1385,50 +1403,50 @@
 
   <!-- MODAL TROCAR PERÍODOS DE DIA (LOCAIS & LOOKS ATRELADOS) -->
   <div id="swapPeriodModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col">
-      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-amber-50 to-indigo-50">
+    <div class="bg-white rounded-3xl max-w-lg w-full border border-[#e0e2ec] shadow-2xl overflow-hidden flex flex-col">
+      <div class="px-6 py-4 border-b border-[#e0e2ec] flex items-center justify-between bg-[#f8fafd]">
         <div class="flex items-center gap-3">
-          <div class="w-9 h-9 rounded-xl bg-brand-600 text-white flex items-center justify-center shadow-sm">
-            <i class="fa-solid fa-arrow-right-arrow-left text-sm"></i>
+          <div class="w-9 h-9 rounded-xl bg-[#edf2fa] border border-[#c2d7fa] flex items-center justify-center text-lg shadow-sm">
+            🔄
           </div>
           <div>
-            <h4 class="text-sm font-bold text-slate-900 font-serif">Trocar Períodos de Dia</h4>
-            <p class="text-xs text-slate-500">Locais e looks andam juntos e trocam de lugar</p>
+            <h4 class="text-sm font-bold text-[#1f1f1f]">Trocar Períodos de Dia</h4>
+            <p class="text-xs text-[#444746]">Locais e looks andam juntos e trocam de lugar</p>
           </div>
         </div>
-        <button id="closeSwapPeriodModalBtn" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 flex items-center justify-center transition">
-          <i class="fa-solid fa-xmark text-sm"></i>
+        <button id="closeSwapPeriodModalBtn" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 flex items-center justify-center transition font-bold">
+          ❌
         </button>
       </div>
 
       <div class="p-6 space-y-4">
-        <div class="p-3 bg-brand-50/70 border border-brand-200 rounded-2xl flex items-start gap-2.5 text-xs text-brand-900">
-          <i class="fa-solid fa-circle-info text-brand-600 mt-0.5 text-sm shrink-0"></i>
+        <div class="p-3 bg-[#edf2fa] border border-[#c2d7fa] rounded-2xl flex items-start gap-2.5 text-xs text-[#1f1f1f]">
+          <span class="text-base shrink-0">💡</span>
           <span>Ao mover este período para outro dia, o período correspondente daquele dia trocará de lugar. O roteiro de atividades e os looks serão trocados juntos.</span>
         </div>
 
-        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-1">
-          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Período Selecionado:</span>
-          <div id="swapSourcePeriodTitle" class="font-bold text-sm text-slate-900 flex items-center gap-2"></div>
-          <div id="swapSourcePeriodSummary" class="text-xs text-slate-500"></div>
+        <div class="bg-[#f8fafd] border border-[#e0e2ec] rounded-2xl p-3.5 space-y-1">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-[#444746] block">Período Selecionado:</span>
+          <div id="swapSourcePeriodTitle" class="font-bold text-sm text-[#1f1f1f] flex items-center gap-2"></div>
+          <div id="swapSourcePeriodSummary" class="text-xs text-[#444746]"></div>
         </div>
 
         <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
-            <i class="fa-solid fa-arrow-right-arrow-left text-brand-600"></i>
+          <label class="block text-xs font-bold text-[#1f1f1f] mb-1.5 flex items-center gap-1.5">
+            <span>🔄</span>
             <span>Trocar com qual período de outro dia?</span>
           </label>
-          <select id="swapTargetDaySelect" class="w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-slate-800"></select>
+          <select id="swapTargetDaySelect" class="w-full px-3.5 py-2.5 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0] bg-white font-medium text-[#1f1f1f]"></select>
         </div>
 
         <div id="swapPreviewBox" class="p-3 bg-amber-50/60 border border-amber-200 rounded-2xl text-xs space-y-1 text-amber-950"></div>
 
-        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
-          <button type="button" id="cancelSwapPeriodBtn" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 rounded-xl transition">
+        <div class="pt-3 border-t border-[#e0e2ec] flex items-center justify-end gap-2">
+          <button type="button" id="cancelSwapPeriodBtn" class="gc-btn-secondary px-4 py-2 text-xs">
             Cancelar
           </button>
-          <button type="button" id="confirmSwapPeriodBtn" class="px-5 py-2 text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 rounded-xl shadow transition flex items-center gap-1.5">
-            <i class="fa-solid fa-arrow-right-arrow-left"></i>
+          <button type="button" id="confirmSwapPeriodBtn" class="gc-btn-primary px-5 py-2 text-xs flex items-center gap-1.5">
+            <span>🔄</span>
             <span>Confirmar Troca</span>
           </button>
         </div>
@@ -1438,19 +1456,19 @@
 
   <!-- MODAL POPUP SELETOR: MINHAS VIAGENS SALVAS -->
   <div id="savedTripsSelectorModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[85vh] border border-slate-200 shadow-2xl overflow-hidden flex flex-col">
-      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[85vh] border border-[#e0e2ec] shadow-2xl overflow-hidden flex flex-col">
+      <div class="px-6 py-4 border-b border-[#e0e2ec] flex items-center justify-between bg-[#f8fafd] shrink-0">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center font-bold shadow-sm">
-            <i class="fa-solid fa-map-location-dot text-base"></i>
+          <div class="w-10 h-10 rounded-xl bg-[#edf2fa] border border-[#c2d7fa] flex items-center justify-center text-xl shadow-sm">
+            🗺️
           </div>
           <div>
-            <h4 class="text-base font-bold text-slate-900 font-serif">Minhas Viagens Planejadas</h4>
-            <p class="text-xs text-slate-500">Escolha uma viagem para abrir o roteiro completo em uma nova página</p>
+            <h4 class="text-base font-bold text-[#1f1f1f]">Minhas Viagens Planejadas</h4>
+            <p class="text-xs text-[#444746]">Escolha uma viagem para abrir o roteiro completo em uma nova página</p>
           </div>
         </div>
-        <button type="button" id="closeSavedTripsSelectorBtn" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 flex items-center justify-center transition">
-          <i class="fa-solid fa-xmark text-sm"></i>
+        <button type="button" id="closeSavedTripsSelectorBtn" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 flex items-center justify-center transition font-bold">
+          ❌
         </button>
       </div>
 
@@ -1460,12 +1478,12 @@
         </div>
       </div>
 
-      <div class="px-6 py-3 border-t border-slate-100 bg-slate-50 flex items-center justify-between shrink-0">
-        <button type="button" id="closeSavedTripsSelectorFooterBtn" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 rounded-xl transition">
+      <div class="px-6 py-3 border-t border-[#e0e2ec] bg-[#f8fafd] flex items-center justify-between shrink-0">
+        <button type="button" id="closeSavedTripsSelectorFooterBtn" class="gc-btn-secondary px-4 py-2 text-xs">
           Fechar
         </button>
-        <button type="button" id="planNewTripFromSelectorBtn" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow transition flex items-center gap-1.5">
-          <i class="fa-solid fa-plus"></i>
+        <button type="button" id="planNewTripFromSelectorBtn" class="gc-btn-primary px-4 py-2 text-xs flex items-center gap-1.5">
+          <span>➕</span>
           <span>Planejar Nova Viagem</span>
         </button>
       </div>
@@ -1473,24 +1491,25 @@
   </div>
 
   <!-- FOOTER -->
-  <footer class="mt-auto border-t border-slate-200 bg-white py-6">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+  <footer class="mt-auto border-t border-[#e0e2ec] bg-white py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#444746]">
       <div class="flex items-center gap-2">
-        <span class="font-bold text-slate-700">Roupeiro Virtual</span>
+        <img src="/static/assets/google-cloud-logo-fullcolor.svg" alt="Google Cloud" class="h-4 w-auto" />
+        <span class="font-bold text-[#1f1f1f]">Roupeiro Virtual</span>
         <span>&bull;</span>
-        <span>Google Cloud Run</span>
+        <span>Google Cloud Run ☁️</span>
       </div>
       <div class="flex items-center gap-4">
-        <a href="/privacy" class="text-slate-600 hover:text-brand-600 font-medium transition underline">Política de Privacidade</a>
+        <a href="/privacy" class="text-[#444746] hover:text-[#0b57d0] font-medium transition underline">Política de Privacidade</a>
         <span>&bull;</span>
-        <a href="/terms" class="text-slate-600 hover:text-brand-600 font-medium transition underline">Termos de Serviço</a>
+        <a href="/terms" class="text-[#444746] hover:text-[#0b57d0] font-medium transition underline">Termos de Serviço</a>
         <span>&bull;</span>
-        <span>Vertex AI Gemini 3.7 Flash</span>
+        <span>Vertex AI Gemini 3.7 Flash ✨</span>
       </div>
     </div>
   </footer>
 
   <!-- Main Application Logic -->
-  <script src="/static/app.js?v=20260909c"></script>
+  <script src="/static/app.js?v=20260909d"></script>
 </body>
 </html>

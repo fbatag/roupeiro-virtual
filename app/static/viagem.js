@@ -486,7 +486,7 @@
     const firstDay = currentTrip.days && currentTrip.days[0];
     if (firstDay && firstDay.weather && firstDay.weather.day) {
       tripWeatherSummaryBadge.innerHTML = `
-        <i class="fa-solid ${firstDay.weather.day.icon || 'fa-cloud-sun'} text-amber-300"></i>
+        <span>🌤️</span>
         <span>${firstDay.weather.day.temp_c || '--'} • ${firstDay.weather.day.condition || 'Ameno'}</span>
       `;
     }
@@ -545,7 +545,7 @@
     if (!dayStatus.hasAnyLook || dayStatus.totalItems === 0) {
       return `
         <div class="flex items-center gap-1.5 bg-slate-100 border border-slate-200 px-3 py-1 rounded-xl text-xs font-medium text-slate-600 shadow-2xs" title="Nenhum look configurado para este dia">
-          <i class="fa-solid fa-circle-question text-slate-400 text-xs"></i>
+          <span>❓</span>
           <span>Sem look definido</span>
         </div>
       `;
@@ -554,7 +554,7 @@
     if (dayStatus.isComplete) {
       return `
         <div class="flex items-center gap-1.5 bg-emerald-50 border border-emerald-300 px-3 py-1 rounded-xl text-xs font-bold text-emerald-800 shadow-2xs" title="Todos os looks deste dia estão com peças definidas">
-          <i class="fa-solid fa-circle-check text-emerald-600 text-xs"></i>
+          <span>✅</span>
           <span>Look Completo</span>
         </div>
       `;
@@ -562,7 +562,7 @@
 
     return `
       <div class="flex items-center gap-1.5 bg-amber-50 border border-amber-300 px-3 py-1 rounded-xl text-xs font-bold text-amber-900 shadow-2xs" title="${dayStatus.pendingCount} item(ns) pendente(s) a definir neste dia">
-        <i class="fa-solid fa-triangle-exclamation text-amber-500 text-xs"></i>
+        <span>⚠️</span>
         <span>Faltam ${dayStatus.pendingCount} ${dayStatus.pendingCount === 1 ? 'item' : 'itens'} a definir</span>
       </div>
     `;
@@ -578,14 +578,14 @@
     if (pending === 0) {
       return `
         <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100/90 border border-emerald-200 px-2 py-0.5 rounded-full ml-1 normal-case tracking-normal shadow-2xs">
-          <i class="fa-solid fa-circle-check text-emerald-600 text-[10px]"></i> Look Completo
+          <span>✅</span> Look Completo
         </span>
       `;
     }
 
     return `
       <span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100 border border-amber-300 px-2 py-0.5 rounded-full ml-1 normal-case tracking-normal shadow-2xs">
-        <i class="fa-solid fa-triangle-exclamation text-amber-600 text-[10px]"></i> Faltam ${pending} ${pending === 1 ? 'item' : 'itens'} a definir
+        <span>⚠️</span> Faltam ${pending} ${pending === 1 ? 'item' : 'itens'} a definir
       </span>
     `;
   }
@@ -608,8 +608,8 @@
       const areLocationsVisible = locationsVisibleMap[dayIndex];
       const areLooksVisible = looksVisibleMap[dayIndex];
 
-      const dayWeather = day.weather?.day || { temp_c: "--", condition: "Ameno", icon: "fa-sun" };
-      const nightWeather = day.weather?.night || { temp_c: "--", condition: "Fresco", icon: "fa-moon" };
+      const dayWeather = day.weather?.day || { temp_c: "--", condition: "Ameno", icon: "☀️" };
+      const nightWeather = day.weather?.night || { temp_c: "--", condition: "Fresco", icon: "🌙" };
 
       // Calculate Day Look Status (Completo vs Faltam itens a definir)
       const dayStatus = getDayLookStatus(day);
@@ -643,21 +643,21 @@
 
             <!-- Day Weather Badge -->
             <div class="flex items-center gap-2 bg-amber-50 border border-amber-200 px-3 py-1 rounded-xl text-xs text-amber-900" title="Previsão do Dia">
-              <i class="fa-solid ${dayWeather.icon || 'fa-sun'} text-amber-500"></i>
+              <span>☀️</span>
               <span class="font-bold">${escapeHtml(dayWeather.temp_c)}</span>
               <span class="text-[10px] text-amber-700 hidden sm:inline">${escapeHtml(dayWeather.condition)}</span>
             </div>
 
             <!-- Night Weather Badge -->
             <div class="flex items-center gap-2 bg-indigo-50 border border-indigo-200 px-3 py-1 rounded-xl text-xs text-indigo-900" title="Previsão da Noite">
-              <i class="fa-solid ${nightWeather.icon || 'fa-moon'} text-indigo-500"></i>
+              <span>🌙</span>
               <span class="font-bold">${escapeHtml(nightWeather.temp_c)}</span>
               <span class="text-[10px] text-indigo-700 hidden sm:inline">${escapeHtml(nightWeather.condition)}</span>
             </div>
 
             <!-- Chevron Icon -->
             <button type="button" class="w-8 h-8 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-brand-600 flex items-center justify-center shadow-2xs transition ml-1">
-              <i class="fa-solid ${isDayExpanded ? 'fa-chevron-up' : 'fa-chevron-down'} text-xs"></i>
+              <span>${isDayExpanded ? '🔼' : '🔽'}</span>
             </button>
           </div>
         </div>
@@ -670,7 +670,7 @@
             <div class="flex items-center justify-between border-b border-amber-200/60 pb-2">
               <div class="flex flex-wrap items-center gap-2 text-xs font-bold text-amber-800 uppercase tracking-wider">
                 <div class="flex items-center gap-1.5">
-                  <i class="fa-solid fa-sun text-amber-500 text-base"></i>
+                  <span class="text-base">☀️</span>
                   <span>Período Diurno &bull; Roteiro & Look</span>
                 </div>
                 ${dayPeriodBadgeHtml}
@@ -679,21 +679,21 @@
               <!-- Actions for this period -->
               <div class="flex items-center gap-1.5 no-print flex-wrap">
                 <button type="button" class="btn-open-add-loc px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 text-[11px] font-bold transition flex items-center gap-1 shadow-2xs" data-day="${dayIndex}" data-period="day_period" title="Adicionar local a este período">
-                  <i class="fa-solid fa-plus text-[10px] text-amber-700"></i>
+                  <span>➕</span>
                   <span>+ Local</span>
                 </button>
                 <button type="button" class="swap-period-btn px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 text-[11px] font-bold transition flex items-center gap-1.5 shadow-2xs" data-day="${dayIndex}" data-period="day_period" title="Trocar este período (roteiro e look) com outro dia">
-                  <i class="fa-solid fa-arrow-right-arrow-left text-[10px] text-amber-700"></i>
+                  <span>🔄</span>
                   <span>Trocar Período</span>
                 </button>
                 <span class="text-slate-300">|</span>
                 <button type="button" class="text-[11px] font-semibold text-slate-500 hover:text-brand-600 toggle-period-locs-btn" data-day="${dayIndex}" data-period="day_period">
-                  <i class="fa-solid fa-location-dot text-amber-500 mr-1"></i>
+                  <span>📍</span>
                   <span>${areLocationsVisible ? 'Ocultar Locais' : 'Ver Locais'}</span>
                 </button>
                 <span class="text-slate-300">|</span>
                 <button type="button" class="text-[11px] font-semibold text-slate-500 hover:text-brand-600 toggle-period-look-btn" data-day="${dayIndex}" data-period="day_period">
-                  <i class="fa-solid fa-shirt text-brand-600 mr-1"></i>
+                  <span>👔</span>
                   <span>${areLooksVisible ? 'Ocultar Look' : 'Ver Look'}</span>
                 </button>
               </div>
@@ -715,7 +715,7 @@
             <div class="flex items-center justify-between border-b border-indigo-200/60 pb-2">
               <div class="flex flex-wrap items-center gap-2 text-xs font-bold text-indigo-800 uppercase tracking-wider">
                 <div class="flex items-center gap-1.5">
-                  <i class="fa-solid fa-moon text-indigo-500 text-base"></i>
+                  <span class="text-base">🌙</span>
                   <span>Período Noturno &bull; Roteiro & Look</span>
                 </div>
                 ${nightPeriodBadgeHtml}
@@ -723,21 +723,21 @@
 
               <div class="flex items-center gap-1.5 no-print flex-wrap">
                 <button type="button" class="btn-open-add-loc px-2.5 py-1 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-900 border border-indigo-200 text-[11px] font-bold transition flex items-center gap-1 shadow-2xs" data-day="${dayIndex}" data-period="night_period" title="Adicionar local a este período">
-                  <i class="fa-solid fa-plus text-[10px] text-indigo-700"></i>
+                  <span>➕</span>
                   <span>+ Local</span>
                 </button>
                 <button type="button" class="swap-period-btn px-2.5 py-1 rounded-lg bg-indigo-100 hover:bg-indigo-200 text-indigo-900 text-[11px] font-bold transition flex items-center gap-1.5 shadow-2xs" data-day="${dayIndex}" data-period="night_period" title="Trocar este período (roteiro e look) com outro dia">
-                  <i class="fa-solid fa-arrow-right-arrow-left text-[10px] text-indigo-700"></i>
+                  <span>🔄</span>
                   <span>Trocar Período</span>
                 </button>
                 <span class="text-slate-300">|</span>
                 <button type="button" class="text-[11px] font-semibold text-slate-500 hover:text-brand-600 toggle-period-locs-btn" data-day="${dayIndex}" data-period="night_period">
-                  <i class="fa-solid fa-location-dot text-amber-500 mr-1"></i>
+                  <span>📍</span>
                   <span>${areLocationsVisible ? 'Ocultar Locais' : 'Ver Locais'}</span>
                 </button>
                 <span class="text-slate-300">|</span>
                 <button type="button" class="text-[11px] font-semibold text-slate-500 hover:text-brand-600 toggle-period-look-btn" data-day="${dayIndex}" data-period="night_period">
-                  <i class="fa-solid fa-shirt text-brand-600 mr-1"></i>
+                  <span>👔</span>
                   <span>${areLooksVisible ? 'Ocultar Look' : 'Ver Look'}</span>
                 </button>
               </div>
@@ -834,7 +834,7 @@
         <div class="col-span-full py-4 px-4 bg-slate-50 border border-dashed border-slate-200 rounded-2xl text-center space-y-2">
           <p class="text-xs text-slate-400">${periodKey === 'night_period' ? 'Sem passeios noturnos agendados para este dia.' : 'Nenhuma atividade programada para este período.'}</p>
           <button type="button" class="btn-empty-add-loc inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 text-xs font-semibold transition" data-day="${dayIndex}" data-period="${periodKey}">
-            <i class="fa-solid fa-plus text-[10px]"></i>
+            <span>➕</span>
             <span>Adicionar Local</span>
           </button>
         </div>
@@ -858,19 +858,19 @@
         <div>
           <div class="flex items-center justify-between gap-2 mb-1.5">
             <div class="flex items-center gap-1.5">
-              <i class="fa-solid fa-grip-vertical text-slate-400 cursor-grab active:cursor-grabbing text-xs mr-0.5" title="Arraste para trocar ordem com outro local deste período"></i>
+              <span class="cursor-grab active:cursor-grabbing text-xs mr-0.5" title="Arraste para trocar ordem com outro local deste período">⠿</span>
               <button type="button" class="btn-edit-loc-badge text-[11px] font-bold text-brand-700 bg-brand-50 hover:bg-brand-100 px-2.5 py-0.5 rounded-md border border-brand-200/80 flex items-center gap-1 transition" title="Clique para editar horários de início e término">
-                <i class="fa-regular fa-clock text-[10px]"></i>
+                <span>🕒</span>
                 <span>${escapeHtml(loc.time || "Horário")}</span>
               </button>
             </div>
             <div class="flex items-center gap-1">
               ${loc.style ? `<span class="text-[10px] font-semibold text-slate-500 bg-slate-200/70 px-2 py-0.5 rounded-full">${escapeHtml(loc.style)}</span>` : ""}
               <button type="button" class="btn-edit-loc text-slate-400 hover:text-amber-600 p-1 text-xs transition" title="Editar horários e detalhes do local">
-                <i class="fa-solid fa-pen-to-square"></i>
+                <span>✏️</span>
               </button>
               <button type="button" class="btn-delete-loc text-slate-400 hover:text-rose-600 p-1 text-xs transition" title="Remover local">
-                <i class="fa-solid fa-trash-can"></i>
+                <span>🗑️</span>
               </button>
             </div>
           </div>
@@ -880,7 +880,7 @@
 
         <div class="pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px]">
           <span class="text-slate-500 flex items-center gap-1">
-            <i class="fa-solid fa-route text-slate-400 text-[10px]"></i>
+            <span>🚕</span>
             ${escapeHtml(loc.travel_time || "Trajeto livre")}
           </span>
           <span class="text-[10px] text-slate-400 italic">Arraste para reordenar</span>
@@ -997,7 +997,7 @@
           <div>
             <div class="flex items-center gap-2">
               <h4 class="text-sm font-bold text-slate-900 font-serif flex items-center gap-1.5">
-                <i class="fa-solid fa-shirt text-brand-600"></i>
+                <span>👔</span>
                 <span>${escapeHtml(look.title || (periodKey === 'day_period' ? 'Look Diurno Completo' : 'Look Noturno Completo'))}</span>
               </h4>
               ${look.style ? `<span class="text-[10px] font-bold text-brand-700 bg-brand-100/70 px-2.5 py-0.5 rounded-full">${escapeHtml(look.style)}</span>` : ""}
@@ -1006,7 +1006,7 @@
           </div>
 
           <button type="button" class="btn-ai-regenerate-look px-3 py-1.5 rounded-xl bg-white hover:bg-slate-50 text-brand-700 border border-brand-200 text-xs font-semibold shadow-2xs transition flex items-center gap-1.5 shrink-0 self-start sm:self-auto no-print">
-            <i class="fa-solid fa-wand-magic-sparkles text-brand-600"></i>
+            <span>🪄</span>
             <span>Ajustar com IA (Voz/Texto)</span>
           </button>
         </div>
@@ -1017,7 +1017,7 @@
           <!-- Add piece slot button -->
           <div class="border border-dashed border-slate-300 hover:border-brand-400 bg-slate-50/50 hover:bg-brand-50/30 rounded-2xl p-3 flex flex-col justify-center items-center text-center shadow-2xs transition cursor-pointer group min-h-[190px] btn-add-look-slot no-print" data-day="${dayIndex}" data-period="${periodKey}" title="Adicionar nova peça a este look">
             <div class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-400 group-hover:text-brand-600 group-hover:border-brand-300 flex items-center justify-center transition shadow-2xs">
-              <i class="fa-solid fa-plus text-xs"></i>
+              <span>➕</span>
             </div>
             <span class="text-xs font-bold text-slate-600 group-hover:text-brand-700 mt-2">+ Peça</span>
             <span class="text-[10px] text-slate-400">Novo item no look</span>
@@ -1026,7 +1026,7 @@
 
         ${look.recommendations ? `
           <div class="text-[11px] text-amber-800 bg-amber-50/80 border border-amber-200/80 rounded-xl px-3.5 py-2 flex items-center gap-2">
-            <i class="fa-regular fa-lightbulb text-amber-600"></i>
+            <span>💡</span>
             <span><strong>Dica do Estilista:</strong> ${escapeHtml(look.recommendations)}</span>
           </div>
         ` : ""}
@@ -1124,24 +1124,24 @@
                 ${escapeHtml(slotName)}
               </span>
               <span class="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-amber-100 text-amber-800 border border-amber-300 flex items-center gap-1 shadow-2xs" title="Item a definir no look">
-                <i class="fa-solid fa-puzzle-piece text-amber-600 text-[8px]"></i>
+                <span>🧩</span>
                 <span>A Definir</span>
               </span>
             </div>
             <button type="button" class="btn-remove-slot-item text-slate-400 hover:text-rose-600 transition p-1 text-xs no-print" data-item-index="${itIdx}" title="Remover item do look">
-              <i class="fa-solid fa-trash-can"></i>
+              <span>🗑️</span>
             </button>
           </div>
 
           <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-amber-100/90 border border-dashed border-amber-300 flex flex-col items-center justify-center text-amber-600 my-auto group-hover:scale-105 group-hover:bg-amber-200/60 transition-all shadow-inner">
-            <i class="fa-solid fa-plus text-2xl"></i>
+            <span class="text-2xl">➕</span>
           </div>
 
           <div class="w-full my-1">
             <h5 class="text-xs font-bold text-amber-950 truncate" title="${escapeHtml(item.tipo)}">${escapeHtml(item.tipo)}</h5>
             <span class="text-[10px] text-amber-700 font-medium block truncate">Item a preencher</span>
             <span class="text-[9px] text-amber-600 font-semibold block mt-1 flex items-center justify-center gap-1">
-              <i class="fa-solid fa-hand-pointer text-[8px]"></i>
+              <span>👆</span>
               <span>Toque para escolher</span>
             </span>
           </div>
@@ -1159,24 +1159,24 @@
                 ${escapeHtml(slotName)}
               </span>
               <span class="px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-sky-100 text-sky-800 border border-sky-200 flex items-center gap-1 shadow-2xs" title="Peça planejada para compra">
-                <i class="fa-solid fa-bag-shopping text-sky-600 text-[8px]"></i>
+                <span>🛍️</span>
                 <span>A Comprar</span>
               </span>
             </div>
             <div class="flex items-center gap-1.5">
               ${imgUrl ? `
                 <button type="button" class="btn-zoom-slot-item text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded p-1 text-xs transition no-print" data-img="${escapeHtml(imgUrl)}" data-title="${escapeHtml(item.tipo)}" data-slot="${escapeHtml(slotName)}" title="Ampliar imagem (Zoom 4x)">
-                  <i class="fa-solid fa-eye text-xs"></i>
+                  <span>🔍</span>
                 </button>
               ` : ''}
               <button type="button" class="btn-remove-slot-item text-slate-400 hover:text-rose-600 transition p-1 text-xs no-print" data-item-index="${itIdx}" title="Remover item do look">
-                <i class="fa-solid fa-trash-can"></i>
+                <span>🗑️</span>
               </button>
             </div>
           </div>
 
           <div class="w-full h-32 sm:h-36 flex items-center justify-center overflow-hidden my-1 bg-slate-50/70 rounded-xl p-1.5 border border-slate-100">
-            ${imgUrl ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(item.tipo)}" class="max-h-full max-w-full object-contain transition group-hover:scale-105 duration-200">` : `<i class="fa-solid fa-bag-shopping text-sky-400 text-3xl"></i>`}
+            ${imgUrl ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(item.tipo)}" class="max-h-full max-w-full object-contain transition group-hover:scale-105 duration-200">` : `<span class="text-3xl">🛍️</span>`}
           </div>
 
           <div class="w-full my-1">
@@ -1209,18 +1209,18 @@
           <div class="flex items-center gap-1.5">
             ${imgUrl ? `
               <button type="button" class="btn-zoom-slot-item text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded p-1 text-xs transition no-print" data-img="${escapeHtml(imgUrl)}" data-title="${escapeHtml(item.tipo)}" data-slot="${escapeHtml(slotName)}" title="Ampliar imagem (Zoom 4x)">
-                <i class="fa-solid fa-eye text-xs"></i>
+                <span>🔍</span>
               </button>
             ` : ''}
             <span class="text-[10px]" title="Peça do Meu Roupeiro">🚪</span>
             <button type="button" class="btn-remove-slot-item text-slate-400 hover:text-rose-600 transition p-1 text-xs no-print" data-item-index="${itIdx}" title="Remover item do look">
-              <i class="fa-solid fa-trash-can"></i>
+              <span>🗑️</span>
             </button>
           </div>
         </div>
 
         <div class="w-full h-32 sm:h-36 flex items-center justify-center overflow-hidden my-1 bg-slate-50/70 rounded-xl p-1.5 border border-slate-100">
-          ${imgUrl ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(item.tipo)}" class="max-h-full max-w-full object-contain transition group-hover:scale-105 duration-200">` : `<i class="fa-solid fa-shirt text-slate-300 text-3xl"></i>`}
+          ${imgUrl ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(item.tipo)}" class="max-h-full max-w-full object-contain transition group-hover:scale-105 duration-200">` : `<span class="text-3xl">👕</span>`}
         </div>
 
         <div class="w-full my-1">
@@ -1359,7 +1359,7 @@
         <div class="w-20 h-20 flex items-center justify-center overflow-hidden mb-2">
           ${img ? `<img src="${escapeHtml(img)}" alt="${escapeHtml(piece.tipo)}" class="max-h-full max-w-full object-contain">` : `
             <div class="w-16 h-16 rounded-2xl flex items-center justify-center shadow-inner border border-slate-200" style="background-color: ${escapeHtml(piece.cor_hex || '#e2e8f0')}20">
-              <i class="fa-solid fa-shirt text-2xl" style="color: ${escapeHtml(piece.cor_hex || '#64748b')}"></i>
+              <span class="text-2xl">👕</span>
             </div>
           `}
         </div>
@@ -1644,7 +1644,7 @@
 
       card.innerHTML = `
         <div class="w-20 h-20 flex items-center justify-center overflow-hidden mb-2">
-          ${catItem.thumbnail ? `<img src="${escapeHtml(catItem.thumbnail)}" alt="${escapeHtml(catItem.title)}" class="max-h-full max-w-full object-contain">` : `<i class="fa-solid fa-bag-shopping text-blue-300 text-3xl"></i>`}
+          ${catItem.thumbnail ? `<img src="${escapeHtml(catItem.thumbnail)}" alt="${escapeHtml(catItem.title)}" class="max-h-full max-w-full object-contain">` : `<span class="text-3xl">🛍️</span>`}
         </div>
 
         <div class="w-full mb-2">
@@ -1776,7 +1776,7 @@
     swapPreviewBox.innerHTML = `
       <div class="flex items-center justify-between font-bold text-amber-900 border-b border-amber-200 pb-1.5 mb-1.5">
         <span>Resultado da Troca:</span>
-        <i class="fa-solid fa-arrow-right-arrow-left text-amber-600"></i>
+        <span>🔄</span>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
         <div class="bg-white/80 p-2 rounded-xl border border-amber-200">
@@ -1816,7 +1816,7 @@
     }
 
     btnConfirmSwapPeriod.disabled = true;
-    btnConfirmSwapPeriod.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i><span>Trocando...</span>`;
+    btnConfirmSwapPeriod.innerHTML = `<span class="animate-spin">⏳</span><span>Trocando...</span>`;
 
     try {
       // Swap period content: locations and look move together as requested
@@ -1843,7 +1843,7 @@
       alert("Erro ao trocar períodos: " + err.message);
     } finally {
       btnConfirmSwapPeriod.disabled = false;
-      btnConfirmSwapPeriod.innerHTML = `<i class="fa-solid fa-arrow-right-arrow-left"></i><span>Confirmar Troca</span>`;
+      btnConfirmSwapPeriod.innerHTML = `<span>🔄</span><span>Confirmar Troca</span>`;
     }
   }
 
@@ -2153,8 +2153,7 @@
         return {
           label: "Passar",
           description: "Passar a ferro",
-          iconHtml: `<svg class="w-3.5 h-3.5 inline-block text-amber-600 fill-current shrink-0" viewBox="0 0 24 24"><path d="M21.5 16.5c-.3-3.2-2.5-5.8-5.5-6.3V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10.5c0 .8.7 1.5 1.5 1.5h17c.6 0 1.1-.5 1-1.1zM4 6h10v4.2c-3.1.5-5.6 2.8-6 5.8H4V6zm14 10h-8c.4-2.5 2.5-4.5 5-4.5h3c.8 0 1.5.3 2 1 .3.7.3 1.7 0 2.5-.5.6-1.2 1-2 1z"/><circle cx="15.5" cy="14" r="1"/><circle cx="13" cy="14" r="1"/></svg>`,
-          iconFa: "fa-solid fa-shirt",
+          iconHtml: `<span>♨️</span>`,
           bg: "bg-amber-50",
           text: "text-amber-800",
           border: "border-amber-300",
@@ -2165,8 +2164,7 @@
         return {
           label: "Lavar",
           description: "Lavar na máquina / cesto",
-          iconHtml: `<i class="fa-solid fa-droplet text-sky-600 text-xs"></i>`,
-          iconFa: "fa-solid fa-droplet",
+          iconHtml: `<span>🫧</span>`,
           bg: "bg-sky-50",
           text: "text-sky-800",
           border: "border-sky-300",
@@ -2177,8 +2175,7 @@
         return {
           label: "Lavanderia",
           description: "Lavanderia a seco / externa",
-          iconHtml: `<i class="fa-solid fa-building text-blue-600 text-xs"></i>`,
-          iconFa: "fa-solid fa-building",
+          iconHtml: `<span>🧼</span>`,
           bg: "bg-blue-50",
           text: "text-blue-800",
           border: "border-blue-300",
@@ -2189,8 +2186,7 @@
         return {
           label: "Emprestada",
           description: "Emprestada a alguém",
-          iconHtml: `<i class="fa-solid fa-handshake text-orange-600 text-xs"></i>`,
-          iconFa: "fa-solid fa-handshake",
+          iconHtml: `<span>🤝</span>`,
           bg: "bg-orange-50",
           text: "text-orange-800",
           border: "border-orange-300",
@@ -2201,8 +2197,7 @@
         return {
           label: "Achar",
           description: "Localizar / procurar peça",
-          iconHtml: `<i class="fa-solid fa-magnifying-glass text-rose-600 text-xs"></i>`,
-          iconFa: "fa-solid fa-magnifying-glass",
+          iconHtml: `<span>🔍</span>`,
           bg: "bg-rose-50",
           text: "text-rose-800",
           border: "border-rose-300",
@@ -2214,8 +2209,7 @@
         return {
           label: "Ok",
           description: "Pronta pra uso ou mala",
-          iconHtml: `<i class="fa-solid fa-circle-check text-emerald-600 text-xs"></i>`,
-          iconFa: "fa-solid fa-circle-check",
+          iconHtml: `<span>✅</span>`,
           bg: "bg-emerald-50",
           text: "text-emerald-800",
           border: "border-emerald-300",
@@ -2354,11 +2348,11 @@
     if (overviewQuickStats) {
       overviewQuickStats.innerHTML = `
         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 font-semibold">
-          <i class="fa-solid fa-suitcase text-emerald-600"></i>
+          <span>🧳</span>
           <span>${totalPieces} peças na mala</span>
         </span>
         <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl ${totalPendencias > 0 ? 'bg-amber-100 text-amber-900 font-bold' : 'bg-emerald-100 text-emerald-900 font-bold'}">
-          <i class="fa-solid ${totalPendencias > 0 ? 'fa-triangle-exclamation text-amber-600' : 'fa-check text-emerald-600'}"></i>
+          <span>${totalPendencias > 0 ? '⚠️' : '✅'}</span>
           <span>${totalPendencias > 0 ? `${totalPendencias} pendências` : '100% pronta'}</span>
         </span>
       `;
@@ -2369,14 +2363,14 @@
 
   function getCategoryIcon(catName) {
     const c = (catName || "").toLowerCase();
-    if (c.includes("camisa") || c.includes("camiseta") || c.includes("blusa") || c.includes("top")) return "fa-shirt";
-    if (c.includes("calça") || c.includes("bermuda") || c.includes("short") || c.includes("saia")) return "fa-person-walking";
-    if (c.includes("calçado") || c.includes("sapato") || c.includes("tênis") || c.includes("bota")) return "fa-shoe-prints";
-    if (c.includes("casaco") || c.includes("jaqueta") || c.includes("frio") || c.includes("blazer")) return "fa-vest";
-    if (c.includes("íntima") || c.includes("intima") || c.includes("meia") || c.includes("cueca")) return "fa-socks";
-    if (c.includes("acessório") || c.includes("acessorio") || c.includes("óculos") || c.includes("bolsa")) return "fa-glasses";
-    if (c.includes("vestido") || c.includes("macacão")) return "fa-person-dress";
-    return "fa-tag";
+    if (c.includes("camisa") || c.includes("camiseta") || c.includes("blusa") || c.includes("top")) return "👕";
+    if (c.includes("calça") || c.includes("bermuda") || c.includes("short") || c.includes("saia")) return "👖";
+    if (c.includes("calçado") || c.includes("sapato") || c.includes("tênis") || c.includes("bota")) return "👟";
+    if (c.includes("casaco") || c.includes("jaqueta") || c.includes("frio") || c.includes("blazer")) return "🧥";
+    if (c.includes("íntima") || c.includes("intima") || c.includes("meia") || c.includes("cueca")) return "🧦";
+    if (c.includes("acessório") || c.includes("acessorio") || c.includes("óculos") || c.includes("bolsa")) return "🕶️";
+    if (c.includes("vestido") || c.includes("macacão")) return "👗";
+    return "🏷️";
   }
 
   function renderMalaView() {
@@ -2483,7 +2477,7 @@
       <div class="p-5 rounded-2xl ${totalPendencias === 0 ? 'bg-gradient-to-r from-emerald-500/10 via-emerald-500/5 to-teal-500/10 border border-emerald-200' : 'bg-gradient-to-r from-amber-500/15 via-rose-500/10 to-blue-500/10 border border-amber-200'} flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div class="flex items-start sm:items-center gap-3.5">
           <div class="w-12 h-12 rounded-2xl ${totalPendencias === 0 ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'} flex items-center justify-center text-xl shadow-md shrink-0">
-            <i class="fa-solid ${totalPendencias === 0 ? 'fa-clipboard-check' : 'fa-triangle-exclamation'}"></i>
+            <span>${totalPendencias === 0 ? '📋' : '⚠️'}</span>
           </div>
           <div>
             <div class="flex items-center gap-2 flex-wrap">
@@ -2504,7 +2498,7 @@
 
         <div class="flex items-center gap-2 self-end sm:self-auto shrink-0 flex-wrap">
           <button type="button" id="btnToggleOnlyPending" class="px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-2xs ${malaOnlyPending ? 'bg-amber-600 text-white hover:bg-amber-700' : 'bg-white hover:bg-slate-50 text-slate-700 border border-slate-200'}">
-            <i class="fa-solid ${malaOnlyPending ? 'fa-eye' : 'fa-filter'}"></i>
+            <span>${malaOnlyPending ? '👁️' : '🔍'}</span>
             <span>${malaOnlyPending ? 'Ver Todas as Peças' : `Ver Somente Pendências (${totalPendencias})`}</span>
           </button>
         </div>
@@ -2519,7 +2513,7 @@
               <span>Total na Mala</span>
               ${malaStatusFilter === 'all' && !malaOnlyPending ? '<span class="text-[9px] text-emerald-600 font-extrabold">• Ativo</span>' : ''}
             </span>
-            <i class="fa-solid fa-suitcase-rolling text-emerald-600 text-sm"></i>
+            <span>🧳</span>
           </div>
           <div>
             <div class="text-2xl font-bold text-slate-900">${countWardrobe + countShopping}</div>
@@ -2540,7 +2534,7 @@
               <span>Prontas</span>
               ${malaStatusFilter === 'prontas' ? '<span class="text-[9px] text-emerald-700 font-extrabold">• Ativo</span>' : ''}
             </span>
-            <i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i>
+            <span>✅</span>
           </div>
           <div>
             <div class="text-2xl font-bold text-emerald-950">${countOk}</div>
@@ -2555,7 +2549,7 @@
               <span>Atenção</span>
               ${malaStatusFilter === 'atencao' ? '<span class="text-[9px] text-amber-800 font-extrabold">• Ativo</span>' : ''}
             </span>
-            <i class="fa-solid fa-shirt text-amber-600 text-sm"></i>
+            <span>👕</span>
           </div>
           <div>
             <div class="text-2xl font-bold text-amber-950">${countAttention}</div>
@@ -2572,7 +2566,7 @@
               <span>A Comprar</span>
               ${malaStatusFilter === 'comprar' ? '<span class="text-[9px] text-sky-800 font-extrabold">• Ativo</span>' : ''}
             </span>
-            <i class="fa-solid fa-bag-shopping text-sky-600 text-sm"></i>
+            <span>🛍️</span>
           </div>
           <div>
             <div class="text-2xl font-bold text-sky-950">${countShopping}</div>
@@ -2587,7 +2581,7 @@
               <span>A Definir</span>
               ${malaStatusFilter === 'definir' ? '<span class="text-[9px] text-blue-800 font-extrabold">• Ativo</span>' : ''}
             </span>
-            <i class="fa-solid fa-puzzle-piece text-blue-600 text-sm"></i>
+            <span>🧩</span>
           </div>
           <div>
             <div class="text-2xl font-bold text-blue-950">${countMissing}</div>
@@ -2601,7 +2595,7 @@
         <div class="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-slate-100/80 border border-slate-200/80 text-xs flex-wrap">
           <div class="flex items-center gap-1.5 flex-wrap">
             <span class="text-slate-500 font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-filter text-[10px] text-brand-600"></i>
+              <span>🔍</span>
               <span>Filtros ativos:</span>
             </span>
             ${malaStatusFilter !== 'all' ? `
@@ -2621,7 +2615,7 @@
             ` : ''}
           </div>
           <button type="button" id="btnClearActiveFilters" class="text-brand-600 hover:text-brand-800 font-bold text-xs hover:underline flex items-center gap-1">
-            <i class="fa-solid fa-rotate-left text-[10px]"></i>
+            <span>🔄</span>
             <span>Limpar filtros</span>
           </button>
         </div>
@@ -2637,11 +2631,11 @@
         <!-- Bulk Pack / Unpack Checkbox Buttons -->
         <div class="flex items-center gap-2 self-end sm:self-auto shrink-0">
           <button type="button" id="btnPackAllPieces" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition flex items-center gap-1.5 shadow-2xs" title="Marcar todas as peças como colocadas na mala">
-            <i class="fa-solid fa-check-double text-emerald-600 text-[10px]"></i>
+            <span>✅</span>
             <span>Guardar Todas</span>
           </button>
           <button type="button" id="btnUnpackAllPieces" class="px-2.5 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition flex items-center gap-1.5 shadow-2xs" title="Desmarcar todas">
-            <i class="fa-solid fa-rotate-left text-slate-400 text-[10px]"></i>
+            <span>🔄</span>
             <span>Desmarcar</span>
           </button>
         </div>
@@ -2721,7 +2715,7 @@
         isTodasSelected ? 'bg-emerald-600 text-white font-bold' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold'
       }`;
       todasBtn.innerHTML = `
-        <i class="fa-solid fa-layer-group text-[10px]"></i>
+        <span>🌈</span>
         <span>Todas (${totalItems} ${totalItems === 1 ? 'item' : 'itens'} • ${totalTripDays} ${totalTripDays === 1 ? 'dia' : 'dias'})</span>
       `;
       todasBtn.addEventListener("click", () => {
@@ -2744,7 +2738,7 @@
           isSelected ? 'bg-emerald-600 text-white font-bold' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold'
         }`;
         btn.innerHTML = `
-          <i class="fa-solid ${getCategoryIcon(catName)} text-[10px]"></i>
+          <span>${getCategoryIcon(catName)}</span>
           <span>${escapeHtml(catName)} (${cTotalItems} ${cTotalItems === 1 ? 'peça' : 'peças'} • ${cDays} ${cDays === 1 ? 'dia' : 'dias'})</span>
         `;
         btn.addEventListener("click", () => {
@@ -2827,7 +2821,7 @@
               <!-- Eye Icon for 4x Zoom -->
               ${imgUrl ? `
                 <button type="button" class="btn-zoom-slot-item absolute top-2 right-2 w-7 h-7 rounded-lg bg-white/95 text-slate-600 hover:text-brand-600 hover:scale-110 shadow-sm border border-slate-200 flex items-center justify-center transition z-20" data-img="${escapeHtml(imgUrl)}" data-title="${escapeHtml(piece.tipo)}" data-slot="${escapeHtml(piece.categoria)}" title="Visualizar em Zoom (4x)">
-                  <i class="fa-solid fa-eye text-xs"></i>
+                  <span>🔍</span>
                 </button>
               ` : ''}
 
@@ -2835,7 +2829,7 @@
                 <img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(piece.tipo)}" class="max-h-36 max-w-full object-contain transition group-hover:scale-105 duration-200">
               ` : `
                 <div class="w-12 h-12 rounded-2xl flex items-center justify-center shadow-inner" style="background-color: ${piece.cor_hex || '#94a3b8'}20">
-                  <i class="fa-solid ${getCategoryIcon(piece.categoria)} text-2xl" style="color: ${piece.cor_hex || '#94a3b8'}"></i>
+                  <span class="text-2xl">${getCategoryIcon(piece.categoria)}</span>
                 </div>
               `}
 
@@ -2864,7 +2858,7 @@
               <!-- Usages in Trip with Days Count -->
               <div class="bg-indigo-50/70 border border-indigo-100 rounded-xl p-2 text-[10px] text-indigo-900 leading-tight">
                 <span class="font-bold block text-indigo-950 mb-0.5 flex items-center gap-1">
-                  <i class="fa-solid fa-calendar-check text-[9px] text-indigo-600"></i>
+                  <span>🗓️</span>
                   <span>Usada em ${daysLabel} (${daysListStr}):</span>
                 </span>
                 <span class="font-medium text-slate-600">${escapeHtml(periodsDetailStr)}</span>
@@ -2909,7 +2903,7 @@
               <!-- Zoom eye button -->
               ${imgUrl ? `
                 <button type="button" class="btn-zoom-slot-item absolute top-2 right-2 w-7 h-7 rounded-lg bg-white/95 text-slate-600 hover:text-sky-600 hover:scale-110 shadow-sm border border-slate-200 flex items-center justify-center transition z-20" data-img="${escapeHtml(imgUrl)}" data-title="${escapeHtml(item.tipo)}" data-slot="${escapeHtml(item.merchant || 'Loja')}" title="Visualizar em Zoom (4x)">
-                  <i class="fa-solid fa-eye text-xs"></i>
+                  <span>🔍</span>
                 </button>
               ` : ''}
 
@@ -2917,7 +2911,7 @@
                 <img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(item.tipo)}" class="max-h-36 max-w-full object-contain transition group-hover:scale-105 duration-200">
               ` : `
                 <div class="w-12 h-12 rounded-2xl bg-sky-100 flex items-center justify-center text-sky-600 text-2xl">
-                  <i class="fa-solid fa-bag-shopping"></i>
+                  <span>🛍️</span>
                 </div>
               `}
 
@@ -2937,7 +2931,7 @@
               <!-- Usages in Trip with Days Count -->
               <div class="bg-sky-50 border border-sky-100 rounded-xl p-2 text-[10px] text-sky-900 leading-tight">
                 <span class="font-bold block text-sky-950 mb-0.5">
-                  <i class="fa-solid fa-calendar-day text-[9px] text-sky-600"></i>
+                  <span>🗓️</span>
                   <span>Planejada para ${daysLabel} (${daysListStr}):</span>
                 </span>
                 <span class="font-medium text-slate-600">${escapeHtml(periodsDetailStr)}</span>
@@ -2946,7 +2940,7 @@
               <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
                 ${item.link ? `
                   <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" class="w-full text-center py-1 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-[11px] font-bold transition flex items-center justify-center gap-1">
-                    <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                    <span>↗️</span>
                     <span>Ver na Loja</span>
                   </a>
                 ` : `
@@ -2966,7 +2960,7 @@
           <div class="garment-card bg-white rounded-2xl border-2 border-dashed border-rose-300 p-4 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between space-y-3">
             <div class="flex flex-col items-center text-center space-y-2 pt-2">
               <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-xl">
-                <i class="fa-solid fa-puzzle-piece"></i>
+                <span>🧩</span>
               </div>
               <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">
                 ⚠️ A Definir
@@ -2983,7 +2977,7 @@
             </div>
 
             <button type="button" class="btn-fill-missing-slot w-full py-2 rounded-xl bg-gradient-to-r from-rose-500 to-brand-600 hover:from-rose-600 hover:to-brand-700 text-white text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5" data-day="${dayIndex}" data-period="${periodKey}" data-item-idx="${itIdx}">
-              <i class="fa-solid fa-plus text-[10px]"></i>
+              <span>➕</span>
               <span>Escolher Peça</span>
             </button>
           </div>
@@ -2996,7 +2990,7 @@
         <div class="flex items-center justify-between pb-3.5 mb-4 border-b border-slate-200/80">
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-emerald-600 shadow-2xs">
-              <i class="fa-solid ${getCategoryIcon(catName)} text-base"></i>
+              <span class="text-base">${getCategoryIcon(catName)}</span>
             </div>
             <div>
               <h3 class="text-base font-bold text-slate-900 font-serif">${escapeHtml(catName)}</h3>
@@ -3027,7 +3021,7 @@
       malaCategoriesGrid.innerHTML = `
         <div class="py-12 text-center bg-white rounded-3xl border border-dashed border-slate-200 p-8 space-y-3">
           <div class="w-14 h-14 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mx-auto">
-            <i class="fa-solid fa-filter"></i>
+            <span>🔍</span>
           </div>
           <h4 class="text-sm font-bold text-slate-800">Nenhum item encontrado ${filterDesc} ${catDesc}</h4>
           <p class="text-xs text-slate-500">Alterne os totalizadores ou os filtros de categoria para visualizar outros itens.</p>
@@ -3117,7 +3111,7 @@
   async function openSavedTripsModal() {
     savedTripsListContainer.innerHTML = `
       <div class="py-8 text-center text-xs text-slate-400">
-        <i class="fa-solid fa-spinner animate-spin text-lg text-brand-600 mb-2"></i>
+        <span class="inline-block animate-spin text-lg mb-2">⏳</span>
         <p>Carregando histórico de viagens...</p>
       </div>
     `;
@@ -3133,7 +3127,7 @@
           <div class="py-8 text-center text-slate-400 space-y-3 bg-slate-50 rounded-2xl p-6">
             <p class="text-xs">Nenhuma viagem encontrada.</p>
             <a href="/" class="inline-flex items-center gap-1 px-4 py-2 bg-brand-600 text-white font-bold text-xs rounded-xl shadow transition">
-              Planejar no Roupeiro
+              Planejar no Roupeiro ✈️
             </a>
           </div>
         `;
@@ -3153,7 +3147,7 @@
         card.innerHTML = `
           <div class="flex items-center gap-3">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center font-bold shadow-xs">
-              <i class="fa-solid fa-plane-departure text-sm"></i>
+              <span class="text-sm">✈️</span>
             </div>
             <div>
               <div class="flex items-center gap-2">
@@ -3171,7 +3165,7 @@
               ${isCurrent ? '✓ Viagem Atual' : 'Abrir Roteiro'}
             </button>
             <button type="button" class="btn-delete-trip p-1.5 text-slate-400 hover:text-red-600 rounded-lg" title="Excluir">
-              <i class="fa-solid fa-trash-can text-xs"></i>
+              <span class="text-xs">🗑️</span>
             </button>
           </div>
         `;

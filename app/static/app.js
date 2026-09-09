@@ -889,15 +889,15 @@
 
   function getCategoryIcon(catName) {
     const cat = (catName || "").toLowerCase();
-    if (cat.includes("superior") || cat.includes("camiseta") || cat.includes("camisa") || cat.includes("blusa")) return "fa-shirt";
-    if (cat.includes("inferior") || cat.includes("calça") || cat.includes("shorts") || cat.includes("bermuda") || cat.includes("saia")) return "fa-vest-patches";
-    if (cat.includes("calçado") || cat.includes("sapato") || cat.includes("tênis") || cat.includes("sandália") || cat.includes("bota")) return "fa-shoe-prints";
-    if (cat.includes("casaco") || cat.includes("jaqueta") || cat.includes("sobreposição") || cat.includes("malha") || cat.includes("blazer")) return "fa-mitten";
-    if (cat.includes("praia") || cat.includes("sunga") || cat.includes("biquíni") || cat.includes("maiô")) return "fa-umbrella-beach";
-    if (cat.includes("íntima") || cat.includes("cueca") || cat.includes("calcinha") || cat.includes("meia")) return "fa-heart";
-    if (cat.includes("acessório") || cat.includes("óculos") || cat.includes("bolsa") || cat.includes("relógio") || cat.includes("cinto")) return "fa-glasses";
-    if (cat.includes("vestido") || cat.includes("macacão") || cat.includes("única")) return "fa-person-dress";
-    return "fa-tag";
+    if (cat.includes("superior") || cat.includes("camiseta") || cat.includes("camisa") || cat.includes("blusa")) return "👕";
+    if (cat.includes("inferior") || cat.includes("calça") || cat.includes("shorts") || cat.includes("bermuda") || cat.includes("saia")) return "👖";
+    if (cat.includes("calçado") || cat.includes("sapato") || cat.includes("tênis") || cat.includes("sandália") || cat.includes("bota")) return "👟";
+    if (cat.includes("casaco") || cat.includes("jaqueta") || cat.includes("sobreposição") || cat.includes("malha") || cat.includes("blazer")) return "🧥";
+    if (cat.includes("praia") || cat.includes("sunga") || cat.includes("biquíni") || cat.includes("maiô")) return "🏖️";
+    if (cat.includes("íntima") || cat.includes("cueca") || cat.includes("calcinha") || cat.includes("meia")) return "🧦";
+    if (cat.includes("acessório") || cat.includes("óculos") || cat.includes("bolsa") || cat.includes("relógio") || cat.includes("cinto")) return "🕶️";
+    if (cat.includes("vestido") || cat.includes("macacão") || cat.includes("única")) return "👗";
+    return "🏷️";
   }
 
   function renderCategoryTabs(categoryCounts) {
@@ -910,8 +910,8 @@
       const count = cat === "Todas" ? totalCount : (lastCategoryCounts[cat] || 0);
       const isDraggable = (cat !== "Todas");
       const activeClasses = isSelected
-        ? "bg-brand-600 text-white shadow-sm font-semibold ring-2 ring-brand-400/40"
-        : "bg-white text-slate-600 hover:bg-slate-100 border border-slate-200";
+        ? "bg-[#0b57d0] text-white shadow-sm font-semibold ring-2 ring-[#0b57d0]/30"
+        : "bg-white text-[#444746] hover:bg-[#f1f4f9] border border-[#e0e2ec]";
 
       let tripCount = 0;
       if (cat === "Todas") {
@@ -922,20 +922,23 @@
         });
       }
 
+      const emoji = cat === "Todas" ? "🌈" : getCategoryIcon(cat);
+
       return `
-        <button type="button" draggable="${isDraggable}" data-category="${escapeHtml(cat)}" class="category-tab ${isDraggable ? 'cursor-grab active:cursor-grabbing' : ''} px-3 py-1.5 rounded-xl text-xs flex items-center gap-1.5 transition select-none ${activeClasses}" title="${isDraggable ? 'Clique para selecionar/deselecionar filtro ou arraste para ordenar' : 'Ver todas as peças'}">
-          ${isDraggable ? '<i class="fa-solid fa-grip-vertical text-slate-400/60 text-[9px] mr-0.5"></i>' : ''}
+        <button type="button" draggable="${isDraggable}" data-category="${escapeHtml(cat)}" class="category-tab ${isDraggable ? 'cursor-grab active:cursor-grabbing' : ''} px-3 py-1.5 rounded-full text-xs flex items-center gap-1.5 transition select-none ${activeClasses}" title="${isDraggable ? 'Clique para selecionar/deselecionar filtro ou arraste para ordenar' : 'Ver todas as peças'}">
+          ${isDraggable ? '<span class="text-[10px] opacity-60 mr-0.5">⠿</span>' : ''}
+          <span>${emoji}</span>
           <span>${escapeHtml(cat)}</span>
-          <span class="px-1.5 py-0.2 rounded-full text-[10px] ${isSelected ? 'bg-brand-700 text-white' : 'bg-slate-100 text-slate-500'}">${count}</span>
+          <span class="px-1.5 py-0.2 rounded-full text-[10px] ${isSelected ? 'bg-[#0842a0] text-white' : 'bg-[#f1f4f9] text-[#444746]'}">${count}</span>
           ${tripCount > 0 ? `
-            <span class="px-1.5 py-0.2 rounded-full text-[9px] font-bold ${isSelected ? 'bg-brand-800 text-blue-100' : 'bg-indigo-100 text-indigo-800'} flex items-center gap-0.5" title="${tripCount} peças planejadas na viagem">
-              <i class="fa-solid fa-plane-departure text-[8px]"></i>
+            <span class="px-1.5 py-0.2 rounded-full text-[9px] font-bold ${isSelected ? 'bg-[#041e49] text-[#d3e3fd]' : 'bg-[#edf2fa] text-[#0b57d0]'} flex items-center gap-0.5" title="${tripCount} peças planejadas na viagem">
+              <span>✈️</span>
               <span>${tripCount}</span>
             </span>
           ` : ''}
           ${(cat !== "Todas" && count === 0) ? `
             <span class="btn-delete-empty-cat-tab ml-1 w-4 h-4 rounded hover:bg-rose-100 text-slate-400 hover:text-rose-600 transition inline-flex items-center justify-center text-[9px]" data-category="${escapeHtml(cat)}" title="Excluir categoria vazia">
-              <i class="fa-solid fa-trash-can"></i>
+              🗑️
             </span>
           ` : ''}
         </button>
@@ -1085,8 +1088,8 @@
         return {
           label: "Passar",
           description: "Passar a ferro",
-          iconHtml: `<svg class="w-3.5 h-3.5 inline-block text-amber-600 fill-current shrink-0" viewBox="0 0 24 24"><path d="M21.5 16.5c-.3-3.2-2.5-5.8-5.5-6.3V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v10.5c0 .8.7 1.5 1.5 1.5h17c.6 0 1.1-.5 1-1.1zM4 6h10v4.2c-3.1.5-5.6 2.8-6 5.8H4V6zm14 10h-8c.4-2.5 2.5-4.5 5-4.5h3c.8 0 1.5.3 2 1 .3.7.3 1.7 0 2.5-.5.6-1.2 1-2 1z"/><circle cx="15.5" cy="14" r="1"/><circle cx="13" cy="14" r="1"/></svg>`,
-          iconFa: "fa-solid fa-shirt",
+          iconHtml: `<span>♨️</span>`,
+          iconFa: "♨️",
           bg: "bg-amber-50",
           text: "text-amber-800",
           border: "border-amber-300",
@@ -1097,8 +1100,8 @@
         return {
           label: "Lavar",
           description: "Lavar na máquina / cesto",
-          iconHtml: `<i class="fa-solid fa-droplet text-sky-600 text-xs"></i>`,
-          iconFa: "fa-solid fa-droplet",
+          iconHtml: `<span>🫧</span>`,
+          iconFa: "🫧",
           bg: "bg-sky-50",
           text: "text-sky-800",
           border: "border-sky-300",
@@ -1109,8 +1112,8 @@
         return {
           label: "Lavanderia",
           description: "Lavanderia a seco / externa",
-          iconHtml: `<i class="fa-solid fa-building text-blue-600 text-xs"></i>`,
-          iconFa: "fa-solid fa-building",
+          iconHtml: `<span>🧼</span>`,
+          iconFa: "🧼",
           bg: "bg-blue-50",
           text: "text-blue-800",
           border: "border-blue-300",
@@ -1121,8 +1124,8 @@
         return {
           label: "Emprestada",
           description: "Emprestada a alguém",
-          iconHtml: `<i class="fa-solid fa-handshake text-orange-600 text-xs"></i>`,
-          iconFa: "fa-solid fa-handshake",
+          iconHtml: `<span>🤝</span>`,
+          iconFa: "🤝",
           bg: "bg-orange-50",
           text: "text-orange-800",
           border: "border-orange-300",
@@ -1133,8 +1136,8 @@
         return {
           label: "Achar",
           description: "Localizar / procurar peça",
-          iconHtml: `<i class="fa-solid fa-magnifying-glass text-rose-600 text-xs"></i>`,
-          iconFa: "fa-solid fa-magnifying-glass",
+          iconHtml: `<span>🔍</span>`,
+          iconFa: "🔍",
           bg: "bg-rose-50",
           text: "text-rose-800",
           border: "border-rose-300",
@@ -1146,8 +1149,8 @@
         return {
           label: "Ok",
           description: "Pronta pra uso ou mala",
-          iconHtml: `<i class="fa-solid fa-circle-check text-emerald-600 text-xs"></i>`,
-          iconFa: "fa-solid fa-circle-check",
+          iconHtml: `<span>✅</span>`,
+          iconFa: "✅",
           bg: "bg-emerald-50",
           text: "text-emerald-800",
           border: "border-emerald-300",
@@ -1225,38 +1228,38 @@
           </span>
 
           <div class="absolute bottom-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-            <button type="button" class="edit-btn w-7 h-7 rounded-lg bg-white/95 text-slate-600 hover:text-brand-600 shadow-sm border border-slate-200 flex items-center justify-center transition" title="Editar Peça (Alterar dados e status)">
-              <i class="fa-solid fa-pen text-[10px]"></i>
+            <button type="button" class="edit-btn w-7 h-7 rounded-lg bg-white/95 text-slate-600 hover:text-[#0b57d0] shadow-sm border border-[#e0e2ec] flex items-center justify-center transition text-xs" title="Editar Peça (Alterar dados e status)">
+              ✏️
             </button>
-            <button type="button" class="delete-btn w-7 h-7 rounded-lg bg-white/95 text-slate-600 hover:text-red-600 shadow-sm border border-slate-200 flex items-center justify-center transition" title="Excluir Peça">
-              <i class="fa-solid fa-trash-can text-[10px]"></i>
+            <button type="button" class="delete-btn w-7 h-7 rounded-lg bg-white/95 text-slate-600 hover:text-red-600 shadow-sm border border-[#e0e2ec] flex items-center justify-center transition text-xs" title="Excluir Peça">
+              🗑️
             </button>
           </div>
         </div>
       `;
     } else {
       visualContent = `
-        <div class="relative h-48 sm:h-52 bg-gradient-to-br from-slate-50 to-slate-100/80 p-3 flex flex-col items-center justify-center overflow-hidden border-b border-slate-100">
-          <!-- Multi-select Checkbox (Requisito: selecionar várias peças) -->
+        <div class="relative h-48 sm:h-52 bg-gradient-to-br from-[#f8fafd] to-[#f1f4f9] p-3 flex flex-col items-center justify-center overflow-hidden border-b border-[#e0e2ec]">
+          <!-- Multi-select Checkbox -->
           <div class="absolute top-2 left-2 z-20" onclick="event.stopPropagation()">
-            <input type="checkbox" class="piece-select-checkbox w-4 h-4 rounded text-brand-600 focus:ring-brand-500 border-slate-300 cursor-pointer shadow-xs" data-id="${item.id}" ${isSelected ? 'checked' : ''} title="Selecionar peça">
+            <input type="checkbox" class="piece-select-checkbox w-4 h-4 rounded text-[#0b57d0] focus:ring-[#0b57d0] border-slate-300 cursor-pointer shadow-xs" data-id="${item.id}" ${isSelected ? 'checked' : ''} title="Selecionar peça">
           </div>
 
-          <div class="w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner border border-white/80 mb-2 transition group-hover:scale-110 duration-200" style="background-color: ${colorHex}18">
-            <i class="fa-solid ${getCategoryIcon(item.categoria)} text-2xl" style="color: ${colorHex}"></i>
+          <div class="w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner border border-white/80 mb-2 transition group-hover:scale-110 duration-200 text-2xl" style="background-color: ${colorHex}18">
+            <span>${getCategoryIcon(item.categoria)}</span>
           </div>
-          <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Item Básico</span>
+          <span class="text-[9px] font-bold text-[#444746] uppercase tracking-wider">Item Básico</span>
 
-          <span class="absolute top-2 left-8 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white/95 text-slate-800 shadow-2xs border border-slate-200/80">
-            ${escapeHtml(item.categoria)}
+          <span class="absolute top-2 left-8 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white/95 text-[#1f1f1f] shadow-2xs border border-[#e0e2ec]">
+            ${getCategoryIcon(item.categoria)} ${escapeHtml(item.categoria)}
           </span>
 
           <div class="absolute top-2 right-2 flex flex-col items-end gap-1">
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500 text-white shadow-2xs" title="Quantidade disponível">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-[#fbbc04] text-[#1f1f1f] shadow-2xs" title="Quantidade disponível">
               Qtd: ${qty}
             </span>
             ${naoRepetir ? `
-              <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-100 text-blue-700 border border-blue-200 shadow-2xs" title="Não repetir em mais de um dia">
+              <span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-[#edf2fa] text-[#0b57d0] border border-[#c2d7fa] shadow-2xs" title="Não repetir em mais de um dia">
                 1x/dia
               </span>
             ` : ''}
@@ -1269,11 +1272,11 @@
           </span>
 
           <div class="absolute bottom-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity z-20">
-            <button type="button" class="edit-btn w-7 h-7 rounded-lg bg-white/95 text-slate-600 hover:text-brand-600 shadow-sm border border-slate-200 flex items-center justify-center transition" title="Editar Peça (Alterar dados e status)">
-              <i class="fa-solid fa-pen text-[10px]"></i>
+            <button type="button" class="edit-btn w-7 h-7 rounded-lg bg-white/95 text-slate-600 hover:text-[#0b57d0] shadow-sm border border-[#e0e2ec] flex items-center justify-center transition text-xs" title="Editar Peça (Alterar dados e status)">
+              ✏️
             </button>
-            <button type="button" class="delete-btn w-7 h-7 rounded-lg bg-white/95 text-slate-600 hover:text-red-600 shadow-sm border border-slate-200 flex items-center justify-center transition" title="Excluir Peça">
-              <i class="fa-solid fa-trash-can text-[10px]"></i>
+            <button type="button" class="delete-btn w-7 h-7 rounded-lg bg-white/95 text-slate-600 hover:text-red-600 shadow-sm border border-[#e0e2ec] flex items-center justify-center transition text-xs" title="Excluir Peça">
+              🗑️
             </button>
           </div>
         </div>
@@ -1281,48 +1284,48 @@
     }
 
     return `
-      <div class="garment-card bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-2xs hover:shadow-md transition-all flex flex-col group relative cursor-pointer ${isSelected ? 'ring-2 ring-brand-500 border-brand-500' : ''}" data-id="${item.id}">
+      <div class="garment-card bg-white rounded-2xl border border-[#e0e2ec] overflow-hidden shadow-2xs hover:shadow-md transition-all flex flex-col group relative cursor-pointer ${isSelected ? 'ring-2 ring-[#0b57d0] border-[#0b57d0]' : ''}" data-id="${item.id}">
         ${visualContent}
         
         <div class="p-3 flex-1 flex flex-col justify-between space-y-2">
           <div>
-            <h4 class="text-xs font-bold text-slate-900 leading-snug line-clamp-1" title="${escapeHtml(item.tipo)}">${escapeHtml(item.tipo)}</h4>
-            <p class="text-[11px] text-slate-500 mt-0.5 line-clamp-2 leading-relaxed">
+            <h4 class="text-xs font-bold text-[#1f1f1f] leading-snug line-clamp-1" title="${escapeHtml(item.tipo)}">${escapeHtml(item.tipo)}</h4>
+            <p class="text-[11px] text-[#444746] mt-0.5 line-clamp-2 leading-relaxed">
               ${escapeHtml(item.descricao || (isGeneric ? `Item básico com ${qty} unidade(s)` : "Sem descrição informada."))}
             </p>
           </div>
 
-          <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+          <div class="pt-2 border-t border-[#e0e2ec] flex items-center justify-between text-xs">
             <div class="flex items-center gap-1.5" title="Cor Predominante">
               <span class="w-3 h-3 rounded-full border border-slate-300 shadow-inner flex-shrink-0" style="background-color: ${colorHex}"></span>
-              <span class="text-slate-700 font-medium text-[10px] truncate max-w-[80px]">${escapeHtml(item.cor_predominante)}</span>
+              <span class="text-[#1f1f1f] font-medium text-[10px] truncate max-w-[80px]">${escapeHtml(item.cor_predominante)}</span>
             </div>
 
             ${isGeneric ? `
-              <span class="text-[10px] font-semibold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded">
+              <span class="text-[10px] font-semibold text-amber-800 bg-amber-50 px-1.5 py-0.5 rounded">
                 ${qty} un
               </span>
             ` : `
-              <div class="flex items-center gap-1 text-[10px] text-slate-500 hover:text-brand-600 cursor-pointer edit-date-trigger" title="Data de Aquisição">
-                <i class="fa-regular fa-calendar text-[9px]"></i>
+              <div class="flex items-center gap-1 text-[10px] text-[#444746] hover:text-[#0b57d0] cursor-pointer edit-date-trigger" title="Data de Aquisição">
+                <span>🗓️</span>
                 <span>${formattedDate}</span>
               </div>
             `}
           </div>
 
-          <!-- Planejamento da Viagem (Requisito: Mostrar em quantos dias está sendo usada no planejamento da viagem) -->
+          <!-- Planejamento da Viagem -->
           ${tripUsage && tripUsage.daysSet.size > 0 ? `
-            <div class="bg-indigo-50/80 border border-indigo-200/80 rounded-xl p-2 text-[10px] text-indigo-900 leading-tight">
-              <div class="flex items-center justify-between font-bold text-indigo-950 mb-0.5">
+            <div class="bg-[#edf2fa] border border-[#c2d7fa] rounded-xl p-2 text-[10px] text-[#0b57d0] leading-tight">
+              <div class="flex items-center justify-between font-bold text-[#0842a0] mb-0.5">
                 <span class="flex items-center gap-1">
-                  <i class="fa-solid fa-plane-departure text-[9px] text-indigo-600"></i>
+                  <span>✈️</span>
                   <span>Na Viagem:</span>
                 </span>
-                <span class="bg-indigo-200 text-indigo-950 px-1.5 py-0.2 rounded-full font-extrabold text-[9px]">
+                <span class="bg-[#d3e3fd] text-[#041e49] px-1.5 py-0.2 rounded-full font-extrabold text-[9px]">
                   ${tripUsage.daysSet.size} ${tripUsage.daysSet.size === 1 ? 'dia' : 'dias'}
                 </span>
               </div>
-              <span class="text-indigo-800 font-medium text-[10px] block truncate" title="${Array.from(tripUsage.daysSet).sort((a,b) => a-b).map(d => `Dia ${d}`).join(', ')}">
+              <span class="text-[#0b57d0] font-medium text-[10px] block truncate" title="${Array.from(tripUsage.daysSet).sort((a,b) => a-b).map(d => `Dia ${d}`).join(', ')}">
                 Usada em: ${Array.from(tripUsage.daysSet).sort((a,b) => a-b).map(d => `Dia ${d}`).join(", ")}
               </span>
             </div>
@@ -1405,20 +1408,20 @@
       const cardsHtml = count > 0
         ? itemsInCat.map(renderGarmentCard).join("")
         : `
-          <div class="col-span-full py-8 text-center bg-white rounded-2xl border border-dashed border-slate-200 p-6 space-y-2">
-            <p class="text-xs text-slate-500 font-medium">Nenhuma peça nesta categoria ainda.</p>
-            <p class="text-[11px] text-slate-400">Adicione fotos diretamente nesta categoria, adicione um item básico ou exclua a categoria vazia.</p>
+          <div class="col-span-full py-8 text-center bg-white rounded-2xl border border-dashed border-[#c4c7c5] p-6 space-y-2">
+            <p class="text-xs text-[#1f1f1f] font-medium">Nenhuma peça nesta categoria ainda.</p>
+            <p class="text-[11px] text-[#444746]">Adicione fotos diretamente nesta categoria, adicione um item básico ou exclua a categoria vazia.</p>
             <div class="flex items-center justify-center gap-2 pt-2 flex-wrap">
-              <button type="button" class="btn-add-photo-in-cat px-3 py-1.5 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 text-xs font-semibold inline-flex items-center gap-1.5 transition shadow-2xs" data-category="${escapeHtml(catName)}" title="Adicionar fotos diretamente nesta categoria">
-                <i class="fa-solid fa-camera text-[10px] text-brand-600"></i>
+              <button type="button" class="btn-add-photo-in-cat gc-btn-secondary px-3 py-1.5 text-xs inline-flex items-center gap-1.5" data-category="${escapeHtml(catName)}" title="Adicionar fotos diretamente nesta categoria">
+                <span>📸</span>
                 <span>+ Adicionar Foto</span>
               </button>
-              <button type="button" class="btn-add-generic-in-cat px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold inline-flex items-center gap-1.5 transition shadow-2xs" data-category="${escapeHtml(catName)}" title="Adicionar item básico">
-                <i class="fa-solid fa-layer-group text-[10px] text-blue-600"></i>
+              <button type="button" class="btn-add-generic-in-cat gc-btn-secondary px-3 py-1.5 text-xs inline-flex items-center gap-1.5" data-category="${escapeHtml(catName)}" title="Adicionar item básico">
+                <span>🧦</span>
                 <span>+ Item Básico</span>
               </button>
-              <button type="button" class="btn-delete-cat px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 text-xs font-semibold inline-flex items-center gap-1.5 transition shadow-2xs" data-category="${escapeHtml(catName)}" title="Excluir categoria vazia">
-                <i class="fa-solid fa-trash-can text-[10px]"></i>
+              <button type="button" class="btn-delete-cat px-3 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold inline-flex items-center gap-1.5 transition" data-category="${escapeHtml(catName)}" title="Excluir categoria vazia">
+                <span>🗑️</span>
                 <span>Excluir Categoria</span>
               </button>
             </div>
@@ -1426,62 +1429,62 @@
         `;
 
       sectionsHtml += `
-        <section class="category-section bg-slate-50/70 rounded-3xl p-5 border border-slate-200/80 shadow-2xs" data-category="${escapeHtml(catName)}">
+        <section class="category-section bg-white rounded-3xl p-5 border border-[#e0e2ec] shadow-sm" data-category="${escapeHtml(catName)}">
           <!-- Category Section Header -->
-          <div class="flex items-center justify-between pb-3.5 mb-4 border-b border-slate-200/80 flex-wrap gap-2">
+          <div class="flex items-center justify-between pb-3.5 mb-4 border-b border-[#e0e2ec] flex-wrap gap-2">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-2xl bg-white border border-slate-200 flex items-center justify-center text-brand-600 shadow-2xs">
-                <i class="fa-solid ${getCategoryIcon(catName)} text-base"></i>
+              <div class="w-10 h-10 rounded-2xl bg-[#edf2fa] border border-[#c2d7fa] flex items-center justify-center text-lg shadow-2xs">
+                <span>${getCategoryIcon(catName)}</span>
               </div>
               <div>
                 <div class="flex items-center gap-2 flex-wrap">
-                  <h3 class="text-base font-bold text-slate-900 font-serif">${escapeHtml(catName)}</h3>
-                  <span class="text-[11px] font-bold px-2 py-0.5 rounded-full ${count === 0 ? 'bg-amber-100 text-amber-800' : 'bg-slate-200/80 text-slate-700'}">${count} ${count === 1 ? 'peça' : 'peças'}</span>
+                  <h3 class="text-base font-bold text-[#1f1f1f]">${escapeHtml(catName)}</h3>
+                  <span class="text-[11px] font-bold px-2 py-0.5 rounded-full ${count === 0 ? 'bg-amber-100 text-amber-800' : 'bg-[#f1f4f9] text-[#1f1f1f]'}">${count} ${count === 1 ? 'peça' : 'peças'}</span>
                   ${catTripPiecesCount > 0 ? `
-                    <span class="text-[11px] font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-full inline-flex items-center gap-1" title="Peças desta categoria planejadas na viagem">
-                      <i class="fa-solid fa-plane-departure text-[9px] text-indigo-600"></i>
+                    <span class="text-[11px] font-semibold text-[#0b57d0] bg-[#edf2fa] border border-[#c2d7fa] px-2 py-0.5 rounded-full inline-flex items-center gap-1" title="Peças desta categoria planejadas na viagem">
+                      <span>✈️</span>
                       <span>${catTripPiecesCount} na viagem (${catTripDaysSet.size} ${catTripDaysSet.size === 1 ? 'dia' : 'dias'})</span>
                     </span>
                   ` : ''}
                 </div>
-                <p class="text-[11px] text-slate-500 mt-0.5">Peças organizadas por categoria</p>
+                <p class="text-[11px] text-[#444746] mt-0.5">Peças organizadas por categoria ✨</p>
               </div>
             </div>
 
             <div class="flex items-center gap-1.5 flex-wrap">
-              <!-- Requisito: Ordenar por cor dentro da categoria -->
+              <!-- Ordenar por cor dentro da categoria -->
               ${count > 1 ? `
-                <button type="button" class="btn-sort-color px-2.5 py-1.5 rounded-xl ${sortMode ? 'bg-amber-100 text-amber-900 border-amber-300' : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'} text-xs font-semibold border flex items-center gap-1.5 transition shadow-2xs" data-category="${escapeHtml(catName)}" title="Ordenar peças por tom de cor (clara ➔ escura ou escura ➔ clara)">
-                  <i class="fa-solid ${sortMode === 'light_to_dark' ? 'fa-arrow-down-short-wide text-amber-600' : (sortMode === 'dark_to_light' ? 'fa-arrow-up-wide-short text-indigo-600' : 'fa-palette text-slate-500')} text-[10px]"></i>
+                <button type="button" class="btn-sort-color gc-btn-secondary px-2.5 py-1.5 text-xs flex items-center gap-1.5" data-category="${escapeHtml(catName)}" title="Ordenar peças por tom de cor (clara ➔ escura ou escura ➔ clara)">
+                  <span>🎨</span>
                   <span>${sortMode === 'light_to_dark' ? 'Mais Claras' : (sortMode === 'dark_to_light' ? 'Mais Escuras' : 'Ordenar Cor')}</span>
                 </button>
               ` : ''}
 
-              <!-- Requisito: Selecionar ou deselecionar todas as peças da categoria -->
+              <!-- Selecionar ou deselecionar todas as peças da categoria -->
               ${count > 0 ? `
-                <button type="button" class="btn-toggle-select-cat px-2.5 py-1.5 rounded-xl ${allInCatSelected ? 'bg-brand-100 text-brand-900 border-brand-300' : 'bg-white hover:bg-slate-100 text-slate-700 border-slate-200'} text-xs font-semibold border flex items-center gap-1.5 transition shadow-2xs" data-category="${escapeHtml(catName)}" title="${allInCatSelected ? 'Desmarcar todas as peças desta categoria' : 'Selecionar todas as peças desta categoria'}">
-                  <i class="fa-solid ${allInCatSelected ? 'fa-square-minus text-brand-600' : 'fa-square-check text-slate-500'} text-[10px]"></i>
+                <button type="button" class="btn-toggle-select-cat gc-btn-secondary px-2.5 py-1.5 text-xs flex items-center gap-1.5" data-category="${escapeHtml(catName)}" title="${allInCatSelected ? 'Desmarcar todas as peças desta categoria' : 'Selecionar todas as peças desta categoria'}">
+                  <span>${allInCatSelected ? '☑️' : '⬜'}</span>
                   <span>${allInCatSelected ? 'Desmarcar Todas' : 'Selecionar Todas'}</span>
                 </button>
               ` : ''}
 
-              <!-- Requisito: Adicionar fotos diretamente a uma categoria -->
-              <button type="button" class="btn-add-photo-in-cat px-3 py-1.5 rounded-xl bg-brand-50 hover:bg-brand-100 text-brand-700 text-xs font-semibold border border-brand-200 flex items-center gap-1.5 transition shadow-2xs" data-category="${escapeHtml(catName)}" title="Adicionar fotos diretamente nesta categoria (ignora classificação automática do Gemini)">
-                <i class="fa-solid fa-camera text-[10px] text-brand-600"></i>
+              <!-- Adicionar fotos diretamente a uma categoria -->
+              <button type="button" class="btn-add-photo-in-cat gc-btn-primary px-3 py-1.5 text-xs flex items-center gap-1.5" data-category="${escapeHtml(catName)}" title="Adicionar fotos diretamente nesta categoria (ignora classificação automática do Gemini)">
+                <span>📸</span>
                 <span>+ Foto</span>
               </button>
-              <button type="button" class="btn-add-generic-in-cat px-3 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200 flex items-center gap-1.5 transition shadow-2xs" data-category="${escapeHtml(catName)}" title="Adicionar item básico nesta categoria">
-                <i class="fa-solid fa-plus text-[10px] text-brand-600"></i>
+              <button type="button" class="btn-add-generic-in-cat gc-btn-secondary px-3 py-1.5 text-xs flex items-center gap-1.5" data-category="${escapeHtml(catName)}" title="Adicionar item básico nesta categoria">
+                <span>➕</span>
                 <span>+ Básico</span>
               </button>
-              <button type="button" class="btn-rename-cat px-2.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold border border-slate-200 flex items-center gap-1.5 transition shadow-2xs" data-category="${escapeHtml(catName)}" title="Alterar nome da categoria">
-                <i class="fa-solid fa-pen-to-square text-[10px] text-amber-600"></i>
+              <button type="button" class="btn-rename-cat gc-btn-secondary px-2.5 py-1.5 text-xs flex items-center gap-1.5" data-category="${escapeHtml(catName)}" title="Alterar nome da categoria">
+                <span>✏️</span>
                 <span>Renomear</span>
               </button>
-              <!-- Requisito: Excluir categoria sem nenhuma peça -->
+              <!-- Excluir categoria sem nenhuma peça -->
               ${count === 0 ? `
-                <button type="button" class="btn-delete-cat px-2.5 py-1.5 rounded-xl bg-white hover:bg-rose-50 text-rose-600 border border-rose-200 text-xs font-semibold flex items-center gap-1.5 transition shadow-2xs" data-category="${escapeHtml(catName)}" title="Excluir categoria vazia">
-                  <i class="fa-solid fa-trash-can text-[10px]"></i>
+                <button type="button" class="btn-delete-cat px-2.5 py-1.5 rounded-full bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold flex items-center gap-1.5 transition" data-category="${escapeHtml(catName)}" title="Excluir categoria vazia">
+                  <span>🗑️</span>
                   <span>Excluir</span>
                 </button>
               ` : ''}
@@ -2035,7 +2038,7 @@
     if (!selected.length) return;
 
     confirmPhotosImportBtn.disabled = true;
-    confirmPhotosImportBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i><span>Importando...</span>`;
+    confirmPhotosImportBtn.innerHTML = `<span class="animate-spin">⏳</span><span>Importando...</span>`;
 
     try {
       const resp = await authFetch("/api/google-photos/import-batch", {
@@ -2066,7 +2069,7 @@
       alert("Falha na importação de fotos.");
     } finally {
       confirmPhotosImportBtn.disabled = false;
-      confirmPhotosImportBtn.innerHTML = `<i class="fa-solid fa-cloud-arrow-down"></i><span>Importar para o Roupeiro</span>`;
+      confirmPhotosImportBtn.innerHTML = `<span>☁️</span><span>Importar para o Roupeiro</span>`;
     }
   });
 
@@ -2146,12 +2149,11 @@
   });
 
   refreshBtn.addEventListener("click", async () => {
-    const icon = refreshBtn.querySelector("i");
-    if (icon) icon.classList.add("fa-spin");
+    refreshBtn.classList.add("animate-spin");
     try {
       await loadWardrobe();
     } finally {
-      if (icon) icon.classList.remove("fa-spin");
+      refreshBtn.classList.remove("animate-spin");
     }
   });
 
@@ -2414,7 +2416,7 @@
     if (!status.hasAnyLook || status.totalItems === 0) {
       return `
         <div class="flex items-center gap-1.5 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-xl text-xs font-medium text-slate-600 shadow-2xs">
-          <i class="fa-solid fa-circle-question text-slate-400 text-xs"></i>
+          <span>❓</span>
           <span>Sem Look</span>
         </div>
       `;
@@ -2423,7 +2425,7 @@
     if (status.isComplete) {
       return `
         <div class="flex items-center gap-1.5 bg-emerald-50 border border-emerald-300 px-2.5 py-1 rounded-xl text-xs font-bold text-emerald-800 shadow-2xs" title="Todos os looks deste dia estão com peças definidas">
-          <i class="fa-solid fa-circle-check text-emerald-600 text-xs"></i>
+          <span>✅</span>
           <span>Look Completo</span>
         </div>
       `;
@@ -2431,7 +2433,7 @@
 
     return `
       <div class="flex items-center gap-1.5 bg-amber-50 border border-amber-300 px-2.5 py-1 rounded-xl text-xs font-bold text-amber-900 shadow-2xs" title="${status.pendingCount} item(ns) a definir no look deste dia">
-        <i class="fa-solid fa-triangle-exclamation text-amber-500 text-xs"></i>
+        <span>⚠️</span>
         <span>Faltam ${status.pendingCount} ${status.pendingCount === 1 ? 'item' : 'itens'} a definir</span>
       </div>
     `;
@@ -2447,8 +2449,8 @@
       const dayDate = formatDateBR(day.date);
       const dayTitle = day.title || `Dia ${dayNum} em ${currentTrip.destination}`;
 
-      const dayWeather = day.weather?.day || { temp_c: "--", condition: "Clima ameno", icon: "fa-sun" };
-      const nightWeather = day.weather?.night || { temp_c: "--", condition: "Clima ameno", icon: "fa-moon" };
+      const dayWeather = day.weather?.day || { temp_c: "--", condition: "Clima ameno", icon: "☀️" };
+      const nightWeather = day.weather?.night || { temp_c: "--", condition: "Clima ameno", icon: "🌙" };
 
       const dayStatus = getTripDayLookStatus(day);
       const dayStatusBadgeHtml = buildTripDayStatusBadgeHtml(dayStatus);
@@ -2475,7 +2477,7 @@
 
             <!-- Day Weather -->
             <div class="flex items-center gap-2 bg-amber-50/80 border border-amber-200/80 px-3 py-1 rounded-xl text-xs text-amber-900" title="Previsão do Dia">
-              <i class="fa-solid ${dayWeather.icon || 'fa-sun'} text-amber-500 text-sm"></i>
+              <span class="text-sm">☀️</span>
               <div>
                 <span class="font-bold">${dayWeather.temp_c || '--'}</span>
                 <span class="text-[10px] text-amber-700 hidden sm:inline ml-1">${dayWeather.condition || ''}</span>
@@ -2484,7 +2486,7 @@
 
             <!-- Night Weather -->
             <div class="flex items-center gap-2 bg-indigo-50/80 border border-indigo-200/80 px-3 py-1 rounded-xl text-xs text-indigo-900" title="Previsão da Noite">
-              <i class="fa-solid ${nightWeather.icon || 'fa-moon'} text-indigo-500 text-sm"></i>
+              <span class="text-sm">🌙</span>
               <div>
                 <span class="font-bold">${nightWeather.temp_c || '--'}</span>
                 <span class="text-[10px] text-indigo-700 hidden sm:inline ml-1">${nightWeather.condition || ''}</span>
@@ -2499,11 +2501,11 @@
           <div class="day-period-block space-y-3">
             <div class="flex items-center justify-between border-b border-amber-200/60 pb-2">
               <div class="flex items-center gap-2 text-xs font-bold text-amber-800 uppercase tracking-wider">
-                <i class="fa-solid fa-sun text-amber-500 text-sm"></i>
+                <span class="text-sm">☀️</span>
                 <span>Roteiro & Atividades Diurnas</span>
               </div>
               <button type="button" class="swap-period-btn px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 text-[11px] font-bold transition flex items-center gap-1.5 shadow-2xs" data-day="${dayIndex}" data-period="day_period" title="Trocar este período (roteiro e look) com outro dia">
-                <i class="fa-solid fa-arrow-right-arrow-left text-[10px] text-amber-700"></i>
+                <span>🔄</span>
                 <span>Trocar Período</span>
               </button>
             </div>
@@ -2519,11 +2521,11 @@
           <div class="night-period-block space-y-3 pt-5 border-t border-slate-200">
             <div class="flex items-center justify-between border-b border-indigo-200/60 pb-2">
               <div class="flex items-center gap-2 text-xs font-bold text-indigo-800 uppercase tracking-wider">
-                <i class="fa-solid fa-moon text-indigo-500 text-sm"></i>
+                <span class="text-sm">🌙</span>
                 <span>Roteiro & Atividades Noturnas</span>
               </div>
               <button type="button" class="swap-period-btn px-2.5 py-1 rounded-lg bg-indigo-100 hover:bg-indigo-200 text-indigo-900 text-[11px] font-bold transition flex items-center gap-1.5 shadow-2xs" data-day="${dayIndex}" data-period="night_period" title="Trocar este período (roteiro e look) com outro dia">
-                <i class="fa-solid fa-arrow-right-arrow-left text-[10px] text-indigo-700"></i>
+                <span>🔄</span>
                 <span>Trocar Período</span>
               </button>
             </div>
@@ -2582,7 +2584,7 @@
         <div>
           <div class="flex items-center justify-between gap-2 mb-1">
             <span class="text-[11px] font-bold text-brand-700 bg-brand-50 px-2 py-0.5 rounded-md border border-brand-100 flex items-center gap-1">
-              <i class="fa-regular fa-clock text-[10px]"></i>
+              <span>🕒</span>
               ${loc.time || "Horário flexível"}
             </span>
             ${loc.style ? `<span class="text-[10px] font-semibold text-slate-500 bg-slate-200/70 px-2 py-0.5 rounded-full">${loc.style}</span>` : ""}
@@ -2593,7 +2595,7 @@
 
         <div class="pt-2 border-t border-slate-200/60 flex items-center justify-between text-[11px]">
           <span class="text-slate-500 flex items-center gap-1">
-            <i class="fa-solid fa-route text-slate-400 text-[10px]"></i>
+            <span>🚕</span>
             ${loc.travel_time || "Trajeto livre"}
           </span>
         </div>
@@ -2629,7 +2631,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div class="flex items-center gap-2">
             <span class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-              <i class="fa-solid fa-shirt text-brand-600"></i>
+              <span>👔</span>
               <span>${look.title || (periodKey === 'day_period' ? 'Look do Dia' : 'Look da Noite')}</span>
             </span>
             ${look.style ? `<span class="text-[10px] font-bold text-brand-700 bg-brand-100/70 px-2 py-0.5 rounded-full">${look.style}</span>` : ""}
@@ -2638,11 +2640,11 @@
           <!-- Actions: Edit with AI (Text/Voice) and Swap Piece -->
           <div class="flex items-center gap-2 self-start sm:self-auto">
             <button type="button" class="btn-edit-look-ai px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 text-brand-700 border border-brand-200 text-xs font-semibold shadow-2xs transition flex items-center gap-1.5">
-              <i class="fa-solid fa-wand-magic-sparkles text-brand-600"></i>
+              <span>🪄</span>
               <span>Ajustar com IA (Voz/Texto)</span>
             </button>
             <button type="button" class="btn-swap-piece px-2.5 py-1 rounded-lg bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-semibold shadow-2xs transition flex items-center gap-1.5">
-              <i class="fa-solid fa-arrows-rotate text-slate-500"></i>
+              <span>🔄</span>
               <span>Trocar Peça</span>
             </button>
           </div>
@@ -2657,7 +2659,7 @@
               <div class="w-14 h-14 flex items-center justify-center overflow-hidden mb-1">
                 ${item.original_url || item.cutout_url
                   ? `<img src="${item.cutout_url || item.original_url}" alt="${item.tipo}" class="max-h-full max-w-full object-contain">`
-                  : `<div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400"><i class="fa-solid fa-shirt"></i></div>`
+                  : `<div class="w-10 h-10 rounded-lg bg-slate-100 flex items-center justify-center text-slate-400"><span>👕</span></div>`
                 }
               </div>
               <span class="text-[10px] font-bold text-slate-800 truncate w-full leading-tight">${item.tipo || "Peça"}</span>
@@ -2671,7 +2673,7 @@
 
         ${look.recommendations ? `
           <div class="text-[11px] text-brand-800 bg-brand-50/70 border border-brand-100 rounded-lg px-3 py-1.5 flex items-center gap-2">
-            <i class="fa-regular fa-lightbulb text-brand-600"></i>
+            <span>💡</span>
             <span>${look.recommendations}</span>
           </div>
         ` : ""}
@@ -2777,7 +2779,7 @@
     swapPreviewBox.innerHTML = `
       <div class="flex items-center justify-between font-bold text-amber-900 border-b border-amber-200 pb-1.5 mb-1.5">
         <span>Resultado da Troca:</span>
-        <i class="fa-solid fa-arrow-right-arrow-left text-amber-600"></i>
+        <span>🔄</span>
       </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
         <div class="bg-white/80 p-2 rounded-xl border border-amber-200">
@@ -2817,7 +2819,7 @@
     }
 
     confirmSwapPeriodBtn.disabled = true;
-    confirmSwapPeriodBtn.innerHTML = `<i class="fa-solid fa-spinner animate-spin"></i><span>Trocando...</span>`;
+    confirmSwapPeriodBtn.innerHTML = `<span class="animate-spin">⏳</span><span>Trocando...</span>`;
 
     try {
       // Swap period content: locations and look move together as requested
@@ -2851,7 +2853,7 @@
       alert("Erro ao trocar períodos: " + err.message);
     } finally {
       confirmSwapPeriodBtn.disabled = false;
-      confirmSwapPeriodBtn.innerHTML = `<i class="fa-solid fa-arrow-right-arrow-left"></i><span>Confirmar Troca</span>`;
+      confirmSwapPeriodBtn.innerHTML = `<span>🔄</span><span>Confirmar Troca</span>`;
     }
   }
 
@@ -3211,7 +3213,7 @@
             <div class="w-9 h-9 rounded-lg bg-white border border-slate-200 flex items-center justify-center overflow-hidden shrink-0">
               ${item.cutout_url || item.original_url
                 ? `<img src="${item.cutout_url || item.original_url}" alt="${item.tipo}" class="max-h-full max-w-full object-contain">`
-                : `<i class="fa-solid fa-shirt text-slate-300 text-xs"></i>`
+                : `<span class="text-xs">👕</span>`
               }
             </div>
             <div class="flex-1 min-w-0">
@@ -3259,7 +3261,7 @@
     if (!savedTripsGrid) return;
     savedTripsGrid.innerHTML = `
       <div class="col-span-full py-12 text-center text-xs text-slate-400">
-        <i class="fa-solid fa-spinner animate-spin text-lg text-brand-600 mb-2"></i>
+        <span class="inline-block animate-spin text-lg mb-2">⏳</span>
         <p>Carregando histórico de viagens...</p>
       </div>
     `;
@@ -3273,7 +3275,7 @@
       if (!userTrips.length) {
         savedTripsGrid.innerHTML = `
           <div class="col-span-full py-12 text-center text-slate-400 space-y-3 bg-white border border-dashed border-slate-200 rounded-2xl p-6">
-            <i class="fa-solid fa-suitcase-rolling text-3xl text-slate-300"></i>
+            <span class="text-3xl">🧳</span>
             <p class="text-sm">Você ainda não planejou nenhuma viagem.</p>
             <button type="button" class="btn-new-trip-inline px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-semibold shadow transition">
               Planejar Minha Primeira Viagem ✈️
@@ -3309,11 +3311,11 @@
 
           <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
             <button type="button" class="btn-open-saved-trip px-3 py-1.5 bg-brand-50 hover:bg-brand-100 text-brand-700 font-semibold text-xs rounded-xl transition flex items-center gap-1.5">
-              <i class="fa-solid fa-map-location-dot"></i>
+              <span>🗺️</span>
               <span>Abrir Roteiro</span>
             </button>
             <button type="button" class="btn-delete-saved-trip p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition" title="Excluir Viagem">
-              <i class="fa-solid fa-trash-can text-xs"></i>
+              <span class="text-xs">🗑️</span>
             </button>
           </div>
         `;
@@ -3348,7 +3350,7 @@
 
     savedTripsSelectorContainer.innerHTML = `
       <div class="py-12 text-center text-xs text-slate-400">
-        <i class="fa-solid fa-spinner animate-spin text-lg text-brand-600 mb-2"></i>
+        <span class="inline-block animate-spin text-lg mb-2">⏳</span>
         <p>Carregando suas viagens planejadas...</p>
       </div>
     `;
@@ -3362,7 +3364,7 @@
       if (!trips.length) {
         savedTripsSelectorContainer.innerHTML = `
           <div class="py-10 text-center text-slate-400 space-y-3 bg-slate-50 border border-dashed border-slate-200 rounded-2xl p-6">
-            <i class="fa-solid fa-suitcase-rolling text-3xl text-slate-300"></i>
+            <span class="text-3xl">🧳</span>
             <p class="text-sm font-medium text-slate-600">Você ainda não planejou nenhuma viagem.</p>
             <p class="text-xs text-slate-400">Monte um roteiro inteligente com looks completos para cada dia e noite!</p>
             <button type="button" class="btn-create-first-trip px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold shadow transition">
@@ -3386,7 +3388,7 @@
         card.innerHTML = `
           <div class="flex items-center gap-3 flex-1 min-w-0">
             <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-600 text-white flex items-center justify-center font-bold shadow-sm shrink-0 group-hover:scale-105 transition">
-              <i class="fa-solid fa-plane-departure text-base"></i>
+              <span class="text-base">✈️</span>
             </div>
             <div class="min-w-0">
               <div class="flex items-center gap-2">
@@ -3403,10 +3405,10 @@
           <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
             <a href="/viagem.html?id=${trip.id}" class="btn-go-to-trip px-3.5 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-xs transition flex items-center gap-1.5">
               <span>Abrir Roteiro</span>
-              <i class="fa-solid fa-arrow-right text-[10px]"></i>
+              <span>➡️</span>
             </a>
             <button type="button" class="btn-delete-trip-selector p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition" title="Excluir Viagem">
-              <i class="fa-solid fa-trash-can text-xs"></i>
+              <span class="text-xs">🗑️</span>
             </button>
           </div>
         `;
