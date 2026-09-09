@@ -188,11 +188,12 @@ log_info "5/7 Verificando variáveis de ambiente e permissões IAM da Service Ac
 # Se não foram informadas via flag, tenta reutilizar as que já estão no Cloud Run (Redeploy)
 if [[ -z "${FIREBASE_API_KEY}" || -z "${GOOGLE_CLIENT_ID}" ]]; then
   if gcloud run services describe "${SERVICE_NAME}" --region "${REGION}" --project "${PROJECT_ID}" >/dev/null 2>&1; then
-    if [[ -z "${FIREBASE_API_KEY}" ]]; then
-      FIREBASE_API_KEY="$(gcloud run services describe "${SERVICE_NAME}" --region "${REGION}" --project "${PROJECT_ID}" --format="value(spec.template.spec.containers[0].env[name=FIREBASE_API_KEY].value)" 2>/dev/null || true)"
+    SERVICE_JSON="$(gcloud run services describe "${SERVICE_NAME}" --region "${REGION}" --project "${PROJECT_ID}" --format=json 2>/dev/null || true)"
+    if [[ -z "${FIREBASE_API_KEY}" && -n "${SERVICE_JSON}" ]]; then
+      FIREBASE_API_KEY="$(echo "${SERVICE_JSON}" | python3 -c "import sys, json; envs = json.load(sys.stdin).get('spec',{}).get('template',{}).get('spec',{}).get('containers',[{}])[0].get('env',[]); print(next((e.get('value','') for e in envs if e.get('name')=='FIREBASE_API_KEY'), ''))" 2>/dev/null || true)"
     fi
-    if [[ -z "${GOOGLE_CLIENT_ID}" ]]; then
-      GOOGLE_CLIENT_ID="$(gcloud run services describe "${SERVICE_NAME}" --region "${REGION}" --project "${PROJECT_ID}" --format="value(spec.template.spec.containers[0].env[name=GOOGLE_CLIENT_ID].value)" 2>/dev/null || true)"
+    if [[ -z "${GOOGLE_CLIENT_ID}" && -n "${SERVICE_JSON}" ]]; then
+      GOOGLE_CLIENT_ID="$(echo "${SERVICE_JSON}" | python3 -c "import sys, json; envs = json.load(sys.stdin).get('spec',{}).get('template',{}).get('spec',{}).get('containers',[{}])[0].get('env',[]); print(next((e.get('value','') for e in envs if e.get('name')=='GOOGLE_CLIENT_ID'), ''))" 2>/dev/null || true)"
     fi
   fi
 fi

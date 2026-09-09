@@ -2071,28 +2071,35 @@
   });
 
   // 6. Look Builder (Montador de Looks)
-  openLookBuilderBtn.addEventListener("click", () => {
+  openLookBuilderBtn?.addEventListener("click", () => {
     populateLookBuilderOptions();
-    lookBuilderModal.classList.remove("hidden");
+    lookBuilderModal?.classList.remove("hidden");
   });
-  closeLookBuilderBtn.addEventListener("click", () => lookBuilderModal.classList.add("hidden"));
+  closeLookBuilderBtn?.addEventListener("click", () => lookBuilderModal?.classList.add("hidden"));
 
   function populateLookBuilderOptions() {
     const tops = wardrobeItems.filter(i => ["Camisas & Camisetas", "Casacos & Jaquetas", "Vestidos & Saias"].includes(i.categoria));
     const bottoms = wardrobeItems.filter(i => ["Calças", "Bermudas & Shorts", "Vestidos & Saias"].includes(i.categoria));
     const shoes = wardrobeItems.filter(i => i.categoria === "Calçados");
 
-    selectLookTop.innerHTML = `<option value="">Selecione uma peça superior...</option>` +
-      tops.map(t => `<option value="${t.id}">${t.tipo} (${t.cor_predominante})</option>`).join("");
+    if (selectLookTop) {
+      selectLookTop.innerHTML = `<option value="">Selecione uma peça superior...</option>` +
+        tops.map(t => `<option value="${t.id}">${t.tipo} (${t.cor_predominante})</option>`).join("");
+    }
 
-    selectLookBottom.innerHTML = `<option value="">Selecione uma peça inferior...</option>` +
-      bottoms.map(b => `<option value="${b.id}">${b.tipo} (${b.cor_predominante})</option>`).join("");
+    if (selectLookBottom) {
+      selectLookBottom.innerHTML = `<option value="">Selecione uma peça inferior...</option>` +
+        bottoms.map(b => `<option value="${b.id}">${b.tipo} (${b.cor_predominante})</option>`).join("");
+    }
 
-    selectLookShoes.innerHTML = `<option value="">Selecione um calçado...</option>` +
-      shoes.map(s => `<option value="${s.id}">${s.tipo} (${s.cor_predominante})</option>`).join("");
+    if (selectLookShoes) {
+      selectLookShoes.innerHTML = `<option value="">Selecione um calçado...</option>` +
+        shoes.map(s => `<option value="${s.id}">${s.tipo} (${s.cor_predominante})</option>`).join("");
+    }
   }
 
   function updateLookSlot(slotElement, itemId, fallbackText) {
+    if (!slotElement) return;
     if (!itemId) {
       slotElement.innerHTML = `<span class="text-xs text-slate-400">${fallbackText}</span>`;
       return;
@@ -2106,12 +2113,13 @@
     }
   }
 
-  selectLookTop.addEventListener("change", (e) => updateLookSlot(lookSlotTop, e.target.value, "Topo (Camisa / Casaco)"));
-  selectLookBottom.addEventListener("change", (e) => updateLookSlot(lookSlotBottom, e.target.value, "Parte Inferior (Calça / Saia)"));
-  selectLookShoes.addEventListener("change", (e) => updateLookSlot(lookSlotShoes, e.target.value, "Calçados"));
+  selectLookTop?.addEventListener("change", (e) => updateLookSlot(lookSlotTop, e.target.value, "Topo (Camisa / Casaco)"));
+  selectLookBottom?.addEventListener("change", (e) => updateLookSlot(lookSlotBottom, e.target.value, "Parte Inferior (Calça / Saia)"));
+  selectLookShoes?.addEventListener("change", (e) => updateLookSlot(lookSlotShoes, e.target.value, "Calçados"));
 
-  randomizeLookBtn.addEventListener("click", () => {
+  randomizeLookBtn?.addEventListener("click", () => {
     const randomPick = (selectElem) => {
+      if (!selectElem) return;
       const options = Array.from(selectElem.options).filter(o => o.value);
       if (options.length) {
         const rand = options[Math.floor(Math.random() * options.length)];
