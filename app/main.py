@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from app.config import get_firebase_config, VALID_CATEGORIES, PROJECT_ID, GEMINI_MODEL
+from app.config import FIREBASE_CONFIG, VALID_CATEGORIES, PROJECT_ID, GEMINI_MODEL
 from app.auth_middleware import get_current_user
 from app.gemini_service import (
     analyze_clothing_image,
@@ -191,7 +191,7 @@ async def get_client_config(response: Response):
     response.headers["Pragma"] = "no-cache"
     response.headers["Expires"] = "0"
     return {
-        "firebase": get_firebase_config(),
+        "firebase": FIREBASE_CONFIG,
         "categories": VALID_CATEGORIES,
         "geminiModel": GEMINI_MODEL
     }
