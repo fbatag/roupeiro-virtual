@@ -186,10 +186,6 @@ async def health_check():
 
 @app.get("/api/config")
 async def get_client_config(response: Response):
-    """Returns Firebase, Gemini Model, and UI configuration for frontend initialization."""
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    response.headers["Pragma"] = "no-cache"
-    response.headers["Expires"] = "0"
     return {
         "firebase": FIREBASE_CONFIG,
         "categories": VALID_CATEGORIES,
