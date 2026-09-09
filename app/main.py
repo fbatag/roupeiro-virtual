@@ -185,7 +185,7 @@ async def health_check():
     return {"status": "ok", "app": "Roupeiro Virtual", "project": PROJECT_ID}
 
 @app.get("/api/config")
-async def get_client_config(response: Response):
+async def get_client_config():
     return {
         "firebase": FIREBASE_CONFIG,
         "categories": VALID_CATEGORIES,
@@ -774,8 +774,8 @@ if os.path.isdir(static_dir):
 async def viagem_page():
     viagem_file = os.path.join(static_dir, "viagem.html")
     if os.path.exists(viagem_file):
-        return FileResponse(viagem_file, headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
-    return FileResponse(os.path.join(static_dir, "index.html"), headers={"Cache-Control": "no-cache, no-store, must-revalidate"})
+        return FileResponse(viagem_file)
+    return FileResponse(os.path.join(static_dir, "index.html"))
 
 @app.get("/")
 @app.head("/")
