@@ -348,7 +348,7 @@
   async function initApp() {
     showAuthLoading();
     try {
-      const resp = await fetch("/api/config");
+      const resp = await fetch(`/api/config?_t=${Date.now()}`, { cache: "no-store" });
       const config = await resp.json();
       availableCategories = config.categories || [];
       if (config.geminiModel) {

@@ -9,7 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from app.config import FIREBASE_CONFIG, VALID_CATEGORIES, PROJECT_ID, GEMINI_MODEL
+from app.config import FIREBASE_CONFIG, get_firebase_config, VALID_CATEGORIES, PROJECT_ID, GEMINI_MODEL
 from app.auth_middleware import get_current_user
 from app.gemini_service import (
     analyze_clothing_image,
@@ -185,10 +185,13 @@ async def health_check():
     return {"status": "ok", "app": "Roupeiro Virtual", "project": PROJECT_ID}
 
 @app.get("/api/config")
-async def get_client_config():
+async def get_client_config(response: Response):
     """Returns Firebase, Gemini Model, and UI configuration for frontend initialization."""
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
     return {
-        "firebase": FIREBASE_CONFIG,
+        "firebase": get_firebase_config(),
         "categories": VALID_CATEGORIES,
         "geminiModel": GEMINI_MODEL
     }

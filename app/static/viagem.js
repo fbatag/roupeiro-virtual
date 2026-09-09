@@ -335,7 +335,7 @@
 
   async function initViagemPage() {
     try {
-      const configResp = await fetch("/api/config");
+      const configResp = await fetch(`/api/config?_t=${Date.now()}`, { cache: "no-store" });
       const config = await configResp.json();
       availableCategories = config.categories || [];
 
