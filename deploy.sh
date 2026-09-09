@@ -4,10 +4,12 @@
 # ==============================================================================
 # Suporta:
 #   1. Deploy do ZERO em um projeto GCP totalmente novo (habilita APIs, cria
-#      banco Firestore, cria Bucket GCS, cria repositório Artifact Registry,
-#      cria Secrets em branco no Secret Manager e configura permissões IAM).
+#      banco Firestore, cria Bucket GCS, cria repositório Artifact Registry
+#      e configura permissões IAM). No primeiro deploy, solicita a FIREBASE_API_KEY
+#      e o GOOGLE_CLIENT_ID (via parâmetros de linha de comando ou prompt).
 #   2. REDEPLOY rápido caso o projeto/serviço já tenha sido provisionado antes
-#      (preservando os valores já preenchidos nos Secrets e o banco de dados).
+#      (preservando os valores de FIREBASE_API_KEY e GOOGLE_CLIENT_ID já definidos
+#      nas variáveis de ambiente do Cloud Run).
 #
 # Uso:
 #   ./deploy.sh [OPÇÕES]
@@ -17,6 +19,8 @@
 #   -r, --region REGION            Região do Cloud Run e Artifact Registry (padrão: us-central1)
 #   -s, --service SERVICE_NAME     Nome do serviço Cloud Run (padrão: roupeiro-virtual)
 #   -b, --bucket BUCKET_NAME       Nome do bucket Cloud Storage (padrão: <PROJECT_ID>-media)
+#   --firebase-api-key KEY         Firebase API Key (solicita interativamente no 1º deploy se omitido)
+#   --google-client-id CLIENT_ID   Google OAuth Client ID (solicita interativamente no 1º deploy se omitido)
 #   --gemini-model MODEL           Modelo Gemini (padrão: gemini-3.7-flash)
 #   -h, --help                     Exibe esta mensagem de ajuda
 # ==============================================================================
@@ -43,6 +47,8 @@ BUCKET_NAME=""
 GEMINI_MODEL="gemini-3.7-flash"
 GEMINI_LOCATION="global"
 ARTIFACT_REPO="roupeiro-virtual"
+FIREBASE_API_KEY=""
+GOOGLE_CLIENT_ID=""
 
 usage() {
   grep '^#' "$0" | sed 's/^# \{0,1\}//'
@@ -66,6 +72,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     -b|--bucket)
       BUCKET_NAME="$2"
+      shift 2
+      ;;
+    --firebase-api-key)
+      FIREBASE_API_KEY="$2"
+      shift 2
+      ;;
+    --google-client-id)
+      GOOGLE_CLIENT_ID="$2"
       shift 2
       ;;
     --gemini-model)
@@ -112,7 +126,6 @@ REQUIRED_APIS=(
   "artifactregistry.googleapis.com"
   "firestore.googleapis.com"
   "storage.googleapis.com"
-  "secretmanager.googleapis.com"
   "aiplatform.googleapis.com"
 )
 gcloud services enable "${REQUIRED_APIS[@]}" --project "${PROJECT_ID}"
@@ -168,32 +181,38 @@ else
 fi
 
 # ------------------------------------------------------------------------------
-# 5. Provisionar Secrets no Secret Manager e Permissões IAM (Idempotente)
+# 5. Configurar Variáveis de Ambiente (Firebase / Google Client ID) e IAM
 # ------------------------------------------------------------------------------
-log_info "5/7 Verificando Secrets no Secret Manager e permissões da Service Account..."
-SECRETS_LIST=("GOOGLE_CLIENT_ID" "GOOGLE_CLIENT_SECRET" "FIREBASE_API_KEY")
-NEW_SECRETS_CREATED=false
+log_info "5/7 Verificando variáveis de ambiente e permissões IAM da Service Account..."
 
-for SECRET_NAME in "${SECRETS_LIST[@]}"; do
-  if gcloud secrets describe "${SECRET_NAME}" --project "${PROJECT_ID}" >/dev/null 2>&1; then
-    log_ok "Secret '${SECRET_NAME}' já existe (valor atual preservado)."
-  else
-    log_warn "Secret '${SECRET_NAME}' não encontrado. Criando com valor em branco para preenchimento manual..."
-    echo -n " " | gcloud secrets create "${SECRET_NAME}" \
-      --data-file=- \
-      --replication-policy="automatic" \
-      --project="${PROJECT_ID}"
-    NEW_SECRETS_CREATED=true
-    log_ok "Secret '${SECRET_NAME}' criado com versão inicial em branco."
+# Se não foram informadas via flag, tenta reutilizar as que já estão no Cloud Run (Redeploy)
+if [[ -z "${FIREBASE_API_KEY}" || -z "${GOOGLE_CLIENT_ID}" ]]; then
+  if gcloud run services describe "${SERVICE_NAME}" --region "${REGION}" --project "${PROJECT_ID}" >/dev/null 2>&1; then
+    if [[ -z "${FIREBASE_API_KEY}" ]]; then
+      FIREBASE_API_KEY="$(gcloud run services describe "${SERVICE_NAME}" --region "${REGION}" --project "${PROJECT_ID}" --format="value(spec.template.spec.containers[0].env[name=FIREBASE_API_KEY].value)" 2>/dev/null || true)"
+    fi
+    if [[ -z "${GOOGLE_CLIENT_ID}" ]]; then
+      GOOGLE_CLIENT_ID="$(gcloud run services describe "${SERVICE_NAME}" --region "${REGION}" --project "${PROJECT_ID}" --format="value(spec.template.spec.containers[0].env[name=GOOGLE_CLIENT_ID].value)" 2>/dev/null || true)"
+    fi
   fi
-done
+fi
+
+# Se ainda estiverem vazias (primeiro deploy), solicita ao usuário interativamente
+if [[ -z "${FIREBASE_API_KEY}" ]]; then
+  log_warn "FIREBASE_API_KEY não encontrada (primeiro deploy)."
+  read -r -p "Informe a FIREBASE_API_KEY: " FIREBASE_API_KEY
+fi
+
+if [[ -z "${GOOGLE_CLIENT_ID}" ]]; then
+  log_warn "GOOGLE_CLIENT_ID não encontrado (primeiro deploy)."
+  read -r -p "Informe o GOOGLE_CLIENT_ID: " GOOGLE_CLIENT_ID
+fi
 
 PROJECT_NUMBER="$(gcloud projects describe "${PROJECT_ID}" --format='value(projectNumber)')"
 COMPUTE_SA="${PROJECT_NUMBER}-compute@developer.gserviceaccount.com"
 
 log_info "Garantindo permissões IAM para a Service Account (${COMPUTE_SA})..."
 ROLES=(
-  "roles/secretmanager.secretAccessor"
   "roles/datastore.user"
   "roles/storage.objectAdmin"
   "roles/aiplatform.user"
@@ -229,8 +248,8 @@ gcloud run deploy "${SERVICE_NAME}" \
   --cpu 2 \
   --concurrency 20 \
   --timeout 300 \
-  --update-secrets="GOOGLE_CLIENT_ID=GOOGLE_CLIENT_ID:latest,GOOGLE_CLIENT_SECRET=GOOGLE_CLIENT_SECRET:latest,FIREBASE_API_KEY=FIREBASE_API_KEY:latest" \
-  --update-env-vars="GOOGLE_CLOUD_PROJECT=${PROJECT_ID},GCS_BUCKET_NAME=${BUCKET_NAME},GEMINI_MODEL=${GEMINI_MODEL},GOOGLE_CLOUD_LOCATION=${GEMINI_LOCATION}"
+  --clear-secrets \
+  --update-env-vars="GOOGLE_CLOUD_PROJECT=${PROJECT_ID},GCS_BUCKET_NAME=${BUCKET_NAME},GEMINI_MODEL=${GEMINI_MODEL},GOOGLE_CLOUD_LOCATION=${GEMINI_LOCATION},FIREBASE_API_KEY=${FIREBASE_API_KEY},GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}"
 
 SERVICE_URL="$(gcloud run services describe "${SERVICE_NAME}" --region "${REGION}" --project "${PROJECT_ID}" --format='value(status.url)')"
 
@@ -240,14 +259,3 @@ echo -e " ${GREEN}✅ Deploy concluído com sucesso!${NC}"
 echo "------------------------------------------------------------------------------"
 echo " 🌐 URL do Serviço Cloud Run: ${SERVICE_URL}"
 echo "=============================================================================="
-
-if [[ "${NEW_SECRETS_CREATED}" == "true" ]]; then
-  echo ""
-  log_warn "ATENÇÃO: Novos secrets foram criados em branco no Secret Manager."
-  echo " Preencha os valores reais no console do Secret Manager ou via terminal:"
-  echo ""
-  echo "   echo -n \"SEU_CLIENT_ID\"     | gcloud secrets versions add GOOGLE_CLIENT_ID     --data-file=- --project ${PROJECT_ID}"
-  echo "   echo -n \"SEU_CLIENT_SECRET\" | gcloud secrets versions add GOOGLE_CLIENT_SECRET --data-file=- --project ${PROJECT_ID}"
-  echo "   echo -n \"SUA_FIREBASE_KEY\"  | gcloud secrets versions add FIREBASE_API_KEY  --data-file=- --project ${PROJECT_ID}"
-  echo ""
-fi

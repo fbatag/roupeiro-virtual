@@ -55,29 +55,24 @@ O repositório inclui o script idempotente `./deploy.sh`, que automatiza tanto o
 
 ### 1. Deploy do Zero em um Projeto Novo
 Ao executar em um projeto GCP recém-criado, o script executa automaticamente:
-- Habilitação das APIs necessárias (`run.googleapis.com`, `cloudbuild.googleapis.com`, `artifactregistry.googleapis.com`, `firestore.googleapis.com`, `storage.googleapis.com`, `secretmanager.googleapis.com`, `aiplatform.googleapis.com`).
+- Habilitação das APIs necessárias (`run.googleapis.com`, `cloudbuild.googleapis.com`, `artifactregistry.googleapis.com`, `firestore.googleapis.com`, `storage.googleapis.com`, `aiplatform.googleapis.com`).
 - Criação do banco de dados **Cloud Firestore** (`(default)`) em modo Nativo.
 - Criação do bucket no **Cloud Storage** (`gs://<PROJECT_ID>-media`).
 - Criação do repositório Docker no **Artifact Registry**.
-- Criação dos secrets `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` e `FIREBASE_API_KEY` no **Secret Manager** (inicialmente em branco para que o container suba sem falhas) e atribuição das permissões IAM (`roles/secretmanager.secretAccessor`, `roles/datastore.user`, `roles/storage.objectAdmin`, `roles/aiplatform.user`) à Service Account do Cloud Run.
+- Configuração das permissões IAM (`roles/datastore.user`, `roles/storage.objectAdmin`, `roles/aiplatform.user`) para a Service Account do Cloud Run.
+- Solicitação (interativa ou via flags) das variáveis `FIREBASE_API_KEY` e `GOOGLE_CLIENT_ID`, configurando-as diretamente como variáveis de ambiente normais do Cloud Run.
 - Build da imagem via **Cloud Build** e deploy no **Cloud Run**.
 
 ```bash
 chmod +x deploy.sh
-./deploy.sh --project SEU_PROJECT_ID --region us-central1
+./deploy.sh --project SEU_PROJECT_ID \
+  --firebase-api-key "SUA_FIREBASE_API_KEY" \
+  --google-client-id "SEU_GOOGLE_CLIENT_ID"
 ```
+*(Se omitir `--firebase-api-key` ou `--google-client-id` no primeiro deploy, o script solicitará interativamente no terminal).*
 
-### 2. Configurando os Secrets no Secret Manager
-Após o primeiro deploy, preencha os valores reais dos secrets pelo Console do GCP (`Security -> Secret Manager`) ou diretamente via terminal:
-
-```bash
-echo -n "SEU_GOOGLE_CLIENT_ID"     | gcloud secrets versions add GOOGLE_CLIENT_ID     --data-file=- --project SEU_PROJECT_ID
-echo -n "SEU_GOOGLE_CLIENT_SECRET" | gcloud secrets versions add GOOGLE_CLIENT_SECRET --data-file=- --project SEU_PROJECT_ID
-echo -n "SUA_FIREBASE_API_KEY"     | gcloud secrets versions add FIREBASE_API_KEY     --data-file=- --project SEU_PROJECT_ID
-```
-
-### 3. Redeploy (Atualização de Código)
-Para implantar novas versões em um projeto já provisionado (preservando os secrets existentes e o banco de dados):
+### 2. Redeploy (Atualização de Código)
+Para implantar novas versões em um projeto já provisionado (preservando automaticamente as variáveis `FIREBASE_API_KEY` e `GOOGLE_CLIENT_ID` já salvas no serviço Cloud Run e o banco de dados):
 
 ```bash
 ./deploy.sh --project SEU_PROJECT_ID
@@ -88,6 +83,8 @@ Para implantar novas versões em um projeto já provisionado (preservando os sec
 - `-r, --region REGION`: Região do Cloud Run e Artifact Registry (padrão: `us-central1`).
 - `-s, --service SERVICE_NAME`: Nome do serviço no Cloud Run (padrão: `roupeiro-virtual`).
 - `-b, --bucket BUCKET_NAME`: Nome do bucket Cloud Storage (padrão: `<PROJECT_ID>-media`).
+- `--firebase-api-key KEY`: Firebase API Key (solicitada interativamente no 1º deploy se omitida).
+- `--google-client-id CLIENT_ID`: Google OAuth Client ID (solicitado interativamente no 1º deploy se omitido).
 - `--gemini-model MODEL`: Modelo Gemini na Vertex AI (padrão: `gemini-3.7-flash`).
 
 ---
