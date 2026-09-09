@@ -258,6 +258,11 @@ gcloud run deploy "${SERVICE_NAME}" \
   --timeout 300 \
   --set-env-vars="GOOGLE_CLOUD_PROJECT=${PROJECT_ID},GCS_BUCKET_NAME=${BUCKET_NAME},GEMINI_MODEL=${GEMINI_MODEL},GOOGLE_CLOUD_LOCATION=${GEMINI_LOCATION},FIREBASE_API_KEY=${FIREBASE_API_KEY},GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}"
 
+gcloud run services update-traffic "${SERVICE_NAME}" \
+  --to-latest \
+  --region "${REGION}" \
+  --project "${PROJECT_ID}" >/dev/null 2>&1 || true
+
 SERVICE_URL="$(gcloud run services describe "${SERVICE_NAME}" --region "${REGION}" --project "${PROJECT_ID}" --format='value(status.url)')"
 
 echo ""
