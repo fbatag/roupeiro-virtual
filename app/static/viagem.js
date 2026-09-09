@@ -1660,20 +1660,51 @@
     renderTripAccordion();
   }
 
-  // Render Saved Shopping Catalog Grid (Reutilização)
+  // Render Saved Shopping Catalog Grid (Reutilização — apenas peças a comprar vinculadas aos looks da viagem atual)
   function renderShoppingCatalogGrid() {
     if (!userShoppingCatalogGrid) return;
-    if (!userShoppingCatalog.length) {
+
+    const { shoppingItems } = collectMalaItems();
+
+    if (!shoppingItems.length) {
       userShoppingCatalogGrid.innerHTML = `
         <div class="col-span-full py-8 text-center text-xs text-slate-400 bg-slate-50 border border-dashed border-slate-200 rounded-2xl p-4">
-          Você ainda não possui nenhuma peça cadastrada no catálogo de compras.
+          Nenhuma peça a comprar associada aos looks desta viagem no momento.
         </div>
       `;
       return;
     }
 
+    const storageKey = `mala_packed_${currentTrip?.id || 'default'}`;
+    let packedMap = {};
+    try {
+      packedMap = JSON.parse(localStorage.getItem(storageKey) || "{}");
+    } catch (e) {
+      packedMap = {};
+    }
+
     userShoppingCatalogGrid.innerHTML = "";
-    userShoppingCatalog.forEach(catItem => {
+    shoppingItems.forEach(({ item: lookShopItem, usages }) => {
+      const catalogMatch = lookShopItem.shopping_id
+        ? userShoppingCatalog.find(c => c.id === lookShopItem.shopping_id)
+        : null;
+
+      const sKey = lookShopItem.shopping_id ? `shop_${lookShopItem.shopping_id}` : `shop_${lookShopItem.tipo}`;
+      const isPurchased = catalogMatch ? !!catalogMatch.purchased : !!packedMap[sKey];
+
+      const catItem = {
+        id: lookShopItem.shopping_id || (catalogMatch ? catalogMatch.id : null),
+        title: lookShopItem.tipo || catalogMatch?.title || "Peça a Comprar",
+        category: lookShopItem.categoria || catalogMatch?.category || "Outros",
+        merchant: lookShopItem.merchant || catalogMatch?.merchant || "Loja",
+        price: lookShopItem.price || catalogMatch?.price || "",
+        link: lookShopItem.link || catalogMatch?.link || "",
+        thumbnail: lookShopItem.original_url || lookShopItem.thumbnail || catalogMatch?.thumbnail || "",
+        purchased: isPurchased
+      };
+
+      const usageLabels = (usages || []).map(u => `Dia ${u.dayNum} (${u.periodLabel})`).join(", ");
+
       const card = document.createElement("div");
       card.className = "bg-white border border-slate-200 hover:border-blue-500 rounded-2xl p-3 flex flex-col justify-between items-center text-center shadow-2xs transition";
 
@@ -1684,11 +1715,12 @@
 
         <div class="w-full mb-2">
           <h5 class="text-xs font-bold text-slate-900 truncate" title="${escapeHtml(catItem.title)}">${escapeHtml(catItem.title)}</h5>
-          <span class="text-[10px] text-slate-500 block truncate">${escapeHtml(catItem.merchant || 'Loja')} • ${escapeHtml(catItem.price || '')}</span>
+          <span class="text-[10px] text-slate-500 block truncate">${escapeHtml(catItem.merchant || 'Loja')} • ${escapeHtml(catItem.price || 'Sob consulta')}</span>
+          ${usageLabels ? `<span class="text-[9px] text-sky-700 font-semibold block truncate mt-0.5" title="${escapeHtml(usageLabels)}">🗓️ ${escapeHtml(usageLabels)}</span>` : ''}
           
           <!-- Purchased status toggle -->
           <label class="inline-flex items-center gap-1.5 mt-2 cursor-pointer text-[10px] font-semibold text-slate-600">
-            <input type="checkbox" data-cat-id="${catItem.id}" ${catItem.purchased ? 'checked' : ''} class="toggle-purchased-cb rounded text-emerald-600 focus:ring-emerald-500">
+            <input type="checkbox" data-cat-id="${catItem.id || ''}" data-skey="${escapeHtml(sKey)}" ${catItem.purchased ? 'checked' : ''} class="toggle-purchased-cb rounded text-emerald-600 focus:ring-emerald-500">
             <span>${catItem.purchased ? '✓ Já comprado' : 'A comprar'}</span>
           </label>
         </div>
@@ -1702,17 +1734,27 @@
 
       const cb = card.querySelector(".toggle-purchased-cb");
       cb.addEventListener("change", async (e) => {
-        catItem.purchased = e.target.checked;
+        const checked = e.target.checked;
+        catItem.purchased = checked;
+        if (catalogMatch) catalogMatch.purchased = checked;
+
+        packedMap[sKey] = checked;
         try {
-          await authFetch(`/api/shopping/catalog/${catItem.id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ item_data: { purchased: catItem.purchased } })
-          });
-          renderShoppingCatalogGrid();
-        } catch (err) {
-          console.error("Error updating purchased status:", err);
+          localStorage.setItem(storageKey, JSON.stringify(packedMap));
+        } catch (err) {}
+
+        if (catItem.id) {
+          try {
+            await authFetch(`/api/shopping/catalog/${catItem.id}`, {
+              method: "PUT",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ item_data: { purchased: checked } })
+            });
+          } catch (err) {
+            console.error("Error updating purchased status:", err);
+          }
         }
+        renderShoppingCatalogGrid();
       });
 
       userShoppingCatalogGrid.appendChild(card);
@@ -2305,7 +2347,12 @@
           const isPlaceholder = !!it.is_placeholder;
 
           if (isShopping) {
-            const existing = shoppingItems.find(s => s.item.tipo === it.tipo && (s.item.original_url === it.original_url || s.item.thumbnail === it.thumbnail));
+            const imgA = it.original_url || it.thumbnail || "";
+            const existing = shoppingItems.find(s => {
+              const imgB = s.item.original_url || s.item.thumbnail || "";
+              if (it.shopping_id && s.item.shopping_id && it.shopping_id === s.item.shopping_id) return true;
+              return s.item.tipo === it.tipo && imgA === imgB;
+            });
             if (existing) {
               existing.usages.push({ dayIndex, periodKey, dayNum, periodLabel });
             } else {
