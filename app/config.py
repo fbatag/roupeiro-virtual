@@ -5,11 +5,11 @@ GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.7-flash")
 LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", os.getenv("GEMINI_LOCATION", "global"))
 BUCKET_NAME = os.getenv("GCS_BUCKET_NAME", "roupeiro-virtual-media")
 
-GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
-GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "").strip()
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "").strip()
 
 FIREBASE_CONFIG = {
-    "apiKey": os.getenv("FIREBASE_API_KEY", ""),
+    "apiKey": os.getenv("FIREBASE_API_KEY", "").strip(),
     "authDomain": PROJECT_ID + ".firebaseapp.com",
     "projectId": os.getenv("FIREBASE_PROJECT_ID", PROJECT_ID),
     "storageBucket": os.getenv("FIREBASE_STORAGE_BUCKET", PROJECT_ID + ".firebasestorage.app"),
