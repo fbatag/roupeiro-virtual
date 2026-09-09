@@ -290,7 +290,8 @@
             continue;
           }
           const item = look.items[itIdx];
-          if (item && item.item_id === pieceId) {
+          const isItemShopping = item && (item.source_type === "shopping" || (item.source_type !== "wardrobe" && (!!item.merchant || !!item.shopping_id || !!item.shopping_item_id)));
+          if (item && !isItemShopping && item.item_id === pieceId) {
             uses.push({
               dayIndex: dIdx,
               dayNumber: dNum,
@@ -1101,15 +1102,25 @@
   function renderSlotCardHtml(item, itIdx, dayIndex, periodKey) {
     const slotName = item.slot_name || "Peça";
     const isPlaceholder = !!item.is_placeholder;
-    const isShopping = item.source_type === "shopping" || !!item.merchant;
+    const isShopping = item.source_type === "shopping" || (item.source_type !== "wardrobe" && (!!item.merchant || !!item.shopping_id || !!item.shopping_item_id));
 
-    // Check if wardrobe piece
+    // Check if wardrobe piece (only when not a shopping item)
     let wardrobePiece = null;
-    if (item.item_id) {
+    if (!isShopping && item.item_id) {
       wardrobePiece = wardrobeItems.find(w => w.id === item.item_id);
     }
 
-    const imgUrl = wardrobePiece ? (wardrobePiece.cutout_url || wardrobePiece.original_url) : (item.original_url || item.thumbnail || "");
+    let shoppingCatalogImg = "";
+    if (isShopping && item.shopping_id) {
+      const catMatch = userShoppingCatalog.find(c => c.id === item.shopping_id);
+      if (catMatch && catMatch.thumbnail) {
+        shoppingCatalogImg = catMatch.thumbnail;
+      }
+    }
+
+    const imgUrl = isShopping
+      ? (item.original_url || item.thumbnail || shoppingCatalogImg || "")
+      : (wardrobePiece ? (wardrobePiece.cutout_url || wardrobePiece.original_url) : (item.original_url || item.thumbnail || ""));
 
     // Check if piece is in use elsewhere
     const usage = wardrobePiece ? findPieceUsageInTrip(wardrobePiece.id, dayIndex, periodKey, itIdx) : { isUsed: false };
@@ -1424,6 +1435,12 @@
     targetSlot.is_placeholder = false;
     targetSlot.source_type = "wardrobe";
     targetSlot.item_id = piece.id;
+    targetSlot.shopping_id = null;
+    targetSlot.shopping_item_id = null;
+    targetSlot.merchant = null;
+    targetSlot.price = null;
+    targetSlot.link = null;
+    targetSlot.thumbnail = null;
 
     // Clean base name and assign sequential number for generic or multi-quantity piece
     const baseTipo = (piece.tipo || "").replace(/\s*#\d+(\s*\(.*\))?$/, "").trim();
@@ -1439,6 +1456,13 @@
     targetSlot.cor = piece.cor_predominante;
     targetSlot.original_url = piece.original_url;
     targetSlot.cutout_url = piece.cutout_url;
+
+    const periodLook = currentTrip.days[dayIndex][periodKey].look;
+    if (periodLook && Array.isArray(periodLook.items)) {
+      periodLook.item_ids = periodLook.items
+        .filter(i => i.source_type !== "shopping" && i.item_id)
+        .map(i => i.item_id);
+    }
 
     // Save trip to backend
     await saveCurrentTrip();
@@ -1612,6 +1636,9 @@
     const targetSlot = currentTrip.days[dayIndex][periodKey].look.items[itemIndex];
     targetSlot.is_placeholder = false;
     targetSlot.source_type = "shopping";
+    targetSlot.item_id = null;
+    targetSlot.cutout_url = null;
+    targetSlot.unit_number = null;
     targetSlot.shopping_id = savedCatalogItem ? savedCatalogItem.id : null;
     targetSlot.tipo = prod.title;
     targetSlot.categoria = item.categoria || "Outros";
@@ -1619,6 +1646,14 @@
     targetSlot.price = prod.price || "";
     targetSlot.link = prod.link || "";
     targetSlot.original_url = prod.thumbnail || "";
+    targetSlot.thumbnail = prod.thumbnail || "";
+
+    const periodLook = currentTrip.days[dayIndex][periodKey].look;
+    if (periodLook && Array.isArray(periodLook.items)) {
+      periodLook.item_ids = periodLook.items
+        .filter(i => i.source_type !== "shopping" && i.item_id)
+        .map(i => i.item_id);
+    }
 
     await saveCurrentTrip();
     closeUnifiedPickerModal();
@@ -1691,6 +1726,9 @@
     const targetSlot = currentTrip.days[dayIndex][periodKey].look.items[itemIndex];
     targetSlot.is_placeholder = false;
     targetSlot.source_type = "shopping";
+    targetSlot.item_id = null;
+    targetSlot.cutout_url = null;
+    targetSlot.unit_number = null;
     targetSlot.shopping_id = catItem.id;
     targetSlot.tipo = catItem.title;
     targetSlot.categoria = catItem.category || item.categoria || "Outros";
@@ -1698,6 +1736,14 @@
     targetSlot.price = catItem.price || "";
     targetSlot.link = catItem.link || "";
     targetSlot.original_url = catItem.thumbnail || "";
+    targetSlot.thumbnail = catItem.thumbnail || "";
+
+    const periodLook = currentTrip.days[dayIndex][periodKey].look;
+    if (periodLook && Array.isArray(periodLook.items)) {
+      periodLook.item_ids = periodLook.items
+        .filter(i => i.source_type !== "shopping" && i.item_id)
+        .map(i => i.item_id);
+    }
 
     await saveCurrentTrip();
     closeUnifiedPickerModal();
