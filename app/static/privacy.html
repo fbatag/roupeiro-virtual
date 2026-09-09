@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Política de Privacidade — Roupeiro Virtual</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👔</text></svg>">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              200: '#ddd6fe',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+              900: '#4c1d95',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans antialiased">
+
+  <!-- Header -->
+  <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <a href="/" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-brand-500/20 group-hover:scale-105 transition">
+          <i class="fa-solid fa-shirt text-lg"></i>
+        </div>
+        <div>
+          <span class="font-bold text-lg text-slate-900 tracking-tight">Roupeiro Virtual</span>
+          <span class="block text-[10px] text-slate-400 -mt-1 font-medium">Armário Inteligente com IA</span>
+        </div>
+      </a>
+      <div class="flex items-center gap-4 text-sm">
+        <a href="/" class="text-slate-600 hover:text-brand-600 font-medium transition flex items-center gap-1.5">
+          <i class="fa-solid fa-arrow-left text-xs"></i> Voltar ao App
+        </a>
+        <a href="/terms" class="text-slate-600 hover:text-brand-600 font-medium transition">
+          Termos de Serviço
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 max-w-4xl mx-auto px-4 sm:px-6 py-12 w-full">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-8 sm:p-12 space-y-8">
+      
+      <!-- Title Block -->
+      <div class="border-b border-slate-200 pb-6">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-semibold mb-3">
+          <i class="fa-solid fa-shield-halved"></i> Transparência & Privacidade
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+          Política de Privacidade
+        </h1>
+        <p class="text-sm text-slate-500 mt-2">
+          <strong>Aplicação:</strong> Roupeiro Virtual &bull; 
+          <strong>Domínio:</strong> <span class="text-slate-700 font-mono text-xs">roupeiro-virtual.app</span> &bull; 
+          <strong>Última atualização:</strong> 8 de setembro de 2026
+        </p>
+      </div>
+
+      <!-- Introduction -->
+      <section class="space-y-4 text-slate-700 leading-relaxed">
+        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+          <span class="w-7 h-7 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center text-sm">1</span>
+          Introdução e Visão Geral
+        </h2>
+        <p>
+          O <strong>Roupeiro Virtual</strong> ("nós", "nosso" ou "a aplicação") é uma plataforma de organização e catalogação digital de roupas e guarda-roupa pessoal, desenvolvida e operada pela equipe do <strong>Roupeiro Virtual</strong> (<span class="font-mono text-xs text-brand-700">suporte@roupeiro-virtual.app</span>).
+        </p>
+        <p>
+          Esta Política de Privacidade descreve com total transparência como coletamos, acessamos, utilizamos, armazenamos, protegemos e compartilhamos os dados dos usuários ao utilizar a aplicação, bem como seus direitos e as medidas de segurança adotadas em conformidade com as diretrizes da <strong>Google API Services User Data Policy</strong> e da legislação aplicável de proteção de dados.
+        </p>
+      </section>
+
+      <!-- Data Accessed & Collected -->
+      <section class="space-y-4 text-slate-700 leading-relaxed">
+        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+          <span class="w-7 h-7 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center text-sm">2</span>
+          Dados Pessoais Coletados e Acessados
+        </h2>
+        <p>
+          O Roupeiro Virtual coleta e acessa apenas as informações estritamente necessárias para o fornecimento dos recursos do aplicativo:
+        </p>
+        <div class="grid sm:grid-cols-2 gap-4 mt-3">
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/70">
+            <div class="font-semibold text-slate-900 mb-1 flex items-center gap-2">
+              <i class="fa-brands fa-google text-red-500"></i> Dados da Conta Google (Firebase Auth)
+            </div>
+            <p class="text-xs text-slate-600">
+              Ao efetuar login via <em>Sign in with Google</em>, obtemos seu <strong>Nome completo</strong>, <strong>Endereço de e-mail</strong>, <strong>Foto de perfil</strong> e o identificador único da conta (Google UID). Esses dados são utilizados exclusivamente para autenticação, isolamento do seu roupeiro pessoal e identificação da sua sessão.
+            </p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/70">
+            <div class="font-semibold text-slate-900 mb-1 flex items-center gap-2">
+              <i class="fa-solid fa-camera text-blue-500"></i> Google Fotos (Opcional - Escopo Sensível)
+            </div>
+            <p class="text-xs text-slate-600">
+              Caso você opte expressamente por utilizar o recurso de importação de fotos da sua galeria via Google Fotos (<code class="text-[11px] bg-slate-200 px-1 py-0.5 rounded">photoslibrary.readonly</code>), a aplicação acessa apenas as mídias (fotos e metadados de criação) que você visualiza e seleciona explicitamente para adicionar ao seu armário virtual.
+            </p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/70">
+            <div class="font-semibold text-slate-900 mb-1 flex items-center gap-2">
+              <i class="fa-solid fa-cloud-arrow-up text-blue-500"></i> Uploads Diretos de Arquivos e Pastas
+            </div>
+            <p class="text-xs text-slate-600">
+              Imagens de peças de vestuário enviadas diretamente do seu dispositivo, computador ou pastas locais através do mecanismo de upload do navegador.
+            </p>
+          </div>
+          <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/70">
+            <div class="font-semibold text-slate-900 mb-1 flex items-center gap-2">
+              <i class="fa-solid fa-tags text-emerald-500"></i> Metadados das Peças de Roupas
+            </div>
+            <p class="text-xs text-slate-600">
+              Informações geradas por IA ou preenchidas por você, incluindo: categoria de roupa, tipo de peça, cor predominante (e código hexadecimal), data de aquisição, estação de uso, estilo e descrição personalizada.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- How We Use Data -->
+      <section class="space-y-4 text-slate-700 leading-relaxed">
+        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+          <span class="w-7 h-7 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center text-sm">3</span>
+          Como Utilizamos os Dados dos Usuários
+        </h2>
+        <p>Todos os dados coletados são usados com o propósito exclusivo de fornecer e aprimorar os recursos visíveis da aplicação:</p>
+        <ul class="list-disc list-inside space-y-2 text-sm text-slate-600 pl-2">
+          <li><strong>Segmentação e Remoção de Fundo:</strong> Extrair a peça de vestuário da imagem original para criar uma representação isolada em fundo transparente (estilo mostruário do Google Fotos).</li>
+          <li><strong>Classificação Inteligente com IA:</strong> Utilizar o modelo Google Gemini para identificar automaticamente o tipo de vestimenta, categoria, cores predominantes, estilo e sugestões de data.</li>
+          <li><strong>Organização e Catálogo:</strong> Permitir que você filtre, busque, edite e gerencie sua coleção de roupas no seu roupeiro particular.</li>
+          <li><strong>Segurança e Isolamento:</strong> Garantir que apenas o usuário autenticado possa visualizar e modificar suas próprias peças.</li>
+        </ul>
+      </section>
+
+      <!-- Google Limited Use Policy (Crucial Section) -->
+      <section class="p-6 rounded-2xl bg-amber-50/70 border-2 border-amber-200 space-y-4 text-slate-800">
+        <div class="flex items-center gap-2.5 text-amber-900 font-bold text-base">
+          <i class="fa-solid fa-certificate text-amber-600 text-lg"></i>
+          <span>Conformidade com a Política de Dados do Usuário dos Serviços de API do Google</span>
+        </div>
+        <p class="text-sm leading-relaxed text-amber-950 font-medium">
+          O uso e a transferência para qualquer outro aplicativo de informações recebidas das APIs do Google pelo <strong>Roupeiro Virtual</strong> aderirão à 
+          <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer" class="text-brand-700 underline font-semibold hover:text-brand-900">
+            Política de Dados do Usuário dos Serviços de API do Google
+          </a>, incluindo os requisitos de <strong>Uso Limitado (Limited Use Requirements)</strong>.
+        </p>
+        <div class="text-xs text-amber-900 space-y-2 border-t border-amber-200/80 pt-3">
+          <p><strong>English Statement:</strong> <em>"Roupeiro Virtual's use and transfer of information received from Google APIs to any other app will adhere to the Google API Services User Data Policy, including the Limited Use requirements."</em></p>
+          <ul class="list-disc list-inside space-y-1 pl-1">
+            <li><strong>Sem Anúncios:</strong> Os dados obtidos do Google Fotos e do perfil Google <strong>NUNCA</strong> são utilizados para veiculação de anúncios, publicidade direcionada ou retargeting.</li>
+            <li><strong>Sem Treinamento de Modelos Generalistas:</strong> Os dados de fotos dos usuários <strong>NÃO</strong> são utilizados para treinar, retreinar ou aprimorar modelos de inteligência artificial ou machine learning generalizados.</li>
+            <li><strong>Acesso Humano Restrito:</strong> Nenhum ser humano tem permissão para visualizar suas fotos ou peças, exceto se expressamente solicitado e autorizado por você para fins de suporte técnico, ou conforme estritamente exigido por lei.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Sharing & Transfer -->
+      <section class="space-y-4 text-slate-700 leading-relaxed">
+        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+          <span class="w-7 h-7 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center text-sm">4</span>
+          Compartilhamento, Venda e Transferência de Dados
+        </h2>
+        <div class="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-sm text-emerald-900 space-y-2">
+          <p class="font-bold flex items-center gap-2">
+            <i class="fa-solid fa-circle-check text-emerald-600"></i> Nós NÃO vendemos nem comercializamos seus dados pessoais.
+          </p>
+          <p class="text-xs text-emerald-800">
+            O Roupeiro Virtual não transfere, aluga, troca ou compartilha seus dados pessoais ou imagens com terceiros, corretores de dados (data brokers) ou empresas de publicidade.
+          </p>
+        </div>
+        <p class="text-sm text-slate-600">
+          Seus dados são transmitidos e armazenados exclusivamente nos serviços de infraestrutura gerenciados do <strong>Google Cloud Platform (GCP)</strong> sob o projeto seguro <code class="text-xs bg-slate-100 px-1 py-0.5 rounded font-mono">roupeiro-virtual</code>:
+        </p>
+        <ul class="list-disc list-inside space-y-1 text-xs text-slate-600 pl-2">
+          <li><strong>Cloud Firestore:</strong> Armazenamento estruturado dos registros e metadados de roupas do usuário.</li>
+          <li><strong>Cloud Storage:</strong> Armazenamento seguro das imagens originais e recortes PNG transparentes.</li>
+          <li><strong>Cloud Run:</strong> Execução do backend em contêineres protegidos com HTTPS/TLS e certificados SSL gerenciados pelo Google.</li>
+        </ul>
+      </section>
+
+      <!-- Storage & Security -->
+      <section class="space-y-4 text-slate-700 leading-relaxed">
+        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+          <span class="w-7 h-7 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center text-sm">5</span>
+          Mecanismos de Segurança e Proteção dos Dados
+        </h2>
+        <p>Adotamos medidas técnicas e administrativas rigorosas para garantir a confidencialidade e integridade das informações:</p>
+        <div class="grid sm:grid-cols-3 gap-3 text-xs">
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+            <i class="fa-solid fa-lock text-brand-600 text-base mb-1.5 block"></i>
+            <span class="font-bold text-slate-800 block mb-1">Criptografia Ponta a Ponta</span>
+            Todas as comunicações entre o navegador e o servidor ocorrem obrigatoriamente através de HTTPS com TLS 1.3. Os dados no Google Cloud Storage e Firestore são criptografados em repouso (at-rest) com padrões AES-256.
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+            <i class="fa-solid fa-user-shield text-brand-600 text-base mb-1.5 block"></i>
+            <span class="font-bold text-slate-800 block mb-1">Isolamento por Usuário</span>
+            Cada peça e foto cadastrada é vinculada exclusivamente ao seu UID do Firebase Authentication. Consultas e exclusões são estritamente filtradas pelo usuário autenticado.
+          </div>
+          <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+            <i class="fa-solid fa-key text-brand-600 text-base mb-1.5 block"></i>
+            <span class="font-bold text-slate-800 block mb-1">Tokens Voláteis</span>
+            Tokens de acesso do Google Fotos são mantidos apenas em memória volátil/Session Storage no navegador e nunca são persistidos em banco de dados backend.
+          </div>
+        </div>
+      </section>
+
+      <!-- Retention and Deletion -->
+      <section class="space-y-4 text-slate-700 leading-relaxed">
+        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+          <span class="w-7 h-7 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center text-sm">6</span>
+          Retenção e Exclusão de Dados dos Usuários
+        </h2>
+        <p class="text-sm">
+          Mantemos suas peças de roupas e fotos armazenadas enquanto você mantiver sua conta ativa no Roupeiro Virtual para viabilizar o uso contínuo do seu guarda-roupa digital.
+        </p>
+        <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 space-y-3">
+          <h3 class="font-semibold text-slate-900 text-sm flex items-center gap-2">
+            <i class="fa-solid fa-trash text-red-500"></i> Como solicitar a exclusão de seus dados:
+          </h3>
+          <ul class="list-disc list-inside space-y-1.5 text-xs text-slate-600 pl-1">
+            <li><strong>Exclusão Direta na Aplicação:</strong> Você pode excluir qualquer peça de roupa a qualquer momento clicando no botão "Excluir" no card da peça. A exclusão remove instantaneamente os metadados do Firestore e deleta permanentemente os arquivos de imagem associados do Cloud Storage.</li>
+            <li><strong>Exclusão Completa da Conta:</strong> Para solicitar a exclusão total da sua conta e de todos os dados associados a ela, basta enviar um e-mail para <a href="mailto:suporte@roupeiro-virtual.app" class="text-brand-600 font-semibold underline">suporte@roupeiro-virtual.app</a> com o assunto "Exclusão de Conta - Roupeiro Virtual". A exclusão completa e irrevogável será realizada em até 15 dias úteis.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Contact Info -->
+      <section class="space-y-4 text-slate-700 leading-relaxed border-t border-slate-200 pt-6">
+        <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
+          <span class="w-7 h-7 rounded-lg bg-brand-100 text-brand-700 flex items-center justify-center text-sm">7</span>
+          Informações de Contato do Desenvolvedor
+        </h2>
+        <p class="text-sm text-slate-600">
+          Caso tenha dúvidas sobre esta Política de Privacidade, sobre as práticas de dados da aplicação ou queira exercer seus direitos de privacidade, entre em contato:
+        </p>
+        <div class="p-4 rounded-xl bg-slate-100/70 border border-slate-200 text-xs text-slate-700 space-y-1">
+          <p><strong>Responsável:</strong> Equipe Roupeiro Virtual</p>
+          <p><strong>E-mail de Suporte e Contato:</strong> <a href="mailto:suporte@roupeiro-virtual.app" class="text-brand-700 font-semibold underline">suporte@roupeiro-virtual.app</a></p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500">
+    <div class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-2 font-medium">
+        <span>&copy; 2026 Roupeiro Virtual. Todos os direitos reservados.</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="/privacy" class="text-brand-600 font-medium hover:underline">Política de Privacidade</a>
+        <span class="text-slate-300">&bull;</span>
+        <a href="/terms" class="text-slate-600 hover:text-brand-600 hover:underline">Termos de Serviço</a>
+        <span class="text-slate-300">&bull;</span>
+        <a href="mailto:suporte@roupeiro-virtual.app" class="text-slate-600 hover:text-brand-600 hover:underline">Contato</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

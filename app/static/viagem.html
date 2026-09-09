@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roteiro de Viagem & Looks — Roupeiro Virtual</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eff6ff',
+              100: '#dbeafe',
+              200: '#bfdbfe',
+              300: '#93c5fd',
+              400: '#60a5fa',
+              500: '#3b82f6',
+              600: '#2563eb',
+              700: '#1d4ed8',
+              800: '#1e40af',
+              900: '#1e3a8a',
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Playfair Display"', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    body {
+      background-color: #f8fafc;
+      color: #0f172a;
+    }
+    .slot-placeholder {
+      border: 2px dashed #f59e0b;
+      background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    }
+    .slot-shopping {
+      border: 1px solid #38bdf8;
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    }
+    .slot-wardrobe {
+      border: 1px solid #e2e8f0;
+      background: #ffffff;
+    }
+    .custom-scroll::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scroll::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printArea, #printArea * {
+        visibility: visible;
+      }
+      #printArea {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
+
+  <!-- Firebase App & Auth Compatibility SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+</head>
+<body class="min-h-screen flex flex-col antialiased">
+
+  <!-- Top Navigation Bar -->
+  <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-slate-200 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <a href="/" class="flex items-center gap-2 text-slate-600 hover:text-brand-600 transition text-sm font-semibold pr-3 border-r border-slate-200">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>Voltar ao Roupeiro</span>
+        </a>
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-600 to-indigo-600 flex items-center justify-center text-white shadow-sm">
+            <i class="fa-solid fa-suitcase-rolling text-xs"></i>
+          </div>
+          <div>
+            <h1 id="pageTripDestination" class="text-sm font-bold text-slate-900 font-serif leading-tight">Carregando viagem...</h1>
+            <span id="pageTripDates" class="text-[11px] text-slate-500 block leading-tight">--</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button type="button" id="btnToggleLockTrip" class="px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-700 transition flex items-center gap-1.5" title="Bloquear ou desbloquear edição desta viagem">
+          <span id="btnToggleLockTripIcon">🔒</span>
+          <span id="btnToggleLockTripText" class="hidden sm:inline">Bloquear Edição</span>
+        </button>
+
+        <button type="button" id="btnDuplicateTrip" class="px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-700 transition flex items-center gap-1.5" title="Duplicar esta viagem">
+          <span>📋</span>
+          <span class="hidden sm:inline">Duplicar</span>
+        </button>
+
+        <button type="button" id="btnOpenMyTripsModal" class="px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-700 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-clock-rotate-left text-brand-600"></i>
+          <span class="hidden sm:inline">Minhas Viagens</span>
+        </button>
+
+        <button type="button" id="btnPrintTrip" class="px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-700 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-print"></i>
+          <span class="hidden sm:inline">Imprimir</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main id="printArea" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- Lock Mode Warning Banner -->
+    <div id="tripLockedBanner" class="hidden bg-amber-50 border border-amber-300 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-xs no-print">
+      <div class="flex items-center gap-3 text-amber-900">
+        <span class="text-xl">🔒</span>
+        <div>
+          <h4 class="text-xs font-bold">Edição Bloqueada</h4>
+          <p class="text-[11px] text-amber-800">Esta viagem está protegida contra alterações acidentais. Desbloqueie caso queira editar locais ou looks.</p>
+        </div>
+      </div>
+      <button type="button" id="btnUnlockFromBanner" class="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold shadow-xs transition flex items-center gap-1.5 shrink-0">
+        <span>🔓</span>
+        <span>Desbloquear Edição</span>
+      </button>
+    </div>
+
+    <!-- Trip Overview Banner Card (Tom Azul) -->
+    <div class="bg-gradient-to-r from-slate-900 via-blue-900 to-sky-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden border border-blue-700/50">
+      <div class="absolute -right-12 -bottom-12 opacity-10 text-white text-9xl pointer-events-none">
+        <i class="fa-solid fa-plane-departure"></i>
+      </div>
+      
+      <div class="relative z-10 space-y-4 max-w-3xl">
+        <div class="flex flex-wrap items-center gap-2.5">
+          <span id="tripDaysBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-amber-400 text-slate-950 shadow-sm">
+            0 Dias de Viagem
+          </span>
+          <span id="tripWeatherSummaryBadge" class="px-3 py-1 rounded-full text-xs font-semibold bg-white/15 backdrop-blur-sm text-white flex items-center gap-1.5">
+            <i class="fa-solid fa-cloud-sun"></i>
+            <span>Clima no Destino</span>
+          </span>
+          <span id="tripLockStatusBadge" class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 border border-emerald-400/40 text-emerald-200 flex items-center gap-1">
+            <span>🔓</span>
+            <span>Edição Liberada</span>
+          </span>
+        </div>
+
+        <div>
+          <h2 id="tripHeadingTitle" class="text-2xl sm:text-3xl font-extrabold font-serif tracking-tight">Destino da Viagem</h2>
+          <p id="tripHeaderDatesTimes" class="text-xs sm:text-sm text-sky-200 mt-1"></p>
+        </div>
+
+        <p id="tripSummaryParagraph" class="text-xs sm:text-sm text-sky-100 leading-relaxed font-serif italic border-l-2 border-amber-400/80 pl-3">
+          Resumo da viagem...
+        </p>
+      </div>
+    </div>
+
+    <!-- View Switcher Tabs: Roteiro & Looks vs. Visão da Mala (Requisito: Visão da Mala inspirada no Roupeiro) -->
+    <div class="flex items-center justify-between border-b border-slate-200/80 pb-3 gap-3 flex-wrap no-print">
+      <div class="flex items-center gap-2 bg-slate-100/90 p-1.5 rounded-2xl border border-slate-200 shadow-2xs">
+        <button type="button" id="tabBtnRoteiro" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 bg-white text-slate-900 shadow-sm border border-slate-200/60">
+          <i class="fa-solid fa-calendar-day text-brand-600"></i>
+          <span>Roteiro & Looks</span>
+        </button>
+        <button type="button" id="tabBtnMala" class="px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 text-slate-600 hover:text-slate-900">
+          <i class="fa-solid fa-suitcase-rolling text-emerald-600"></i>
+          <span>Visão da Mala</span>
+          <span id="tabMalaPendingBadge" class="hidden px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500 text-white shadow-2xs">0 pendências</span>
+        </button>
+      </div>
+
+      <div class="flex items-center gap-2 text-xs text-slate-500 font-medium">
+        <span id="overviewQuickStats" class="hidden sm:inline"></span>
+      </div>
+    </div>
+
+    <!-- CONTAINER 1: ROTEIRO & LOOKS -->
+    <div id="roteiroViewContainer" class="space-y-6">
+      <!-- Expansion & Contraction Controls Toolbar (Requisito do Usuário) -->
+      <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm flex flex-wrap items-center justify-between gap-3 no-print">
+        <div class="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wider">
+          <i class="fa-solid fa-sliders text-brand-600"></i>
+          <span>Controles de Visualização:</span>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <button type="button" id="btnToggleAllDays" class="px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-700 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-calendar-days text-brand-600"></i>
+            <span id="btnToggleAllDaysText">Recolher Todos os Dias</span>
+          </button>
+
+          <button type="button" id="btnToggleAllLocations" class="px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-700 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-location-dot text-amber-500"></i>
+            <span id="btnToggleAllLocationsText">Ocultar Detalhes dos Locais</span>
+          </button>
+
+          <button type="button" id="btnToggleAllLooks" class="px-3 py-1.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-xs font-semibold text-slate-700 transition flex items-center gap-1.5">
+            <i class="fa-solid fa-shirt text-indigo-500"></i>
+            <span id="btnToggleAllLooksText">Ocultar Looks</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Days & Periods Container -->
+      <div id="tripDaysAccordion" class="space-y-6">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+
+    <!-- CONTAINER 2: VISÃO DA MALA (Inspirada no Roupeiro - Subconjunto das Peças da Viagem) -->
+    <div id="malaViewContainer" class="hidden space-y-6">
+      <!-- 1. Mala Summary Card: Status, Pendências e Ações Rápidas -->
+      <div id="malaSummaryCard" class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-5">
+        <!-- Populated dynamically via renderMalaView() -->
+      </div>
+
+      <!-- 2. Grid de Categorias da Mala (Estilo Roupeiro com Peças Reais, Compras e Faltantes) -->
+      <div id="malaCategoriesGrid" class="space-y-8">
+        <!-- Populated dynamically via renderMalaView() -->
+      </div>
+
+      <!-- 3. Dicas de Bagagem & Itens Essenciais Recomendados -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-200">
+        <div class="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-5 space-y-2">
+          <h4 class="text-xs font-bold text-amber-900 uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-lightbulb text-amber-600"></i>
+            <span>Dicas de Bagagem & Clima</span>
+          </h4>
+          <p id="malaPackingTips" class="text-xs text-amber-950 leading-relaxed"></p>
+        </div>
+
+        <div class="bg-indigo-50/70 border border-indigo-200/80 rounded-2xl p-5 space-y-2">
+          <h4 class="text-xs font-bold text-indigo-900 uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-check-double text-indigo-600"></i>
+            <span>Itens Essenciais Recomendados</span>
+          </h4>
+          <ul id="malaEssentialsList" class="text-xs text-indigo-950 space-y-1 list-disc list-inside"></ul>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL UNIFICADO: PEGAR NO MEU GUARDA-ROUPA vs COMPRAR NOVA PEÇA           -->
+  <!-- ========================================================================= -->
+  <div id="unifiedPiecePickerModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-2 sm:p-4 no-print">
+    <div class="bg-white rounded-3xl max-w-4xl w-full h-[90vh] border border-slate-200 shadow-2xl overflow-hidden flex flex-col">
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
+        <div>
+          <span id="pickerSlotBadge" class="text-[10px] font-bold uppercase tracking-wider text-brand-700 bg-brand-50 px-2 py-0.5 rounded-md border border-brand-100">
+            Parte Superior
+          </span>
+          <h3 id="pickerModalTitle" class="text-base font-bold text-slate-900 font-serif mt-1">Preencher ou Trocar Peça</h3>
+          <p id="pickerModalSubtitle" class="text-xs text-slate-500">Dia 1 • Período Diurno</p>
+        </div>
+        <button type="button" id="btnClosePickerModal" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Main Options Selector: Opção A (Guarda-Roupa) vs Opção B (Comprar Nova Peça) -->
+      <div class="px-6 py-3 bg-slate-100/70 border-b border-slate-200 flex items-center gap-2 shrink-0">
+        <button type="button" id="tabBtnOptionWardrobe" class="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 bg-white text-brand-700 shadow-sm border border-brand-200">
+          <i class="fa-solid fa-door-open text-base"></i>
+          <span>Pegar do Meu Guarda-Roupa</span>
+        </button>
+        <button type="button" id="tabBtnOptionShopping" class="flex-1 py-2.5 px-4 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 text-slate-600 hover:text-slate-900 border border-transparent">
+          <i class="fa-solid fa-bag-shopping text-base text-emerald-600"></i>
+          <span>Comprar Nova Peça</span>
+        </button>
+      </div>
+
+      <!-- Option Panels Body -->
+      <div class="flex-1 overflow-y-auto p-4 sm:p-6 custom-scroll">
+        
+        <!-- ================= PANEL A: PEGAR DO MEU GUARDA-ROUPA ================= -->
+        <div id="panelOptionWardrobe" class="space-y-4">
+          <!-- Filters & Search -->
+          <div class="flex flex-col sm:flex-row items-center gap-2.5 bg-slate-50 p-3 rounded-2xl border border-slate-200">
+            <div class="relative flex-1 w-full">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+              <input type="text" id="wardrobeSearchInput" placeholder="Buscar no roupeiro por tipo, cor..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+            </div>
+            <select id="wardrobeCategorySelect" class="w-full sm:w-56 py-1.5 px-3 text-xs bg-white border border-slate-200 rounded-xl text-slate-700">
+              <option value="all">Todas as Categorias</option>
+            </select>
+          </div>
+
+          <!-- Wardrobe Grid -->
+          <div id="wardrobePiecesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            <!-- Populated dynamically via JS -->
+          </div>
+        </div>
+
+        <!-- ================= PANEL B: COMPRAR NOVA PEÇA ================= -->
+        <div id="panelOptionShopping" class="hidden space-y-4">
+          <!-- Shopping Subtabs -->
+          <div class="flex items-center gap-2 border-b border-slate-200 pb-3">
+            <button type="button" id="subtabBtnGoogleShopping" class="px-3.5 py-1.5 rounded-lg text-xs font-bold bg-brand-50 text-brand-700 border border-brand-200">
+              <i class="fa-brands fa-google mr-1"></i> Buscar no Google Shopping
+            </button>
+            <button type="button" id="subtabBtnProductUrl" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 border border-transparent">
+              <i class="fa-solid fa-link mr-1"></i> Link de Loja Externa
+            </button>
+            <button type="button" id="subtabBtnCatalog" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold text-slate-600 hover:text-slate-900 border border-transparent">
+              <i class="fa-solid fa-bookmark mr-1 text-blue-600"></i> Meu Catálogo a Comprar
+            </button>
+          </div>
+
+          <!-- Subtab 1: Google Shopping Search Form -->
+          <div id="subtabContentGoogleShopping" class="space-y-4">
+            <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+              <div class="flex gap-2">
+                <div class="relative flex-1">
+                  <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
+                  <input type="text" id="shoppingQueryInput" placeholder="Ex: camisa de linho branca casual masculina" class="w-full pl-8 pr-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500">
+                </div>
+                <button type="button" id="btnSearchShopping" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                  <i class="fa-solid fa-search"></i>
+                  <span>Buscar</span>
+                </button>
+              </div>
+
+              <!-- Quick Modifiers -->
+              <div class="flex flex-wrap items-center gap-2 text-xs">
+                <input type="text" id="shoppingFilterColor" placeholder="Cor (ex: Branco)" class="px-3 py-1 text-xs border border-slate-200 rounded-lg bg-white w-28">
+                <input type="text" id="shoppingFilterMaterial" placeholder="Tecido (ex: Linho)" class="px-3 py-1 text-xs border border-slate-200 rounded-lg bg-white w-28">
+                <input type="number" id="shoppingFilterMaxPrice" placeholder="Preço Máx R$" class="px-3 py-1 text-xs border border-slate-200 rounded-lg bg-white w-28">
+              </div>
+            </div>
+
+            <!-- Shopping Loading Indicator -->
+            <div id="shoppingLoadingSpinner" class="hidden text-center py-8 text-xs text-slate-500">
+              <i class="fa-solid fa-spinner animate-spin text-lg text-brand-600 mb-2"></i>
+              <p>Buscando no Google Shopping e lojas parceiras (C&A, Hering, Reserva, Renner...)...</p>
+            </div>
+
+            <!-- Shopping Products Grid -->
+            <div id="shoppingResultsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"></div>
+          </div>
+
+          <!-- Subtab 2: Direct Product Link Extraction -->
+          <div id="subtabContentProductUrl" class="hidden space-y-4">
+            <div class="bg-emerald-50/70 border border-emerald-200 rounded-2xl p-4 space-y-3">
+              <div class="flex items-center gap-2 text-xs font-bold text-emerald-900">
+                <i class="fa-solid fa-link text-emerald-600"></i>
+                <span>Informe o link do produto em qualquer loja:</span>
+              </div>
+              <p class="text-xs text-emerald-700">Cole o endereço de lojas como Zara, C&A, Renner, Mercado Livre, Amazon, Shein, etc.</p>
+              
+              <div class="flex gap-2">
+                <input type="url" id="manualProductUrlInput" placeholder="https://www.cea.com.br/camisa-linho..." class="flex-1 px-3.5 py-2 text-xs border border-emerald-300 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <button type="button" id="btnExtractProductUrl" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                  <span>Buscar</span>
+                </button>
+              </div>
+            </div>
+
+            <div id="urlExtractLoadingSpinner" class="hidden text-center py-8 text-xs text-slate-500">
+              <i class="fa-solid fa-spinner animate-spin text-lg text-emerald-600 mb-2"></i>
+              <p>Acessando loja e extraindo foto, preço e detalhes do produto...</p>
+            </div>
+
+            <div id="urlExtractResultContainer"></div>
+          </div>
+
+          <!-- Subtab 3: Saved Shopping Catalog (Reutilização de peças a comprar) -->
+          <div id="subtabContentCatalog" class="hidden space-y-4">
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="text-xs font-bold text-slate-900 uppercase tracking-wider">Meu Catálogo de Peças a Comprar</h4>
+                <p class="text-xs text-slate-500">Peças adicionadas para compra podem ser reutilizadas em qualquer dia da viagem.</p>
+              </div>
+            </div>
+
+            <div id="userShoppingCatalogGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL TROCAR PERÍODOS DE DIA (LOCAIS & LOOKS ATRELADOS)                    -->
+  <!-- ========================================================================= -->
+  <div id="swapPeriodModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-3xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col">
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-amber-50 to-indigo-50">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-brand-600 text-white flex items-center justify-center shadow-sm">
+            <i class="fa-solid fa-arrow-right-arrow-left text-sm"></i>
+          </div>
+          <div>
+            <h4 class="text-sm font-bold text-slate-900 font-serif">Trocar Períodos de Dia</h4>
+            <p class="text-xs text-slate-500">Locais e looks andam juntos e trocam de lugar</p>
+          </div>
+        </div>
+        <button type="button" id="btnCloseSwapPeriodModal" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <!-- Info Alert -->
+        <div class="p-3 bg-brand-50/70 border border-brand-200 rounded-2xl flex items-start gap-2.5 text-xs text-brand-900">
+          <i class="fa-solid fa-circle-info text-brand-600 mt-0.5 text-sm shrink-0"></i>
+          <span>Ao mover este período para outro dia, o período correspondente daquele dia trocará de lugar. O roteiro de atividades e os looks serão trocados juntos.</span>
+        </div>
+
+        <!-- Current / Source Period Box -->
+        <div class="bg-slate-50 border border-slate-200 rounded-2xl p-3.5 space-y-1">
+          <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Período Selecionado:</span>
+          <div id="swapSourcePeriodTitle" class="font-bold text-sm text-slate-900 flex items-center gap-2"></div>
+          <div id="swapSourcePeriodSummary" class="text-xs text-slate-500"></div>
+        </div>
+
+        <!-- Target Period Selector -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+            <i class="fa-solid fa-arrow-right-arrow-left text-brand-600"></i>
+            <span>Trocar com qual período de outro dia?</span>
+          </label>
+          <select id="swapTargetDaySelect" class="w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-medium text-slate-800"></select>
+        </div>
+
+        <!-- Preview Exchange Box -->
+        <div id="swapPreviewBox" class="p-3 bg-amber-50/60 border border-amber-200 rounded-2xl text-xs space-y-1 text-amber-950">
+          <!-- Populated by JS -->
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+          <button type="button" id="btnCancelSwapPeriod" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 rounded-xl transition">
+            Cancelar
+          </button>
+          <button type="button" id="btnConfirmSwapPeriod" class="px-5 py-2 text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 rounded-xl shadow transition flex items-center gap-1.5">
+            <i class="fa-solid fa-arrow-right-arrow-left"></i>
+            <span>Confirmar Troca</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL ADICIONAR / EDITAR LOCAL                                           -->
+  <!-- ========================================================================= -->
+  <div id="locationModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-3xl max-w-md w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col">
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-lg bg-brand-50 text-brand-600 flex items-center justify-center">
+            <i class="fa-solid fa-location-dot text-sm"></i>
+          </div>
+          <div>
+            <h4 id="locationModalTitle" class="text-sm font-bold text-slate-900 font-serif">Editar Local</h4>
+            <p id="locationModalSubtitle" class="text-[11px] text-slate-500">Dia 1 • Período Diurno</p>
+          </div>
+        </div>
+        <button type="button" id="btnCloseLocationModal" class="text-slate-400 hover:text-slate-600 text-base">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="locationForm" class="p-6 space-y-3.5">
+        <input type="hidden" id="locFormDayIndex">
+        <input type="hidden" id="locFormPeriodKey">
+        <input type="hidden" id="locFormLocIndex">
+
+        <!-- Horários Início e Término -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Horário Início *</label>
+            <input type="text" id="locFormStartTime" required placeholder="Ex: 09:00" class="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Horário Término *</label>
+            <input type="text" id="locFormEndTime" required placeholder="Ex: 11:30" class="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">
+          </div>
+        </div>
+
+        <!-- Nome do Local / Atração -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Nome do Local / Atração *</label>
+          <input type="text" id="locFormName" required placeholder="Ex: Museu de Arte, Restaurante, Praia..." class="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">
+        </div>
+
+        <!-- Descrição -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Descrição / Atividade</label>
+          <textarea id="locFormDescription" rows="2" placeholder="O que você vai fazer ou visitar neste local..." class="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 resize-none"></textarea>
+        </div>
+
+        <!-- Estilo e Trajeto -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Estilo Sugerido</label>
+            <input type="text" id="locFormStyle" placeholder="Ex: Casual, Esportivo, Formal" class="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-700 mb-1">Tempo de Trajeto</label>
+            <input type="text" id="locFormTravelTime" placeholder="Ex: 20 min de metrô" class="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500">
+          </div>
+        </div>
+
+        <div class="pt-2 flex items-center justify-end gap-2 border-t border-slate-100">
+          <button type="button" id="btnCancelLocationModal" class="px-3.5 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 rounded-xl transition">
+            Cancelar
+          </button>
+          <button type="submit" id="btnSaveLocation" class="px-4 py-2 text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow transition flex items-center gap-1.5">
+            <i class="fa-solid fa-check"></i>
+            <span>Salvar Local</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL AJUSTAR LOOK COM IA (TEXTO OU VOZ)                                  -->
+  <!-- ========================================================================= -->
+  <div id="editLookAiModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-3xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col relative">
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-blue-50 to-brand-50">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-brand-600 text-white flex items-center justify-center shadow">
+            <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
+          </div>
+          <div>
+            <h4 class="text-sm font-bold text-slate-900 font-serif">Ajustar Look com Gemini</h4>
+            <p id="editLookContextSubtitle" class="text-xs text-slate-500">Dia 1 • Período da Noite</p>
+          </div>
+        </div>
+        <button type="button" id="btnCloseEditLookAiModal" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-4">
+        <div id="editLookContextChip" class="p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs space-y-1"></div>
+
+        <div>
+          <div class="flex items-center justify-between mb-1">
+            <label class="block text-xs font-semibold text-slate-700">Como você quer ajustar este look?</label>
+            <button type="button" id="voicePromptBtn" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition flex items-center gap-1.5" title="Falar pelo microfone">
+              <i class="fa-solid fa-microphone text-brand-600" id="voiceMicIcon"></i>
+              <span id="voicePromptStatusText">Falar por voz</span>
+            </button>
+          </div>
+          <textarea id="aiPromptInput" rows="3" placeholder="Ex: 'Quero um look mais quentinho para a noite com jaqueta e sapato escuro' ou 'Trocar por algo super esportivo e tênis macio'..." class="w-full px-3.5 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+        </div>
+
+        <div class="space-y-1.5">
+          <span class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Sugestões Rápidas:</span>
+          <div class="flex flex-wrap gap-1.5">
+            <button type="button" class="quick-prompt-chip text-[11px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition">Mais quentinho / com casaco</button>
+            <button type="button" class="quick-prompt-chip text-[11px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition">Mais elegante / formal</button>
+            <button type="button" class="quick-prompt-chip text-[11px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition">Super confortável para caminhar</button>
+            <button type="button" class="quick-prompt-chip text-[11px] px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition">Estilo casual despojado</button>
+          </div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+          <button type="button" id="btnCancelEditLookAi" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 rounded-xl transition">
+            Cancelar
+          </button>
+          <button type="button" id="btnSubmitEditLookAi" class="px-5 py-2 text-xs font-bold text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-700 hover:to-indigo-700 rounded-xl shadow transition flex items-center gap-1.5">
+            <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+            <span>Recriar Look Completo</span>
+          </button>
+        </div>
+      </div>
+
+      <div id="editLookLoadingOverlay" class="absolute inset-0 bg-white/95 backdrop-blur-sm hidden flex flex-col items-center justify-center p-6 text-center z-20">
+        <div class="w-12 h-12 border-3 border-brand-600 border-t-transparent rounded-full animate-spin mb-3"></div>
+        <h5 class="text-sm font-bold text-slate-900 font-serif">Consultando seu roupeiro...</h5>
+        <p class="text-xs text-slate-500 max-w-xs mt-1">O Gemini 3.7 Flash está reconstruindo todos os slots do look.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL CHECKLIST DA MALA (MALA PRONTA)                                     -->
+  <!-- ========================================================================= -->
+  <div id="tripChecklistModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-2 sm:p-4 no-print">
+    <div class="bg-white rounded-3xl max-w-3xl w-full h-[90vh] border border-slate-200 shadow-2xl overflow-hidden flex flex-col">
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-emerald-600 text-white flex items-center justify-center shadow-sm">
+            <i class="fa-solid fa-clipboard-check text-xs"></i>
+          </div>
+          <div>
+            <h4 class="text-sm font-bold text-slate-900 font-serif">Mala Pronta — Checklist Inteligente</h4>
+            <p class="text-xs text-slate-500">Todas as peças necessárias para sua viagem organizadas por categoria.</p>
+          </div>
+        </div>
+        <button type="button" id="btnCloseChecklistModal" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scroll">
+        <div id="checklistItemsContainer" class="space-y-6"></div>
+
+        <!-- Tips & Essentials -->
+        <div class="pt-6 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-amber-50/80 border border-amber-200/80 rounded-xl p-4">
+            <h5 class="text-xs font-bold text-amber-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-lightbulb text-amber-500"></i>
+              <span>Dicas de Embalagem & Estilo</span>
+            </h5>
+            <p id="checklistPackingTips" class="text-xs text-amber-800 leading-relaxed"></p>
+          </div>
+          <div class="bg-indigo-50/80 border border-indigo-200/80 rounded-xl p-4">
+            <h5 class="text-xs font-bold text-indigo-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+              <i class="fa-solid fa-list-check text-indigo-500"></i>
+              <span>Itens Essenciais Recomendados</span>
+            </h5>
+            <ul id="checklistEssentialsList" class="text-xs text-indigo-800 space-y-1 list-disc list-inside"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL MINHAS VIAGENS (SELETOR DE VIAGEM SALVA)                            -->
+  <!-- ========================================================================= -->
+  <div id="savedTripsModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[85vh] border border-slate-200 shadow-2xl overflow-hidden flex flex-col">
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-brand-600 text-white flex items-center justify-center shadow-sm">
+            <i class="fa-solid fa-clock-rotate-left text-xs"></i>
+          </div>
+          <div>
+            <h4 class="text-sm font-bold text-slate-900 font-serif">Escolher Viagem Planejada</h4>
+            <p class="text-xs text-slate-500">Selecione para abrir o roteiro completo.</p>
+          </div>
+        </div>
+        <button type="button" id="btnCloseSavedTripsModal" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 flex items-center justify-center">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="p-6 overflow-y-auto flex-1 space-y-3 custom-scroll">
+        <div id="savedTripsListContainer" class="space-y-3">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="mt-auto border-t border-slate-200 bg-white py-6 no-print">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      <div class="flex items-center gap-2">
+        <span class="font-bold text-slate-700">Roupeiro Virtual</span>
+        <span>&bull;</span>
+        <span>Roteiro & Looks com Gemini 3.7 Flash</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="/" class="text-slate-600 hover:text-brand-600 underline">Início</a>
+        <span>&bull;</span>
+        <a href="/privacy" class="text-slate-600 hover:text-brand-600 underline">Política de Privacidade</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- MODAL ZOOM 4X DA PEÇA                                                     -->
+  <!-- ========================================================================= -->
+  <div id="imageZoomModal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden flex items-center justify-center p-4 no-print cursor-zoom-out">
+    <div class="relative max-w-4xl max-h-[92vh] flex flex-col items-center justify-center cursor-default" onclick="event.stopPropagation()">
+      <button type="button" id="btnCloseZoomModal" class="absolute -top-11 right-0 text-white/80 hover:text-white text-2xl p-1 transition flex items-center gap-1.5 cursor-pointer" title="Fechar (Esc)">
+        <span class="text-xs font-semibold text-white/70">Fechar</span>
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="bg-slate-900/80 p-4 sm:p-6 rounded-3xl border border-white/10 shadow-2xl flex flex-col items-center max-h-[85vh] overflow-hidden">
+        <div class="flex-1 flex items-center justify-center overflow-hidden w-full min-h-[300px]">
+          <img id="zoomModalImg" src="" alt="Peça com zoom" class="max-h-[70vh] max-w-[85vw] object-contain rounded-2xl shadow-2xl transform scale-100 hover:scale-105 transition-transform duration-300">
+        </div>
+        <div class="mt-4 text-center text-white space-y-1">
+          <span id="zoomModalSlot" class="text-[10px] uppercase font-bold tracking-wider text-brand-300 bg-brand-950/80 border border-brand-800/80 px-2.5 py-0.5 rounded-full"></span>
+          <h4 id="zoomModalTitle" class="text-base font-bold font-serif text-white"></h4>
+          <span class="text-[11px] text-white/60 block">Visualização ampliada da peça (Zoom 4x)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dedicated Travel Logic -->
+  <script src="/static/viagem.js"></script>
+</body>
+</html>
