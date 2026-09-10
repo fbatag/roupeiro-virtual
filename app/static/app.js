@@ -891,9 +891,9 @@
 
   function getCategoryIcon(catName) {
     const cat = (catName || "").toLowerCase();
+    if (cat.includes("calçado") || cat.includes("sapato") || cat.includes("tênis") || cat.includes("sandália") || cat.includes("bota")) return "👟";
     if (cat.includes("superior") || cat.includes("camiseta") || cat.includes("camisa") || cat.includes("blusa")) return "👕";
     if (cat.includes("inferior") || cat.includes("calça") || cat.includes("shorts") || cat.includes("bermuda") || cat.includes("saia")) return "👖";
-    if (cat.includes("calçado") || cat.includes("sapato") || cat.includes("tênis") || cat.includes("sandália") || cat.includes("bota")) return "👟";
     if (cat.includes("casaco") || cat.includes("jaqueta") || cat.includes("sobreposição") || cat.includes("malha") || cat.includes("blazer")) return "🧥";
     if (cat.includes("praia") || cat.includes("sunga") || cat.includes("biquíni") || cat.includes("maiô")) return "🏖️";
     if (cat.includes("íntima") || cat.includes("cueca") || cat.includes("calcinha") || cat.includes("meia")) return "🧦";

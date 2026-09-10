@@ -1751,6 +1751,11 @@
             <span>Efetuar Compra</span>
           </button>
 
+          <button type="button" class="btn-desistir-catalog-item w-full py-1.5 bg-rose-50 hover:bg-rose-600 hover:text-white text-rose-700 text-xs font-bold rounded-xl transition border border-rose-200 flex items-center justify-center gap-1">
+            <span>🗑️</span>
+            <span>Desistir</span>
+          </button>
+
           <button type="button" class="btn-reuse-shopping-item w-full py-1.5 bg-blue-50 hover:bg-blue-600 hover:text-white text-blue-700 text-xs font-bold rounded-xl transition">
             Reutilizar no Look
           </button>
@@ -1758,6 +1763,10 @@
       `;
 
       card.querySelector(".btn-reuse-shopping-item").addEventListener("click", () => handleReuseShoppingCatalogItem(catItem));
+      card.querySelector(".btn-desistir-catalog-item").addEventListener("click", () => handleDesistirShoppingPiece({
+        tipo: catItem.title,
+        shopping_id: catItem.id
+      }));
       card.querySelector(".btn-buy-catalog-item").addEventListener("click", () => {
         openPurchasePieceModal({
           tipo: catItem.title,
@@ -1771,6 +1780,71 @@
 
       userShoppingCatalogGrid.appendChild(card);
     });
+  }
+
+  async function handleDesistirShoppingPiece(itemData) {
+    if (!itemData) return;
+    const title = itemData.tipo || itemData.title || "esta peça";
+    if (!confirm(`Deseja desistir de comprar "${title}"?\nA peça será removida da lista de compras e de todas as viagens.`)) {
+      return;
+    }
+
+    try {
+      const resp = await authFetch("/api/shopping/desistir", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          shopping_id: itemData.shopping_id || itemData.id || null,
+          title: title,
+          trip_id: currentTrip?.id || null
+        })
+      });
+
+      const targetShopId = itemData.shopping_id || itemData.id || null;
+      const targetTitleLower = title.trim().toLowerCase();
+
+      userShoppingCatalog = userShoppingCatalog.filter(c => {
+        if (targetShopId && c.id === targetShopId) return false;
+        if (targetTitleLower && (c.title || "").trim().toLowerCase() === targetTitleLower) return false;
+        return true;
+      });
+
+      if (currentTrip && Array.isArray(currentTrip.days)) {
+        currentTrip.days.forEach(day => {
+          ["day_period", "night_period"].forEach(periodKey => {
+            const look = day[periodKey]?.look;
+            if (!look || !Array.isArray(look.items)) return;
+            look.items = look.items.filter(slot => {
+              const isShopping = slot.source_type === "shopping" || !!slot.merchant || !!slot.shopping_id;
+              if (!isShopping) return true;
+              const matchesId = !!(targetShopId && slot.shopping_id === targetShopId);
+              const matchesTitle = !!(targetTitleLower && (slot.tipo || "").trim().toLowerCase() === targetTitleLower);
+              return !(matchesId || matchesTitle);
+            });
+            look.item_ids = look.items
+              .filter(i => i.source_type !== "shopping" && i.item_id)
+              .map(i => i.item_id);
+          });
+        });
+      }
+
+      if (resp.ok) {
+        const data = await resp.json().catch(() => ({}));
+        if (data.trip) {
+          currentTrip = data.trip;
+        }
+      } else {
+        await saveCurrentTrip();
+      }
+
+      updateTripPendingBadges();
+      renderTripAccordion();
+      renderMalaView();
+      renderShoppingCatalogGrid();
+    } catch (err) {
+      console.error("Erro ao desistir de comprar peça:", err);
+      alert("Erro ao remover peça da lista de compras.");
+    }
   }
 
   async function handleReuseShoppingCatalogItem(catItem) {
@@ -2468,9 +2542,9 @@
 
   function getCategoryIcon(catName) {
     const c = (catName || "").toLowerCase();
+    if (c.includes("calçado") || c.includes("sapato") || c.includes("tênis") || c.includes("sandália") || c.includes("bota")) return "👟";
     if (c.includes("camisa") || c.includes("camiseta") || c.includes("blusa") || c.includes("top")) return "👕";
     if (c.includes("calça") || c.includes("bermuda") || c.includes("short") || c.includes("saia")) return "👖";
-    if (c.includes("calçado") || c.includes("sapato") || c.includes("tênis") || c.includes("bota")) return "👟";
     if (c.includes("casaco") || c.includes("jaqueta") || c.includes("frio") || c.includes("blazer")) return "🧥";
     if (c.includes("íntima") || c.includes("intima") || c.includes("meia") || c.includes("cueca")) return "🧦";
     if (c.includes("acessório") || c.includes("acessorio") || c.includes("óculos") || c.includes("bolsa")) return "🕶️";
@@ -3045,6 +3119,10 @@
                   <span>🛍️</span>
                   <span>Efetuar Compra (Mover p/ Roupeiro)</span>
                 </button>
+                <button type="button" class="btn-desistir-mala-piece w-full text-center py-1.5 rounded-xl bg-rose-50 hover:bg-rose-600 hover:text-white text-rose-700 text-[11px] font-bold transition flex items-center justify-center gap-1 border border-rose-200 shadow-2xs" data-shop-idx="${shopIdx}">
+                  <span>🗑️</span>
+                  <span>Desistir</span>
+                </button>
                 ${item.link ? `
                   <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" class="w-full text-center py-1 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 text-[10px] font-semibold transition flex items-center justify-center gap-1 border border-sky-200">
                     <span>↗️</span>
@@ -3180,6 +3258,17 @@
           original_url: item.original_url || item.thumbnail,
           shopping_id: item.shopping_id
         });
+      });
+    });
+
+    // 3.1 Shopping "Desistir" Button
+    malaCategoriesGrid.querySelectorAll(".btn-desistir-mala-piece").forEach(btn => {
+      btn.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        const idx = parseInt(btn.getAttribute("data-shop-idx"), 10);
+        const shopEntry = shoppingItems[idx];
+        if (!shopEntry) return;
+        await handleDesistirShoppingPiece(shopEntry.item);
       });
     });
 

@@ -537,10 +537,90 @@ def update_shopping_item(uid: str, item_id: str, updates: dict) -> dict | None:
 def delete_shopping_item(uid: str, item_id: str) -> bool:
     doc_ref = get_shopping_collection(uid).document(item_id)
     doc = doc_ref.get()
-    if not doc.exists:
-        return False
-    doc_ref.delete()
+    title = ""
+    if doc.exists:
+        d = doc.to_dict() or {}
+        title = d.get("title", "")
+        doc_ref.delete()
+    try:
+        remove_shopping_item_across_trips(uid, shopping_id=item_id, shopping_title=title)
+    except Exception as e:
+        logger.error(f"Error removing shopping item {item_id} across trips: {e}")
     return True
+
+def remove_shopping_item_across_trips(
+    uid: str,
+    shopping_id: str | None = None,
+    shopping_title: str | None = None
+) -> int:
+    """
+    Deletes matching shopping catalog items and removes all references to a shopping piece
+    across all user trips (viagens).
+    """
+    shop_coll = get_shopping_collection(uid)
+    if shopping_id:
+        doc_ref = shop_coll.document(shopping_id)
+        if doc_ref.get().exists:
+            doc_ref.delete()
+    if shopping_title:
+        target_title = shopping_title.strip().lower()
+        for sdoc in shop_coll.stream():
+            sd = sdoc.to_dict() or {}
+            if (sd.get("title") or "").strip().lower() == target_title:
+                shop_coll.document(sdoc.id).delete()
+
+    coll = get_trips_collection(uid)
+    docs = coll.stream()
+    updated_count = 0
+    target_title_lower = (shopping_title or "").strip().lower()
+
+    for doc in docs:
+        trip = doc.to_dict()
+        days = trip.get("days") or []
+        trip_modified = False
+
+        for day in days:
+            for period_key in ["day_period", "night_period"]:
+                period = day.get(period_key)
+                if not period or not isinstance(period, dict):
+                    continue
+                look = period.get("look")
+                if not look or not isinstance(look, dict):
+                    continue
+                items = look.get("items") or []
+                new_items = []
+                for slot in items:
+                    if not isinstance(slot, dict):
+                        new_items.append(slot)
+                        continue
+                    is_shopping = slot.get("source_type") == "shopping" or bool(slot.get("merchant")) or bool(slot.get("shopping_id"))
+                    if not is_shopping:
+                        new_items.append(slot)
+                        continue
+
+                    matches_id = bool(shopping_id and slot.get("shopping_id") == shopping_id)
+                    matches_title = bool(target_title_lower and (slot.get("tipo") or "").strip().lower() == target_title_lower)
+                    if matches_id or matches_title:
+                        trip_modified = True
+                        continue
+                    new_items.append(slot)
+
+                if len(new_items) != len(items):
+                    look["items"] = new_items
+                    look["item_ids"] = [
+                        s["item_id"]
+                        for s in new_items
+                        if isinstance(s, dict) and s.get("source_type") != "shopping" and s.get("item_id")
+                    ]
+
+        if trip_modified:
+            coll.document(doc.id).update({
+                "days": days,
+                "updated_at": firestore.SERVER_TIMESTAMP
+            })
+            updated_count += 1
+
+    return updated_count
 
 def convert_shopping_to_wardrobe_across_trips(
     uid: str,

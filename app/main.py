@@ -42,6 +42,7 @@ from app.firestore_service import (
     get_shopping_item,
     update_shopping_item,
     delete_shopping_item,
+    remove_shopping_item_across_trips,
     convert_shopping_to_wardrobe_across_trips
 )
 from app.photos_service import list_google_photos, download_photo_bytes
@@ -850,6 +851,28 @@ async def update_shopping_catalog_item(item_id: str, payload: ShoppingItemUpdate
     if not updated:
         raise HTTPException(status_code=404, detail="Item de compra não encontrado")
     return updated
+
+class DesistirShoppingItemRequest(BaseModel):
+    shopping_id: Optional[str] = None
+    title: Optional[str] = None
+    trip_id: Optional[str] = None
+
+@app.post("/api/shopping/desistir")
+async def desistir_shopping_item(payload: DesistirShoppingItemRequest, user: dict = Depends(get_current_user)):
+    """Deletes a shopping item and removes all references to it across all saved trips."""
+    updated_trips = remove_shopping_item_across_trips(
+        uid=user["uid"],
+        shopping_id=payload.shopping_id,
+        shopping_title=payload.title
+    )
+    updated_trip = None
+    if payload.trip_id:
+        updated_trip = get_trip(user["uid"], payload.trip_id)
+    return {
+        "status": "deleted",
+        "updated_trips": updated_trips,
+        "trip": updated_trip
+    }
 
 @app.delete("/api/shopping/catalog/{item_id}")
 async def delete_shopping_catalog_item(item_id: str, user: dict = Depends(get_current_user)):
