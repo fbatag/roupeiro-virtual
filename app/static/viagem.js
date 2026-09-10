@@ -3372,96 +3372,6 @@
   }
 
   // ==========================================
-  // EVENT LISTENERS SETUP
-  // ==========================================
-
-  function setupEventListeners() {
-    // Lock & Duplicate buttons
-    document.getElementById("btnToggleLockTrip")?.addEventListener("click", () => handleToggleLockCurrentTrip());
-    document.getElementById("btnUnlockFromBanner")?.addEventListener("click", () => handleToggleLockCurrentTrip(false));
-    document.getElementById("btnDuplicateTrip")?.addEventListener("click", () => handleDuplicateCurrentTrip());
-
-    // Main View Switcher Tabs (Roteiro vs Visão da Mala)
-    tabBtnRoteiro?.addEventListener("click", () => switchView("roteiro"));
-    tabBtnMala?.addEventListener("click", () => switchView("mala"));
-
-    // Toolbar Expansion / Contraction
-    btnToggleAllDays?.addEventListener("click", () => {
-      allDaysExpanded = !allDaysExpanded;
-      btnToggleAllDaysText.textContent = allDaysExpanded ? "Recolher Todos os Dias" : "Expandir Todos os Dias";
-      (currentTrip?.days || []).forEach((_, idx) => dayExpandedMap[idx] = allDaysExpanded);
-      renderTripAccordion();
-    });
-
-    btnToggleAllLocations?.addEventListener("click", () => {
-      allLocationsVisible = !allLocationsVisible;
-      btnToggleAllLocationsText.textContent = allLocationsVisible ? "Ocultar Detalhes dos Locais" : "Ver Detalhes dos Locais";
-      (currentTrip?.days || []).forEach((_, idx) => locationsVisibleMap[idx] = allLocationsVisible);
-      renderTripAccordion();
-    });
-
-    btnToggleAllLooks?.addEventListener("click", () => {
-      allLooksVisible = !allLooksVisible;
-      btnToggleAllLooksText.textContent = allLooksVisible ? "Ocultar Looks" : "Ver Looks";
-      (currentTrip?.days || []).forEach((_, idx) => looksVisibleMap[idx] = allLooksVisible);
-      renderTripAccordion();
-    });
-
-    // Top Nav buttons
-    btnOpenMyTripsModal?.addEventListener("click", openSavedTripsModal);
-    btnCloseSavedTripsModal?.addEventListener("click", closeSavedTripsModal);
-    btnCloseChecklistModal?.addEventListener("click", closeChecklistModal);
-    btnPrintTrip?.addEventListener("click", () => window.print());
-
-    // Unified Picker Modal
-    btnClosePickerModal?.addEventListener("click", closeUnifiedPickerModal);
-    tabBtnOptionWardrobe?.addEventListener("click", () => switchPickerOption("wardrobe"));
-    tabBtnOptionShopping?.addEventListener("click", () => switchPickerOption("shopping"));
-
-    wardrobeSearchInput?.addEventListener("input", renderWardrobePickerGrid);
-    wardrobeCategorySelect?.addEventListener("change", renderWardrobePickerGrid);
-
-    subtabBtnGoogleShopping?.addEventListener("click", () => switchShoppingSubtab("google"));
-    subtabBtnProductUrl?.addEventListener("click", () => switchShoppingSubtab("url"));
-    subtabBtnCatalog?.addEventListener("click", () => switchShoppingSubtab("catalog"));
-
-    btnSearchShopping?.addEventListener("click", handleExecuteShoppingSearch);
-    shoppingQueryInput?.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") handleExecuteShoppingSearch();
-    });
-
-    btnExtractProductUrl?.addEventListener("click", handleExtractProductFromUrl);
-    manualProductUrlInput?.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") handleExtractProductFromUrl();
-    });
-
-    // Swap period modal
-    btnCloseSwapPeriodModal?.addEventListener("click", closeSwapPeriodModal);
-    btnCancelSwapPeriod?.addEventListener("click", closeSwapPeriodModal);
-    btnConfirmSwapPeriod?.addEventListener("click", handleConfirmSwapPeriod);
-
-    // Location modal
-    btnCloseLocationModal?.addEventListener("click", closeLocationModal);
-    btnCancelLocationModal?.addEventListener("click", closeLocationModal);
-
-    // AI Look modal
-    initSpeechRecognition();
-    voicePromptBtn?.addEventListener("click", toggleVoiceRecognition);
-    btnCloseEditLookAiModal?.addEventListener("click", closeEditLookAiModal);
-    btnCancelEditLookAi?.addEventListener("click", closeEditLookAiModal);
-    btnSubmitEditLookAi?.addEventListener("click", handleExecuteLookAiRegeneration);
-
-    document.querySelectorAll(".quick-prompt-chip").forEach(chip => {
-      chip.addEventListener("click", () => {
-        const txt = chip.textContent.trim();
-        if (aiPromptInput) {
-          aiPromptInput.value = aiPromptInput.value ? `${aiPromptInput.value}, ${txt}` : txt;
-          aiPromptInput.focus();
-        }
-      });
-    });
-
-  // ==========================================
   // PURCHASE PIECE MODAL (MOVER PEÇA A COMPRAR PARA O ROUPEIRO)
   // ==========================================
 
@@ -3503,12 +3413,14 @@
 
     modal.classList.remove("hidden");
   }
+  window.openPurchasePieceModal = openPurchasePieceModal;
 
   function closePurchasePieceModal() {
     const modal = document.getElementById("purchasePieceModal");
     if (modal) modal.classList.add("hidden");
     activePurchaseItemData = null;
   }
+  window.closePurchasePieceModal = closePurchasePieceModal;
 
   async function handleConfirmPurchasePiece(e) {
     e.preventDefault();
@@ -3619,6 +3531,96 @@
       }
     }
   }
+
+  // ==========================================
+  // EVENT LISTENERS SETUP
+  // ==========================================
+
+  function setupEventListeners() {
+    // Lock & Duplicate buttons
+    document.getElementById("btnToggleLockTrip")?.addEventListener("click", () => handleToggleLockCurrentTrip());
+    document.getElementById("btnUnlockFromBanner")?.addEventListener("click", () => handleToggleLockCurrentTrip(false));
+    document.getElementById("btnDuplicateTrip")?.addEventListener("click", () => handleDuplicateCurrentTrip());
+
+    // Main View Switcher Tabs (Roteiro vs Visão da Mala)
+    tabBtnRoteiro?.addEventListener("click", () => switchView("roteiro"));
+    tabBtnMala?.addEventListener("click", () => switchView("mala"));
+
+    // Toolbar Expansion / Contraction
+    btnToggleAllDays?.addEventListener("click", () => {
+      allDaysExpanded = !allDaysExpanded;
+      btnToggleAllDaysText.textContent = allDaysExpanded ? "Recolher Todos os Dias" : "Expandir Todos os Dias";
+      (currentTrip?.days || []).forEach((_, idx) => dayExpandedMap[idx] = allDaysExpanded);
+      renderTripAccordion();
+    });
+
+    btnToggleAllLocations?.addEventListener("click", () => {
+      allLocationsVisible = !allLocationsVisible;
+      btnToggleAllLocationsText.textContent = allLocationsVisible ? "Ocultar Detalhes dos Locais" : "Ver Detalhes dos Locais";
+      (currentTrip?.days || []).forEach((_, idx) => locationsVisibleMap[idx] = allLocationsVisible);
+      renderTripAccordion();
+    });
+
+    btnToggleAllLooks?.addEventListener("click", () => {
+      allLooksVisible = !allLooksVisible;
+      btnToggleAllLooksText.textContent = allLooksVisible ? "Ocultar Looks" : "Ver Looks";
+      (currentTrip?.days || []).forEach((_, idx) => looksVisibleMap[idx] = allLooksVisible);
+      renderTripAccordion();
+    });
+
+    // Top Nav buttons
+    btnOpenMyTripsModal?.addEventListener("click", openSavedTripsModal);
+    btnCloseSavedTripsModal?.addEventListener("click", closeSavedTripsModal);
+    btnCloseChecklistModal?.addEventListener("click", closeChecklistModal);
+    btnPrintTrip?.addEventListener("click", () => window.print());
+
+    // Unified Picker Modal
+    btnClosePickerModal?.addEventListener("click", closeUnifiedPickerModal);
+    tabBtnOptionWardrobe?.addEventListener("click", () => switchPickerOption("wardrobe"));
+    tabBtnOptionShopping?.addEventListener("click", () => switchPickerOption("shopping"));
+
+    wardrobeSearchInput?.addEventListener("input", renderWardrobePickerGrid);
+    wardrobeCategorySelect?.addEventListener("change", renderWardrobePickerGrid);
+
+    subtabBtnGoogleShopping?.addEventListener("click", () => switchShoppingSubtab("google"));
+    subtabBtnProductUrl?.addEventListener("click", () => switchShoppingSubtab("url"));
+    subtabBtnCatalog?.addEventListener("click", () => switchShoppingSubtab("catalog"));
+
+    btnSearchShopping?.addEventListener("click", handleExecuteShoppingSearch);
+    shoppingQueryInput?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleExecuteShoppingSearch();
+    });
+
+    btnExtractProductUrl?.addEventListener("click", handleExtractProductFromUrl);
+    manualProductUrlInput?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleExtractProductFromUrl();
+    });
+
+    // Swap period modal
+    btnCloseSwapPeriodModal?.addEventListener("click", closeSwapPeriodModal);
+    btnCancelSwapPeriod?.addEventListener("click", closeSwapPeriodModal);
+    btnConfirmSwapPeriod?.addEventListener("click", handleConfirmSwapPeriod);
+
+    // Location modal
+    btnCloseLocationModal?.addEventListener("click", closeLocationModal);
+    btnCancelLocationModal?.addEventListener("click", closeLocationModal);
+
+    // AI Look modal
+    initSpeechRecognition();
+    voicePromptBtn?.addEventListener("click", toggleVoiceRecognition);
+    btnCloseEditLookAiModal?.addEventListener("click", closeEditLookAiModal);
+    btnCancelEditLookAi?.addEventListener("click", closeEditLookAiModal);
+    btnSubmitEditLookAi?.addEventListener("click", handleExecuteLookAiRegeneration);
+
+    document.querySelectorAll(".quick-prompt-chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        const txt = chip.textContent.trim();
+        if (aiPromptInput) {
+          aiPromptInput.value = aiPromptInput.value ? `${aiPromptInput.value}, ${txt}` : txt;
+          aiPromptInput.focus();
+        }
+      });
+    });
 
     // Image Zoom Modal listeners
     btnCloseZoomModal?.addEventListener("click", closeImageZoomModal);
