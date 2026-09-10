@@ -2294,11 +2294,57 @@
     if (packingForm) packingForm.addEventListener("submit", handlePackingFormSubmit);
   }
 
+  let popularDestEventsInitialized = false;
+
+  function initPopularDestinationsEvents() {
+    if (popularDestEventsInitialized) return;
+    popularDestEventsInitialized = true;
+
+    const chips = document.querySelectorAll(".popular-dest-chip");
+    const regionTabs = document.querySelectorAll(".dest-region-tab");
+
+    chips.forEach(chip => {
+      chip.addEventListener("click", () => {
+        const dest = chip.getAttribute("data-destination") || chip.textContent.trim();
+        if (packingDestination) {
+          packingDestination.value = dest;
+          packingDestination.focus();
+        }
+        chips.forEach(c => {
+          c.className = "popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer";
+        });
+        chip.className = "popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-bold bg-[#edf2fa] border-[#0b57d0] text-[#0b57d0] border ring-2 ring-[#0b57d0]/20 shadow-2xs transition cursor-pointer";
+      });
+    });
+
+    regionTabs.forEach(tab => {
+      tab.addEventListener("click", () => {
+        const region = tab.getAttribute("data-region") || "all";
+        regionTabs.forEach(t => {
+          t.className = "dest-region-tab px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white text-[#444746] border border-[#e0e2ec] hover:bg-[#edf2fa] transition cursor-pointer";
+        });
+        tab.className = "dest-region-tab px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#0b57d0] text-white transition cursor-pointer";
+
+        chips.forEach(chip => {
+          const chipRegion = chip.getAttribute("data-region");
+          if (region === "all" || chipRegion === region) {
+            chip.classList.remove("hidden");
+            chip.classList.add("inline-flex");
+          } else {
+            chip.classList.add("hidden");
+            chip.classList.remove("inline-flex");
+          }
+        });
+      });
+    });
+  }
+
   function openPackingModal() {
     if (!currentUser) {
       showLoginGate("Por favor, faça login para planejar sua viagem.");
       return;
     }
+    initPopularDestinationsEvents();
     if (packingModal) packingModal.classList.remove("hidden");
     if (packingDestination) packingDestination.focus();
   }

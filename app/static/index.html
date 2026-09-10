@@ -1141,6 +1141,98 @@
             <span class="absolute left-3.5 top-2.5 text-sm">📍</span>
             <input type="text" id="packingDestination" required placeholder="Ex: Paris, França ou Gramado, RS" class="w-full pl-9 pr-4 py-2.5 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/20 focus:border-[#0b57d0]">
           </div>
+
+          <!-- Sugestões de Destinos Populares -->
+          <div class="mt-2.5 p-3 rounded-2xl bg-[#f8fafd] border border-[#e0e2ec] space-y-2">
+            <div class="flex items-center justify-between flex-wrap gap-1.5">
+              <span class="text-[11px] font-bold text-[#1f1f1f] flex items-center gap-1">
+                <span>✨</span>
+                <span>Sugestões de Destinos Populares:</span>
+              </span>
+              <!-- Filtros de Região -->
+              <div class="flex items-center gap-1 flex-wrap" id="destRegionTabs">
+                <button type="button" data-region="all" class="dest-region-tab px-2 py-0.5 rounded-full text-[10px] font-bold bg-[#0b57d0] text-white transition cursor-pointer">🌍 Todos</button>
+                <button type="button" data-region="brasil" class="dest-region-tab px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white text-[#444746] border border-[#e0e2ec] hover:bg-[#edf2fa] transition cursor-pointer">🇧🇷 Brasil</button>
+                <button type="button" data-region="latam" class="dest-region-tab px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white text-[#444746] border border-[#e0e2ec] hover:bg-[#edf2fa] transition cursor-pointer">🌎 América Latina</button>
+                <button type="button" data-region="eua" class="dest-region-tab px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white text-[#444746] border border-[#e0e2ec] hover:bg-[#edf2fa] transition cursor-pointer">🇺🇸 EUA</button>
+                <button type="button" data-region="europa" class="dest-region-tab px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white text-[#444746] border border-[#e0e2ec] hover:bg-[#edf2fa] transition cursor-pointer">🇪🇺 Europa</button>
+              </div>
+            </div>
+
+            <!-- Lista de Pílulas de Destino -->
+            <div id="popularDestinationsContainer" class="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto pr-1 custom-scroll">
+              <!-- Brasil -->
+              <button type="button" data-region="brasil" data-destination="Rio de Janeiro, RJ, Brasil" class="popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer">
+                <span>🗿</span><span>Rio de Janeiro</span>
+              </button>
+              <button type="button" data-region="brasil" data-destination="Gramado, RS, Brasil" class="popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer">
+                <span>🌲</span><span>Gramado, RS</span>
+              </button>
+              <button type="button" data-region="brasil" data-destination="Fernando de Noronha, PE, Brasil" class="popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer">
+                <span>🐬</span><span>Fernando de Noronha</span>
+              </button>
+              <button type="button" data-region="brasil" data-destination="São Paulo, SP, Brasil" class="popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer">
+                <span>🏙️</span><span>São Paulo, SP</span>
+              </button>
+              <button type="button" data-region="brasil" data-destination="Salvador, BA, Brasil" class="popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer">
+                <span>🌴</span><span>Salvador, BA</span>
+              </button>
+
+              <!-- América Latina -->
+              <button type="button" data-region="latam" data-destination="Buenos Aires, Argentina" class="popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer">
+                <span>🥩</span><span>Buenos Aires</span>
+              </button>
+              <button type="button" data-region="latam" data-destination="Santiago, Chile" class="popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer">
+                <span>🍷</span><span>Santiago, Chile</span>
+              </button>
+              <button type="button" data-region="latam" data-destination="Cusco & Machu Picchu, Peru" class="popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer">
+                <span>🏔️</span><span>Cusco &amp; Machu Picchu</span>
+              </button>
+              <button type="button" data-region="latam" data-destination="Cartagena das Índias, Colômbia" class="popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer">
+                <span>🌺</span><span>Cartagena</span>
+              </button>
+              <button type="button" data-region="latam" data-destination="Punta del Este, Uruguai" class="popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer">
+                <span>🏖️</span><span>Punta del Este</span>
+              </button>
+
+              <!-- EUA -->
+              <button type="button" data-region="eua" data-destination="Nova York, EUA" class="popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer">
+                <span>🗽</span><span>Nova York</span>
+              </button>
+              <button type="button" data-region="eua" data-destination="Orlando, Flórida, EUA" class="popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer">
+                <span>🏰</span><span>Orlando</span>
+              </button>
+              <button type="button" data-region="eua" data-destination="Miami, Flórida, EUA" class="popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer">
+                <span>🌴</span><span>Miami</span>
+              </button>
+              <button type="button" data-region="eua" data-destination="Los Angeles, Califórnia, EUA" class="popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer">
+                <span>🎬</span><span>Los Angeles</span>
+              </button>
+              <button type="button" data-region="eua" data-destination="Las Vegas, Nevada, EUA" class="popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer">
+                <span>🎰</span><span>Las Vegas</span>
+              </button>
+
+              <!-- Europa -->
+              <button type="button" data-region="europa" data-destination="Paris, França" class="popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer">
+                <span>🗼</span><span>Paris</span>
+              </button>
+              <button type="button" data-region="europa" data-destination="Roma, Itália" class="popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer">
+                <span>🏛️</span><span>Roma</span>
+              </button>
+              <button type="button" data-region="europa" data-destination="Londres, Reino Unido" class="popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer">
+                <span>🎡</span><span>Londres</span>
+              </button>
+              <button type="button" data-region="europa" data-destination="Barcelona, Espanha" class="popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer">
+                <span>⛪</span><span>Barcelona</span>
+              </button>
+              <button type="button" data-region="europa" data-destination="Lisboa, Portugal" class="popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer">
+                <span>🚋</span><span>Lisboa</span>
+              </button>
+              <button type="button" data-region="europa" data-destination="Amsterdã, Holanda" class="popular-dest-chip inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[11px] font-medium bg-white hover:bg-[#edf2fa] hover:border-[#0b57d0] text-[#1f1f1f] border border-[#e0e2ec] shadow-2xs transition cursor-pointer">
+                <span>🌷</span><span>Amsterdã</span>
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- Ida: Data e Horário de Chegada -->
@@ -1535,6 +1627,6 @@
   </footer>
 
   <!-- Main Application Logic -->
-  <script src="/static/app.js?v=20260909d"></script>
+  <script src="/static/app.js?v=20260910b"></script>
 </body>
 </html>
