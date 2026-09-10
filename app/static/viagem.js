@@ -1078,7 +1078,12 @@
     // Slot card click to open unified picker modal (Requisito: chamada ao clicar no quadrado do item)
     container.querySelectorAll(".slot-item-card").forEach(card => {
       card.addEventListener("click", (e) => {
-        if (e.target.closest(".btn-remove-slot-item") || e.target.closest(".btn-zoom-slot-item") || e.target.closest("a")) {
+        if (
+          e.target.closest(".btn-remove-slot-item") ||
+          e.target.closest(".btn-zoom-slot-item") ||
+          e.target.closest(".btn-buy-slot-item") ||
+          e.target.closest("a")
+        ) {
           return;
         }
         const itIdx = parseInt(card.getAttribute("data-item-index"), 10);
@@ -1095,6 +1100,24 @@
         const title = btn.getAttribute("data-title");
         const slot = btn.getAttribute("data-slot");
         openImageZoomModal(img, title, slot);
+      });
+    });
+
+    // Purchase button on slot shopping card
+    container.querySelectorAll(".btn-buy-slot-item").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const itIdx = parseInt(btn.getAttribute("data-item-index"), 10);
+        const item = items[itIdx];
+        openPurchasePieceModal({
+          tipo: item.tipo,
+          categoria: item.categoria,
+          cor_predominante: item.cor,
+          price: item.price,
+          merchant: item.merchant,
+          original_url: item.original_url || item.thumbnail,
+          shopping_id: item.shopping_id
+        });
       });
     });
   }
@@ -1161,7 +1184,7 @@
     }
 
     if (isShopping) {
-      // ESTADO: PEÇA A COMPRAR / COMPRADA (IMAGEM EXPANDIDA, BOTÃO OLHO ZOOM 4X)
+      // ESTADO: PEÇA A COMPRAR (IMAGEM EXPANDIDA, BOTÃO OLHO ZOOM 4X, BOTÃO EFETUAR COMPRA)
       return `
         <div class="slot-item-card slot-shopping rounded-2xl p-3.5 flex flex-col justify-between items-center text-center shadow-2xs relative group min-h-[220px] cursor-pointer hover:border-sky-400 hover:shadow-md transition-all border border-sky-200 bg-white select-none" data-day-index="${dayIndex}" data-period-key="${periodKey}" data-item-index="${itIdx}" title="Clique no quadrado para trocar esta peça">
           <div class="w-full text-left mb-1 flex items-center justify-between">
@@ -1190,11 +1213,14 @@
             ${imgUrl ? `<img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(item.tipo)}" class="max-h-full max-w-full object-contain transition group-hover:scale-105 duration-200">` : `<span class="text-3xl">🛍️</span>`}
           </div>
 
-          <div class="w-full my-1">
+          <div class="w-full my-1 space-y-1">
             <h5 class="text-xs font-bold text-slate-900 truncate" title="${escapeHtml(item.tipo)}">${escapeHtml(item.tipo)}</h5>
             <span class="text-[10px] text-sky-700 font-semibold block truncate">${escapeHtml(item.merchant || 'Loja')} • ${escapeHtml(item.price || 'R$ --')}</span>
+            <button type="button" class="btn-buy-slot-item w-full py-1.5 px-2 bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold rounded-lg shadow-2xs transition flex items-center justify-center gap-1 no-print" data-item-index="${itIdx}">
+              <span>🛍️</span>
+              <span>Efetuar Compra</span>
+            </button>
             ${item.link ? `<a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" class="text-[9px] text-brand-600 hover:underline block truncate mt-0.5 no-print" onclick="event.stopPropagation()">Ver na loja ↗</a>` : ''}
-            <span class="text-[9px] text-slate-400 group-hover:text-sky-600 transition block mt-0.5 font-medium">Toque para trocar</span>
           </div>
         </div>
       `;
@@ -1717,44 +1743,30 @@
           <h5 class="text-xs font-bold text-slate-900 truncate" title="${escapeHtml(catItem.title)}">${escapeHtml(catItem.title)}</h5>
           <span class="text-[10px] text-slate-500 block truncate">${escapeHtml(catItem.merchant || 'Loja')} • ${escapeHtml(catItem.price || 'Sob consulta')}</span>
           ${usageLabels ? `<span class="text-[9px] text-sky-700 font-semibold block truncate mt-0.5" title="${escapeHtml(usageLabels)}">🗓️ ${escapeHtml(usageLabels)}</span>` : ''}
-          
-          <!-- Purchased status toggle -->
-          <label class="inline-flex items-center gap-1.5 mt-2 cursor-pointer text-[10px] font-semibold text-slate-600">
-            <input type="checkbox" data-cat-id="${catItem.id || ''}" data-skey="${escapeHtml(sKey)}" ${catItem.purchased ? 'checked' : ''} class="toggle-purchased-cb rounded text-emerald-600 focus:ring-emerald-500">
-            <span>${catItem.purchased ? '✓ Já comprado' : 'A comprar'}</span>
-          </label>
         </div>
 
-        <button type="button" class="btn-reuse-shopping-item w-full py-1.5 bg-blue-50 hover:bg-blue-600 hover:text-white text-blue-700 text-xs font-bold rounded-xl transition">
-          Reutilizar no Look
-        </button>
+        <div class="w-full space-y-1.5">
+          <button type="button" class="btn-buy-catalog-item w-full py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition flex items-center justify-center gap-1.5 shadow-2xs">
+            <span>🛍️</span>
+            <span>Efetuar Compra</span>
+          </button>
+
+          <button type="button" class="btn-reuse-shopping-item w-full py-1.5 bg-blue-50 hover:bg-blue-600 hover:text-white text-blue-700 text-xs font-bold rounded-xl transition">
+            Reutilizar no Look
+          </button>
+        </div>
       `;
 
       card.querySelector(".btn-reuse-shopping-item").addEventListener("click", () => handleReuseShoppingCatalogItem(catItem));
-
-      const cb = card.querySelector(".toggle-purchased-cb");
-      cb.addEventListener("change", async (e) => {
-        const checked = e.target.checked;
-        catItem.purchased = checked;
-        if (catalogMatch) catalogMatch.purchased = checked;
-
-        packedMap[sKey] = checked;
-        try {
-          localStorage.setItem(storageKey, JSON.stringify(packedMap));
-        } catch (err) {}
-
-        if (catItem.id) {
-          try {
-            await authFetch(`/api/shopping/catalog/${catItem.id}`, {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ item_data: { purchased: checked } })
-            });
-          } catch (err) {
-            console.error("Error updating purchased status:", err);
-          }
-        }
-        renderShoppingCatalogGrid();
+      card.querySelector(".btn-buy-catalog-item").addEventListener("click", () => {
+        openPurchasePieceModal({
+          tipo: catItem.title,
+          categoria: catItem.category,
+          price: catItem.price,
+          merchant: catItem.merchant,
+          original_url: catItem.thumbnail,
+          shopping_id: catItem.id
+        });
       });
 
       userShoppingCatalogGrid.appendChild(card);
@@ -2973,9 +2985,7 @@
       }).join("");
 
       // 2.2 Shopping Cards in this Category
-      const shoppingCardsHtml = shoppingInCat.map(({ item, usages }) => {
-        const sKey = item.shopping_id ? `shop_${item.shopping_id}` : `shop_${item.tipo}`;
-        const isPacked = !!packedMap[sKey];
+      const shoppingCardsHtml = shoppingInCat.map(({ item, usages }, shopIdx) => {
         const imgUrl = item.original_url || item.thumbnail;
 
         const uniqueDays = Array.from(new Set(usages.map(u => u.dayNum))).sort((a, b) => a - b);
@@ -2985,13 +2995,13 @@
         const periodsDetailStr = usages.map(u => `Dia ${u.dayNum} (${u.periodLabel})`).join(", ");
 
         return `
-          <div class="garment-card bg-white rounded-2xl border border-sky-200 overflow-hidden shadow-2xs hover:shadow-md transition-all flex flex-col group relative ${isPacked ? 'opacity-70 bg-emerald-50/30' : ''}">
+          <div class="garment-card bg-white rounded-2xl border border-sky-200 overflow-hidden shadow-2xs hover:shadow-md transition-all flex flex-col group relative">
             <div class="relative h-44 sm:h-48 bg-sky-50/40 p-3 flex items-center justify-center overflow-hidden border-b border-sky-100">
-              <!-- Checkbox "Comprado" -->
-              <label class="absolute top-2 left-2 z-20 flex items-center gap-1.5 bg-white/95 px-2 py-1 rounded-lg border border-sky-200 shadow-2xs cursor-pointer select-none hover:bg-slate-50" onclick="event.stopPropagation()">
-                <input type="checkbox" class="mala-shop-pack-checkbox w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer" data-skey="${sKey}" ${isPacked ? 'checked' : ''}>
-                <span class="text-[10px] font-bold ${isPacked ? 'text-emerald-700' : 'text-sky-800'}">${isPacked ? 'Comprado ✓' : 'A Comprar'}</span>
-              </label>
+              <!-- Quick Buy Button in top-left -->
+              <button type="button" class="btn-buy-mala-piece absolute top-2 left-2 z-20 flex items-center gap-1 bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-lg shadow-xs cursor-pointer transition text-[10px] font-bold" data-shop-idx="${shopIdx}" onclick="event.stopPropagation()">
+                <span>🛍️</span>
+                <span>Efetuar Compra</span>
+              </button>
 
               <!-- Zoom eye button -->
               ${imgUrl ? `
@@ -3030,15 +3040,17 @@
                 <span class="font-medium text-slate-600">${escapeHtml(periodsDetailStr)}</span>
               </div>
 
-              <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+              <div class="pt-2 border-t border-slate-100 flex flex-col gap-1.5">
+                <button type="button" class="btn-buy-mala-piece w-full text-center py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-bold transition flex items-center justify-center gap-1 shadow-2xs" data-shop-idx="${shopIdx}">
+                  <span>🛍️</span>
+                  <span>Efetuar Compra (Mover p/ Roupeiro)</span>
+                </button>
                 ${item.link ? `
-                  <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" class="w-full text-center py-1 rounded-xl bg-sky-600 hover:bg-sky-700 text-white text-[11px] font-bold transition flex items-center justify-center gap-1">
+                  <a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer" class="w-full text-center py-1 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-700 text-[10px] font-semibold transition flex items-center justify-center gap-1 border border-sky-200">
                     <span>↗️</span>
                     <span>Ver na Loja</span>
                   </a>
-                ` : `
-                  <span class="text-[10px] text-slate-400 italic">Item a adquirir</span>
-                `}
+                ` : ''}
               </div>
             </div>
           </div>
@@ -3151,14 +3163,23 @@
       });
     });
 
-    // 3. Shopping "Comprado" Checkbox
-    malaCategoriesGrid.querySelectorAll(".mala-shop-pack-checkbox").forEach(chk => {
-      chk.addEventListener("change", (e) => {
+    // 3. Shopping "Efetuar Compra" Button
+    malaCategoriesGrid.querySelectorAll(".btn-buy-mala-piece").forEach(btn => {
+      btn.addEventListener("click", (e) => {
         e.stopPropagation();
-        const skey = chk.getAttribute("data-skey");
-        packedMap[skey] = e.target.checked;
-        localStorage.setItem(storageKey, JSON.stringify(packedMap));
-        renderMalaView();
+        const idx = parseInt(btn.getAttribute("data-shop-idx"), 10);
+        const shopEntry = shoppingItems[idx];
+        if (!shopEntry) return;
+        const item = shopEntry.item;
+        openPurchasePieceModal({
+          tipo: item.tipo,
+          categoria: item.categoria,
+          cor_predominante: item.cor,
+          price: item.price,
+          merchant: item.merchant,
+          original_url: item.original_url || item.thumbnail,
+          shopping_id: item.shopping_id
+        });
       });
     });
 
@@ -3440,6 +3461,165 @@
       });
     });
 
+  // ==========================================
+  // PURCHASE PIECE MODAL (MOVER PEÇA A COMPRAR PARA O ROUPEIRO)
+  // ==========================================
+
+  let activePurchaseItemData = null;
+
+  function openPurchasePieceModal(itemData) {
+    activePurchaseItemData = itemData || {};
+    const modal = document.getElementById("purchasePieceModal");
+    if (!modal) return;
+
+    const titleInput = document.getElementById("purchasePieceTitle");
+    const dateInput = document.getElementById("purchasePieceDate");
+    const priceInput = document.getElementById("purchasePiecePrice");
+    const merchantInput = document.getElementById("purchasePieceMerchant");
+    const titlePreview = document.getElementById("purchasePieceTitlePreview");
+    const catPreview = document.getElementById("purchasePieceCategoryPreview");
+    const imgPreview = document.getElementById("purchasePieceImg");
+    const fallbackIcon = document.getElementById("purchasePieceFallbackIcon");
+
+    const title = itemData.tipo || itemData.title || "Peça Comprada";
+    const category = itemData.categoria || "Outros";
+    const todayStr = new Date().toISOString().split("T")[0];
+
+    if (titleInput) titleInput.value = title;
+    if (dateInput) dateInput.value = todayStr;
+    if (priceInput) priceInput.value = itemData.price || "";
+    if (merchantInput) merchantInput.value = itemData.merchant || "";
+    if (titlePreview) titlePreview.textContent = title;
+    if (catPreview) catPreview.textContent = category;
+
+    if (itemData.original_url && imgPreview) {
+      imgPreview.src = itemData.original_url;
+      imgPreview.classList.remove("hidden");
+      if (fallbackIcon) fallbackIcon.classList.add("hidden");
+    } else {
+      if (imgPreview) imgPreview.classList.add("hidden");
+      if (fallbackIcon) fallbackIcon.classList.remove("hidden");
+    }
+
+    modal.classList.remove("hidden");
+  }
+
+  function closePurchasePieceModal() {
+    const modal = document.getElementById("purchasePieceModal");
+    if (modal) modal.classList.add("hidden");
+    activePurchaseItemData = null;
+  }
+
+  async function handleConfirmPurchasePiece(e) {
+    e.preventDefault();
+    if (!activePurchaseItemData) return;
+
+    const btn = document.getElementById("btnConfirmPurchasePiece");
+    const originalBtnHtml = btn ? btn.innerHTML : "";
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-circle-notch fa-spin"></i> <span>Movendo para o Roupeiro...</span>`;
+    }
+
+    const title = (document.getElementById("purchasePieceTitle")?.value || activePurchaseItemData.tipo || "Peça Comprada").trim();
+    const acqDate = document.getElementById("purchasePieceDate")?.value || new Date().toISOString().split("T")[0];
+    const precoPago = (document.getElementById("purchasePiecePrice")?.value || "").trim();
+    const lojaComprada = (document.getElementById("purchasePieceMerchant")?.value || "").trim();
+
+    try {
+      const resp = await authFetch("/api/clothes/from-shopping", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tipo: title,
+          categoria: activePurchaseItemData.categoria || "Outros",
+          cor_predominante: activePurchaseItemData.cor_predominante || "Padrão",
+          data_aquisicao: acqDate,
+          preco_pago: precoPago,
+          loja_comprada: lojaComprada,
+          image_url: activePurchaseItemData.original_url || "",
+          shopping_id: activePurchaseItemData.shopping_id || null
+        })
+      });
+
+      if (!resp.ok) {
+        const errData = await resp.json().catch(() => ({}));
+        throw new Error(errData.detail || "Não foi possível registrar a compra no roupeiro.");
+      }
+
+      const data = await resp.json();
+      const newWardrobePiece = data.item;
+
+      // 1. Add to local wardrobeItems array
+      if (newWardrobePiece) {
+        wardrobeItems.unshift(newWardrobePiece);
+      }
+
+      // 2. Convert all matching slots in currentTrip from shopping -> wardrobe
+      if (currentTrip && Array.isArray(currentTrip.days)) {
+        const oldTitleLower = (activePurchaseItemData.tipo || "").trim().toLowerCase();
+        const targetShopId = activePurchaseItemData.shopping_id;
+
+        currentTrip.days.forEach(day => {
+          ["day_period", "night_period"].forEach(periodKey => {
+            const look = day[periodKey]?.look;
+            if (!look || !Array.isArray(look.items)) return;
+
+            let periodModified = false;
+            look.items.forEach(slot => {
+              const isShopping = slot.source_type === "shopping" || (slot.source_type !== "wardrobe" && (!!slot.merchant || !!slot.shopping_id || !!slot.shopping_item_id));
+              if (!isShopping) return;
+
+              const matchesId = !!(targetShopId && slot.shopping_id === targetShopId);
+              const matchesTitle = !!(oldTitleLower && (slot.tipo || "").trim().toLowerCase() === oldTitleLower);
+
+              if (matchesId || matchesTitle) {
+                slot.source_type = "wardrobe";
+                slot.item_id = newWardrobePiece.id;
+                slot.tipo = newWardrobePiece.tipo;
+                slot.categoria = newWardrobePiece.categoria || slot.categoria || "Outros";
+                slot.cor = newWardrobePiece.cor_predominante || slot.cor || "Padrão";
+                slot.original_url = newWardrobePiece.original_url || slot.original_url;
+                slot.cutout_url = newWardrobePiece.cutout_url || newWardrobePiece.original_url || slot.original_url;
+                slot.shopping_id = null;
+                slot.shopping_item_id = null;
+                slot.merchant = null;
+                slot.price = null;
+                slot.link = null;
+                slot.thumbnail = null;
+                periodModified = true;
+              }
+            });
+
+            if (periodModified) {
+              look.item_ids = look.items
+                .filter(i => i.source_type !== "shopping" && i.item_id)
+                .map(i => i.item_id);
+            }
+          });
+        });
+
+        await saveCurrentTrip();
+      }
+
+      closePurchasePieceModal();
+      closeUnifiedPickerModal();
+      renderTripAccordion();
+      renderMalaView();
+      renderShoppingCatalogGrid();
+
+      alert(`✅ Peça "${newWardrobePiece.tipo}" adicionada ao seu Roupeiro e atualizada nos looks da viagem!`);
+    } catch (err) {
+      console.error("Erro ao efetuar compra:", err);
+      alert(err.message || "Erro ao efetuar compra da peça.");
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = originalBtnHtml;
+      }
+    }
+  }
+
     // Image Zoom Modal listeners
     btnCloseZoomModal?.addEventListener("click", closeImageZoomModal);
     imageZoomModal?.addEventListener("click", closeImageZoomModal);
@@ -3448,6 +3628,12 @@
         closeImageZoomModal();
       }
     });
+
+    // Purchase Piece Modal listeners
+    document.getElementById("btnClosePurchasePieceModal")?.addEventListener("click", closePurchasePieceModal);
+    document.getElementById("btnCancelPurchasePiece")?.addEventListener("click", closePurchasePieceModal);
+    document.getElementById("purchasePieceModal")?.addEventListener("click", closePurchasePieceModal);
+    document.getElementById("purchasePieceForm")?.addEventListener("submit", handleConfirmPurchasePiece);
 
     // Auto-sync status with wardrobe when window regains focus (e.g. user returns from Roupeiro tab)
     window.addEventListener("focus", async () => {

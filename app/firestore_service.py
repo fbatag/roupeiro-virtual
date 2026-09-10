@@ -28,6 +28,8 @@ def create_item(uid: str, data: dict) -> dict:
     
     # Ensure default fields
     data.setdefault("data_aquisicao", "")
+    data.setdefault("preco_pago", "")
+    data.setdefault("loja_comprada", "")
     data.setdefault("descricao", "")
     data.setdefault("cor_predominante", "Não identificada")
     data.setdefault("cor_hex", "#94a3b8")
@@ -122,6 +124,7 @@ def update_item(uid: str, item_id: str, updates: dict) -> dict | None:
     # Only allow updating user-editable fields
     allowed = [
         "categoria", "tipo", "cor_predominante", "cor_hex", "data_aquisicao",
+        "preco_pago", "loja_comprada",
         "descricao", "estacao", "estilo", "is_generic", "quantidade", "nao_repetir",
         "status_roupa"
     ]
@@ -538,5 +541,75 @@ def delete_shopping_item(uid: str, item_id: str) -> bool:
         return False
     doc_ref.delete()
     return True
+
+def convert_shopping_to_wardrobe_across_trips(
+    uid: str,
+    shopping_id: str | None,
+    shopping_title: str,
+    new_wardrobe_item: dict
+) -> int:
+    """
+    Converts all references to a purchased shopping piece across all user trips
+    into the newly created wardrobe item.
+    """
+    coll = get_trips_collection(uid)
+    docs = coll.stream()
+    updated_count = 0
+
+    for doc in docs:
+        trip = doc.to_dict()
+        days = trip.get("days") or []
+        trip_modified = False
+
+        for day in days:
+            for period_key in ["day_period", "night_period"]:
+                period = day.get(period_key)
+                if not period or not isinstance(period, dict):
+                    continue
+                look = period.get("look")
+                if not look or not isinstance(look, dict):
+                    continue
+                items = look.get("items") or []
+                for slot in items:
+                    if not isinstance(slot, dict):
+                        continue
+                    is_shopping = slot.get("source_type") == "shopping" or bool(slot.get("merchant")) or bool(slot.get("shopping_id"))
+                    if not is_shopping:
+                        continue
+
+                    matches_id = bool(shopping_id and slot.get("shopping_id") == shopping_id)
+                    matches_title = bool(shopping_title and (slot.get("tipo") or "").strip().lower() == shopping_title.strip().lower())
+                    if matches_id or matches_title:
+                        slot["source_type"] = "wardrobe"
+                        slot["item_id"] = new_wardrobe_item["id"]
+                        slot["tipo"] = new_wardrobe_item["tipo"]
+                        slot["categoria"] = new_wardrobe_item.get("categoria", slot.get("categoria", "Outros"))
+                        slot["cor"] = new_wardrobe_item.get("cor_predominante", slot.get("cor", "Padrão"))
+                        slot["original_url"] = new_wardrobe_item.get("original_url", "")
+                        slot["cutout_url"] = new_wardrobe_item.get("cutout_url", new_wardrobe_item.get("original_url", ""))
+                        slot["shopping_id"] = None
+                        slot["shopping_item_id"] = None
+                        slot["merchant"] = None
+                        slot["price"] = None
+                        slot["link"] = None
+                        slot["thumbnail"] = None
+                        trip_modified = True
+
+                if trip_modified:
+                    look["item_ids"] = [
+                        s["item_id"]
+                        for s in items
+                        if isinstance(s, dict) and s.get("source_type") != "shopping" and s.get("item_id")
+                    ]
+
+        if trip_modified:
+            coll.document(doc.id).update({
+                "days": days,
+                "updated_at": firestore.SERVER_TIMESTAMP
+            })
+            updated_count += 1
+
+    return updated_count
+
 
 

@@ -41,7 +41,8 @@ from app.firestore_service import (
     list_shopping_items,
     get_shopping_item,
     update_shopping_item,
-    delete_shopping_item
+    delete_shopping_item,
+    convert_shopping_to_wardrobe_across_trips
 )
 from app.photos_service import list_google_photos, download_photo_bytes
 from app.prompt_mapper import PromptMapper
@@ -76,6 +77,8 @@ class ItemUpdate(BaseModel):
     cor_predominante: Optional[str] = None
     cor_hex: Optional[str] = None
     data_aquisicao: Optional[str] = None
+    preco_pago: Optional[str] = None
+    loja_comprada: Optional[str] = None
     descricao: Optional[str] = None
     estacao: Optional[str] = None
     estilo: Optional[str] = None
@@ -83,6 +86,17 @@ class ItemUpdate(BaseModel):
     quantidade: Optional[int] = None
     nao_repetir: Optional[bool] = None
     status_roupa: Optional[str] = None
+
+class ShoppingPurchaseRequest(BaseModel):
+    tipo: str
+    categoria: Optional[str] = "Outros"
+    cor_predominante: Optional[str] = "Padrão"
+    cor_hex: Optional[str] = "#94a3b8"
+    data_aquisicao: Optional[str] = None
+    preco_pago: Optional[str] = ""
+    loja_comprada: Optional[str] = ""
+    image_url: Optional[str] = ""
+    shopping_id: Optional[str] = None
 
 class ItemStatusUpdateRequest(BaseModel):
     status_roupa: str
@@ -386,6 +400,89 @@ async def create_generic_clothing_piece(
     saved_item = create_item(uid, item_doc)
     logger.info(f"Generic item created successfully: {saved_item['id']} ({saved_item['tipo']} x{saved_item['quantidade']}, nao_repetir={saved_item['nao_repetir']})")
     return saved_item
+
+@app.post("/api/clothes/from-shopping")
+async def create_item_from_shopping_purchase(
+    payload: ShoppingPurchaseRequest,
+    user: dict = Depends(get_current_user)
+):
+    """
+    Executes a purchase of a shopping item:
+    1. Creates the item in the user's wardrobe (clothes collection) with data_aquisicao, preco_pago, and loja_comprada.
+    2. Converts references to this shopping piece across all user trips to the newly created wardrobe item.
+    3. Marks the shopping catalog entry as purchased if shopping_id is present.
+    """
+    uid = user["uid"]
+    item_id = str(uuid.uuid4())
+    tipo = (payload.tipo or "Peça Comprada").strip()
+    categoria = (payload.categoria or "Outros").strip()
+    add_user_category(uid, categoria)
+
+    acq_date = payload.data_aquisicao or datetime.utcnow().strftime("%Y-%m-%d")
+    preco_pago = (payload.preco_pago or "").strip()
+    loja_comprada = (payload.loja_comprada or "").strip()
+    image_url = (payload.image_url or "").strip()
+
+    item_doc = {
+        "id": item_id,
+        "uid": uid,
+        "user_email": user.get("email", ""),
+        "original_filename": f"comprado_{item_id}.jpg",
+        "folder_path": "",
+        "categoria": categoria,
+        "tipo": tipo,
+        "cor_predominante": payload.cor_predominante or "Padrão",
+        "cor_hex": payload.cor_hex or "#94a3b8",
+        "data_aquisicao": acq_date,
+        "preco_pago": preco_pago,
+        "loja_comprada": loja_comprada,
+        "descricao": f"Adquirida em {loja_comprada}" if loja_comprada else "Adquirida para viagem",
+        "estacao": "Todas",
+        "estilo": "Casual",
+        "is_generic": False,
+        "quantidade": 1,
+        "nao_repetir": False,
+        "original_image_path": "",
+        "cutout_image_path": "",
+        "original_url": image_url,
+        "cutout_url": image_url,
+        "status_roupa": "Ok",
+        "source": "purchased_shopping"
+    }
+
+    saved_item = create_item(uid, item_doc)
+
+    # Mark catalog entry as purchased if shopping_id is provided
+    if payload.shopping_id:
+        try:
+            update_shopping_item(uid, payload.shopping_id, {
+                "purchased": True,
+                "wardrobe_item_id": item_id,
+                "purchased_at": acq_date
+            })
+        except Exception as e:
+            logger.warning(f"Could not update shopping catalog item {payload.shopping_id}: {e}")
+
+    # Convert shopping item references across all user trips to this new wardrobe item
+    updated_trips_count = 0
+    try:
+        updated_trips_count = convert_shopping_to_wardrobe_across_trips(
+            uid=uid,
+            shopping_id=payload.shopping_id,
+            shopping_title=tipo,
+            new_wardrobe_item=saved_item
+        )
+    except Exception as e:
+        logger.warning(f"Could not convert shopping references across trips: {e}")
+
+    logger.info(
+        f"Shopping item purchased and moved to wardrobe: {saved_item['id']} ({saved_item['tipo']}), "
+        f"data_aquisicao={acq_date}, preco_pago={preco_pago}, loja={loja_comprada}, trips_updated={updated_trips_count}"
+    )
+    return {
+        "item": saved_item,
+        "updated_trips_count": updated_trips_count
+    }
 
 @app.post("/api/google-photos/media-items")
 async def get_user_google_photos(

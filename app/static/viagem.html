@@ -737,7 +737,76 @@
     </div>
   </div>
 
+  <!-- ========================================================================= -->
+  <!-- MODAL EFETUAR COMPRA (MOVER PEÇA A COMPRAR PARA O ROUPEIRO)               -->
+  <!-- ========================================================================= -->
+  <div id="purchasePieceModal" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs hidden flex items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-md w-full overflow-hidden flex flex-col" onclick="event.stopPropagation()">
+      <!-- Header -->
+      <div class="px-6 py-4 bg-gradient-to-r from-[#0b57d0] to-[#34a853] text-white flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-lg">
+            <span>🛍️</span>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold leading-tight">Efetuar Compra da Peça</h3>
+            <p class="text-[11px] text-white/85">Adiciona ao seu roupeiro e atualiza os looks</p>
+          </div>
+        </div>
+        <button type="button" id="btnClosePurchasePieceModal" class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white text-xs transition cursor-pointer">
+          ✕
+        </button>
+      </div>
+
+      <!-- Form Content -->
+      <form id="purchasePieceForm" class="p-6 space-y-4">
+        <div class="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 border border-slate-200">
+          <div class="w-16 h-16 rounded-xl bg-white border border-slate-200 flex items-center justify-center overflow-hidden shrink-0">
+            <img id="purchasePieceImg" src="" alt="" class="max-h-full max-w-full object-contain hidden">
+            <span id="purchasePieceFallbackIcon" class="text-2xl">👔</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <span id="purchasePieceCategoryPreview" class="text-[10px] font-bold uppercase tracking-wider text-sky-800 bg-sky-100 px-2 py-0.5 rounded-full">Outros</span>
+            <h4 id="purchasePieceTitlePreview" class="text-xs font-bold text-slate-900 truncate mt-1">Peça a Comprar</h4>
+            <p class="text-[11px] text-slate-500">Ao confirmar, esta peça deixa de ser "A Comprar" e vira uma peça do seu roupeiro.</p>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Nome / Tipo da Peça</label>
+          <input type="text" id="purchasePieceTitle" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Data de Aquisição</label>
+            <input type="date" id="purchasePieceDate" required class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Preço Pago</label>
+            <input type="text" id="purchasePiecePrice" placeholder="Ex: R$ 189,90" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Loja onde foi comprada</label>
+          <input type="text" id="purchasePieceMerchant" placeholder="Ex: Zara, Renner..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/30">
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2">
+          <button type="button" id="btnCancelPurchasePiece" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 text-xs font-semibold transition cursor-pointer">
+            Cancelar
+          </button>
+          <button type="submit" id="btnConfirmPurchasePiece" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm hover:shadow-md transition flex items-center gap-2 cursor-pointer">
+            <span>🛍️</span>
+            <span>Confirmar Compra &amp; Mover p/ Roupeiro</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- Dedicated Travel Logic -->
-  <script src="/static/viagem.js?v=20260909c"></script>
+  <script src="/static/viagem.js?v=20260910a"></script>
 </body>
 </html>

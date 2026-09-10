@@ -82,6 +82,8 @@
   const editCorPicker = document.getElementById("editCorPicker");
   const editCorHex = document.getElementById("editCorHex");
   const editDataAquisicao = document.getElementById("editDataAquisicao");
+  const editPrecoPago = document.getElementById("editPrecoPago");
+  const editLojaComprada = document.getElementById("editLojaComprada");
   const editDescricao = document.getElementById("editDescricao");
   const editEstilo = document.getElementById("editEstilo");
   const editEstacao = document.getElementById("editEstacao");
@@ -1747,6 +1749,8 @@
     editCorHex.value = item.cor_hex || "#000000";
     editCorPicker.value = item.cor_hex || "#000000";
     editDataAquisicao.value = item.data_aquisicao || "";
+    if (editPrecoPago) editPrecoPago.value = item.preco_pago || "";
+    if (editLojaComprada) editLojaComprada.value = item.loja_comprada || "";
     editDescricao.value = item.descricao || "";
     editEstilo.value = item.estilo || "Casual";
     editEstacao.value = item.estacao || "Todas";
@@ -1792,6 +1796,8 @@
       cor_predominante: editCor.value,
       cor_hex: editCorHex.value,
       data_aquisicao: editDataAquisicao.value,
+      preco_pago: editPrecoPago ? editPrecoPago.value.trim() : "",
+      loja_comprada: editLojaComprada ? editLojaComprada.value.trim() : "",
       descricao: editDescricao.value,
       estilo: editEstilo.value,
       estacao: editEstacao.value,
