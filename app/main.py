@@ -600,8 +600,8 @@ async def update_clothing_status(
     payload: ItemStatusUpdateRequest,
     user: dict = Depends(get_current_user)
 ):
-    """Quickly updates the clothing piece status (Ok, Passar, Lavar, Lavanderia, Emprestada, Achar)."""
-    valid_statuses = ["Ok", "Passar", "Lavar", "Lavanderia", "Emprestada", "Achar"]
+    """Quickly updates the clothing piece status (Ok, Passar, Lavar, Lavanderia, Emprestada, Achar, Provar, Desgastada)."""
+    valid_statuses = ["Ok", "Passar", "Lavar", "Lavanderia", "Emprestada", "Achar", "Provar", "Desgastada"]
     st = payload.status_roupa.strip()
     if st not in valid_statuses:
         raise HTTPException(status_code=400, detail=f"Status inválido. Valores aceitos: {', '.join(valid_statuses)}")

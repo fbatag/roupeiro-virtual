@@ -1146,6 +1146,30 @@
           dot: "bg-rose-500",
           badge: "bg-rose-100 text-rose-800 border-rose-300"
         };
+      case "Provar":
+        return {
+          label: "Provar",
+          description: "Provar / verificar ajuste",
+          iconHtml: `<span>🪞</span>`,
+          iconFa: "🪞",
+          bg: "bg-purple-50",
+          text: "text-purple-800",
+          border: "border-purple-300",
+          dot: "bg-purple-500",
+          badge: "bg-purple-100 text-purple-800 border-purple-300"
+        };
+      case "Desgastada":
+        return {
+          label: "Desgastada",
+          description: "Desgastada / precisa reparo",
+          iconHtml: `<span>🧵</span>`,
+          iconFa: "🧵",
+          bg: "bg-slate-100",
+          text: "text-slate-700",
+          border: "border-slate-300",
+          dot: "bg-slate-500",
+          badge: "bg-slate-100 text-slate-700 border-slate-300"
+        };
       case "Ok":
       default:
         return {
