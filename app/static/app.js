@@ -1907,38 +1907,45 @@
   }
 
   // 5. Google Photos Integration
+  let pickerPollInterval = null;
+  let currentPickerUri = null;
+  let currentPickerSessionId = null;
+
+  function stopPickerPolling() {
+    if (pickerPollInterval) {
+      clearInterval(pickerPollInterval);
+      pickerPollInterval = null;
+    }
+  }
+
   openGooglePhotosBtn.addEventListener("click", async () => {
     googlePhotosModal.classList.remove("hidden");
     selectedGooglePhotos.clear();
     updatePhotosSelectionCount();
 
+    const statusBanner = document.getElementById("photosPickerStatusBanner");
+    if (statusBanner) statusBanner.classList.add("hidden");
+
     if (!googlePhotosAccessToken) {
-      // Check if user is logged into Google with Firebase
-      if (window.firebase && firebase.auth().currentUser) {
-        // Re-authenticate to request photos scope
-        photosReauthBanner.classList.remove("hidden");
-        photosLoadingSpinner.classList.add("hidden");
-      } else {
-        photosReauthBanner.classList.remove("hidden");
-        photosLoadingSpinner.classList.add("hidden");
-      }
+      photosReauthBanner.classList.remove("hidden");
+      photosLoadingSpinner.classList.add("hidden");
     } else {
       photosReauthBanner.classList.add("hidden");
-      await fetchGooglePhotos();
+      await startGooglePhotosPickerSession();
     }
   });
 
   photosReauthBtn.addEventListener("click", async () => {
     try {
       const provider = new firebase.auth.GoogleAuthProvider();
-      provider.addScope("https://www.googleapis.com/auth/photoslibrary.readonly.appcreateddata");
+      provider.addScope("https://www.googleapis.com/auth/photospicker.mediaitems.readonly");
       provider.setCustomParameters({ prompt: "consent" });
       const result = await firebase.auth().signInWithPopup(provider);
       if (result.credential && result.credential.accessToken) {
         googlePhotosAccessToken = result.credential.accessToken;
         sessionStorage.setItem("google_photos_access_token", googlePhotosAccessToken);
         photosReauthBanner.classList.add("hidden");
-        await fetchGooglePhotos();
+        await startGooglePhotosPickerSession();
       }
     } catch (err) {
       console.error("Google Photos auth error:", err);
@@ -1962,46 +1969,136 @@
     }
   });
 
-  closeGooglePhotosModalBtn.addEventListener("click", () => googlePhotosModal.classList.add("hidden"));
-  cancelPhotosImportBtn.addEventListener("click", () => googlePhotosModal.classList.add("hidden"));
+  const openPhotosPickerPopupBtn = document.getElementById("openPhotosPickerPopupBtn");
+  if (openPhotosPickerPopupBtn) {
+    openPhotosPickerPopupBtn.addEventListener("click", () => {
+      if (currentPickerUri) {
+        window.open(currentPickerUri + "/autoclose", "GooglePhotosPicker", "width=980,height=720");
+      } else {
+        startGooglePhotosPickerSession();
+      }
+    });
+  }
 
-  async function fetchGooglePhotos() {
+  closeGooglePhotosModalBtn.addEventListener("click", () => {
+    stopPickerPolling();
+    googlePhotosModal.classList.add("hidden");
+  });
+  cancelPhotosImportBtn.addEventListener("click", () => {
+    stopPickerPolling();
+    googlePhotosModal.classList.add("hidden");
+  });
+
+  async function startGooglePhotosPickerSession() {
+    stopPickerPolling();
     photosLoadingSpinner.classList.remove("hidden");
+    const loadingText = document.getElementById("photosLoadingText");
+    if (loadingText) loadingText.textContent = "Abrindo seletor oficial do Google Fotos...";
     googlePhotosGrid.innerHTML = "";
     photosEmptyNotice.classList.add("hidden");
 
+    const statusBanner = document.getElementById("photosPickerStatusBanner");
+    const statusText = document.getElementById("photosPickerStatusText");
+
     try {
-      const resp = await authFetch("/api/google-photos/media-items", {
+      const resp = await authFetch("/api/google-photos/picker-session", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ access_token: googlePhotosAccessToken })
+      });
+
+      if (!resp.ok) {
+        const err = await resp.json();
+        photosReauthBanner.classList.remove("hidden");
+        photosLoadingSpinner.classList.add("hidden");
+        throw new Error(err.detail || "Permissão do Google Photos Picker necessária");
+      }
+
+      const sessionData = await resp.json();
+      currentPickerSessionId = sessionData.id;
+      currentPickerUri = sessionData.pickerUri;
+
+      if (statusBanner) statusBanner.classList.remove("hidden");
+      if (statusText) {
+        statusText.textContent = "Aguardando sua seleção na janela do Google Fotos...";
+      }
+
+      // Open the official Google Photos Picker window
+      window.open(currentPickerUri + "/autoclose", "GooglePhotosPicker", "width=980,height=720");
+
+      if (loadingText) {
+        loadingText.textContent = "Selecione suas fotos na janela do Google Fotos e clique em 'Concluído'...";
+      }
+
+      // Poll every 2.5 seconds until mediaItemsSet === true
+      pickerPollInterval = setInterval(async () => {
+        try {
+          const pollResp = await authFetch(
+            `/api/google-photos/picker-session/${encodeURIComponent(currentPickerSessionId)}?access_token=${encodeURIComponent(googlePhotosAccessToken)}`
+          );
+          if (!pollResp.ok) return;
+          const pollData = await pollResp.json();
+          if (pollData.mediaItemsSet) {
+            stopPickerPolling();
+            if (statusText) {
+              statusText.textContent = "Fotos selecionadas! Carregando pré-visualização...";
+            }
+            await fetchPickerMediaItems(currentPickerSessionId);
+          }
+        } catch (pollErr) {
+          console.warn("Picker poll error:", pollErr);
+        }
+      }, 2500);
+
+    } catch (err) {
+      console.error("Error starting Google Photos Picker session:", err);
+      photosEmptyNotice.textContent = "Clique em 'Autorizar e Escolher Fotos' acima para conceder permissão ao Google Photos Picker.";
+      photosEmptyNotice.classList.remove("hidden");
+      photosLoadingSpinner.classList.add("hidden");
+    }
+  }
+
+  async function fetchPickerMediaItems(sessionId) {
+    photosLoadingSpinner.classList.remove("hidden");
+    const loadingText = document.getElementById("photosLoadingText");
+    if (loadingText) loadingText.textContent = "Carregando fotos selecionadas...";
+
+    try {
+      const resp = await authFetch("/api/google-photos/picker-media-items", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           access_token: googlePhotosAccessToken,
-          page_size: 60
+          session_id: sessionId
         })
       });
 
       if (!resp.ok) {
         const err = await resp.json();
-        if (resp.status === 400 || resp.status === 401) {
-          photosReauthBanner.classList.remove("hidden");
-        }
-        throw new Error(err.detail || "Erro ao buscar fotos");
+        throw new Error(err.detail || "Erro ao buscar itens do Picker");
       }
 
       const data = await resp.json();
       googlePhotosList = data.photos || [];
 
       if (!googlePhotosList.length) {
+        photosEmptyNotice.textContent = "Nenhuma foto foi selecionada na janela do Google Fotos.";
         photosEmptyNotice.classList.remove("hidden");
         return;
       }
 
+      // Auto-select all picked photos for convenience
+      googlePhotosList.forEach(p => selectedGooglePhotos.add(p.id));
       renderGooglePhotosGrid();
+      updatePhotosSelectionCount();
+
+      const statusText = document.getElementById("photosPickerStatusText");
+      if (statusText) {
+        statusText.textContent = `✅ ${googlePhotosList.length} foto(s) pronta(s) para importar!`;
+      }
     } catch (err) {
-      console.error("Error loading Google Photos:", err);
-      photosEmptyNotice.textContent = "Erro ao carregar fotos do Google Fotos. Verifique a autorização da conta.";
+      console.error("Error loading picked photos:", err);
+      photosEmptyNotice.textContent = "Erro ao carregar as fotos selecionadas.";
       photosEmptyNotice.classList.remove("hidden");
     } finally {
       photosLoadingSpinner.classList.add("hidden");
@@ -2012,7 +2109,7 @@
     googlePhotosGrid.innerHTML = googlePhotosList.map(photo => {
       const isChecked = selectedGooglePhotos.has(photo.id);
       return `
-        <div class="photo-item relative rounded-xl overflow-hidden border border-slate-200 cursor-pointer group bg-slate-100 aspect-square" data-id="${photo.id}">
+        <div class="photo-item relative rounded-xl overflow-hidden border border-slate-200 cursor-pointer group bg-slate-100 aspect-square ${isChecked ? 'ring-2 ring-brand-500' : ''}" data-id="${photo.id}">
           <img src="${photo.thumbnailUrl}" alt="${photo.filename}" class="w-full h-full object-cover group-hover:scale-105 transition duration-200">
           
           <!-- Checkbox overlay -->
@@ -2085,9 +2182,10 @@
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
+          access_token: googlePhotosAccessToken,
           items: selected.map(p => ({
             id: p.id,
-            baseUrl: p.previewUrl.replace("=w1024-h1024", ""),
+            baseUrl: p.baseUrl || p.previewUrl.replace("=w1024-h1024", ""),
             filename: p.filename,
             creationTime: p.creationTime,
             acquisitionDateSuggestion: p.acquisitionDateSuggestion
@@ -2096,6 +2194,7 @@
       });
 
       if (resp.ok) {
+        stopPickerPolling();
         googlePhotosModal.classList.add("hidden");
         await loadWardrobe();
         alert(`${selected.length} foto(s) importadas e catalogadas com sucesso no Roupeiro!`);

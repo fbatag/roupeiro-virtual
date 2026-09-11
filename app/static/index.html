@@ -225,7 +225,7 @@
         </div>
       </div>
       <p class="leading-relaxed">
-        <strong>Coleta e Uso de Dados (Data Collection &amp; Usage):</strong> O aplicativo <strong>Roupeiro Virtual</strong> (<code class="font-mono text-[11px]">https://roupeiro-virtual.fbatagin.demo.altostrat.com</code>) coleta seu endereço de e-mail (<code class="font-mono text-[11px]">userinfo.email</code>) e perfil público (<code class="font-mono text-[11px]">userinfo.profile</code>) exclusivamente para autenticação via Google Firebase Auth e isolamento individual do seu guarda-roupa virtual. As fotos de roupas enviadas são armazenadas com segurança no Google Cloud Storage e classificadas com IA (Gemini) apenas para organização pessoal. Não vendemos nem compartilhamos seus dados com terceiros. O uso das informações recebidas das APIs do Google adere integralmente à <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer" class="text-[#0b57d0] underline">Google API Services User Data Policy</a> (incluindo os requisitos de <em>Limited Use</em>).
+        <strong>Coleta e Uso de Dados (Data Collection &amp; Usage):</strong> O aplicativo <strong>Roupeiro Virtual</strong> (<code class="font-mono text-[11px]">https://roupeiro-virtual.fbatagin.demo.altostrat.com</code>) coleta seu endereço de e-mail (<code class="font-mono text-[11px]">userinfo.email</code>) e perfil público (<code class="font-mono text-[11px]">userinfo.profile</code>) exclusivamente para autenticação via Google Firebase Auth e isolamento individual do seu guarda-roupa virtual. O escopo <code class="font-mono text-[11px]">photospicker.mediaitems.readonly</code> é utilizado somente quando você abre o Seletor Oficial do Google Fotos para importar fotos de peças de roupa selecionadas por você. As fotos de roupas enviadas são armazenadas com segurança no Google Cloud Storage e classificadas com IA (Gemini) apenas para organização pessoal. Não vendemos nem compartilhamos seus dados com terceiros. O uso das informações recebidas das APIs do Google adere integralmente à <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer" class="text-[#0b57d0] underline">Google API Services User Data Policy</a> (incluindo os requisitos de <em>Limited Use</em>).
       </p>
     </div>
   </div>
@@ -1029,17 +1029,31 @@
         <div id="photosReauthBanner" class="hidden mb-4 p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-center justify-between">
           <div class="flex items-center gap-2">
             <span>⚠️</span>
-            <span>Para acessar o Google Fotos, autorize o acesso à sua galeria.</span>
+            <span>Para escolher fotos do seu Google Fotos, autorize o acesso ao Google Photos Picker.</span>
           </div>
           <button id="photosReauthBtn" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-semibold transition">
-            Conectar Google Fotos
+            Autorizar e Escolher Fotos
+          </button>
+        </div>
+
+        <!-- Google Photos Picker Active Session Banner -->
+        <div id="photosPickerStatusBanner" class="hidden mb-4 p-4 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-900 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-base">📸</span>
+            <div>
+              <p id="photosPickerStatusText" class="font-semibold">Aguardando seleção na janela do Google Fotos...</p>
+              <p class="text-[11px] text-blue-700 mt-0.5">Selecione suas fotos no Google Fotos e clique em "Concluído" no canto superior direito.</p>
+            </div>
+          </div>
+          <button id="openPhotosPickerPopupBtn" class="px-3.5 py-2 bg-[#0b57d0] hover:bg-blue-800 text-white rounded-lg font-semibold transition whitespace-nowrap">
+            Abrir Janela do Google Fotos
           </button>
         </div>
 
         <!-- Photos Loading Spinner -->
         <div id="photosLoadingSpinner" class="text-center py-16 space-y-3">
           <div class="w-10 h-10 border-3 border-[#0b57d0] border-t-transparent rounded-full animate-spin mx-auto"></div>
-          <p class="text-xs text-[#444746]">Buscando fotos da sua conta Google...</p>
+          <p id="photosLoadingText" class="text-xs text-[#444746]">Iniciando seletor do Google Fotos...</p>
         </div>
 
         <!-- Photos Grid -->
@@ -1048,7 +1062,7 @@
         </div>
 
         <div id="photosEmptyNotice" class="hidden text-center py-12 text-[#444746] text-sm">
-          Nenhuma foto encontrada no Google Fotos da conta conectada.
+          Clique em "Abrir Janela do Google Fotos" acima para escolher as fotos que deseja importar.
         </div>
       </div>
 
@@ -1645,6 +1659,6 @@
   </footer>
 
   <!-- Main Application Logic -->
-  <script src="/static/app.js?v=20260911a"></script>
+  <script src="/static/app.js?v=20260911b"></script>
 </body>
 </html>

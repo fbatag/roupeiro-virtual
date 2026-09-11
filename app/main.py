@@ -45,7 +45,13 @@ from app.firestore_service import (
     remove_shopping_item_across_trips,
     convert_shopping_to_wardrobe_across_trips
 )
-from app.photos_service import list_google_photos, download_photo_bytes
+from app.photos_service import (
+    list_google_photos,
+    download_photo_bytes,
+    create_picker_session,
+    get_picker_session,
+    list_picker_media_items
+)
 from app.prompt_mapper import PromptMapper
 from app.shopping_service import ShoppingService, extract_product_from_url
 
@@ -135,6 +141,10 @@ class GooglePhotosQuery(BaseModel):
     access_token: str
     page_size: int = 40
     page_token: Optional[str] = None
+    session_id: Optional[str] = None
+
+class GooglePhotosPickerSessionRequest(BaseModel):
+    access_token: str
 
 class GooglePhotosImportItem(BaseModel):
     id: str
@@ -146,6 +156,7 @@ class GooglePhotosImportItem(BaseModel):
 class GooglePhotosImportRequest(BaseModel):
     items: list[GooglePhotosImportItem]
     target_category: Optional[str] = None
+    access_token: Optional[str] = None
 
 class TripPlanRequest(BaseModel):
     destination: str
@@ -485,6 +496,70 @@ async def create_item_from_shopping_purchase(
         "updated_trips_count": updated_trips_count
     }
 
+@app.post("/api/google-photos/picker-session")
+async def create_user_picker_session(
+    req: GooglePhotosPickerSessionRequest,
+    user: dict = Depends(get_current_user)
+):
+    """Creates a Google Photos Picker session (v1/sessions)."""
+    try:
+        session_data = await create_picker_session(req.access_token)
+        return session_data
+    except Exception as e:
+        logger.error(f"Error creating Google Photos Picker session: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/api/google-photos/picker-session/{session_id}")
+async def check_user_picker_session(
+    session_id: str,
+    access_token: str,
+    user: dict = Depends(get_current_user)
+):
+    """Checks status of a Google Photos Picker session."""
+    try:
+        session_data = await get_picker_session(access_token, session_id)
+        return session_data
+    except Exception as e:
+        logger.error(f"Error checking Google Photos Picker session: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.post("/api/google-photos/picker-media-items")
+async def get_user_picker_media_items(
+    query: GooglePhotosQuery,
+    user: dict = Depends(get_current_user)
+):
+    """Fetches media items chosen by user in a Google Photos Picker session."""
+    try:
+        photos_data = await list_picker_media_items(
+            access_token=query.access_token,
+            session_id=query.session_id
+        )
+        return photos_data
+    except Exception as e:
+        logger.error(f"Error fetching Google Photos Picker items: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+@app.get("/api/google-photos/proxy-image")
+async def proxy_google_photo_image(url: str, token: str):
+    """
+    Proxies Google Photos Picker image URLs with Bearer token so browser <img> tags can render thumbnails.
+    """
+    import httpx
+    from fastapi.responses import Response
+    try:
+        async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
+            resp = await client.get(url, headers={"Authorization": f"Bearer {token}"})
+            if resp.status_code != 200:
+                raise HTTPException(status_code=resp.status_code, detail="Failed to fetch Google Photo")
+            return Response(content=resp.content, media_type=resp.headers.get("Content-Type", "image/jpeg"))
+    except Exception as e:
+        logger.error(f"Error proxying Google Photos image: {e}")
+        raise HTTPException(status_code=400, detail=str(e))
+
+
 @app.post("/api/google-photos/media-items")
 async def get_user_google_photos(
     query: GooglePhotosQuery,
@@ -522,8 +597,8 @@ async def import_from_google_photos(
     for photo in payload.items:
         try:
             logger.info(f"Importing Google Photo: {photo.filename} ({photo.id})")
-            # Download high-res bytes
-            img_bytes = await download_photo_bytes(photo.baseUrl)
+            # Download high-res bytes (authenticated with access_token for Picker API)
+            img_bytes = await download_photo_bytes(photo.baseUrl, access_token=payload.access_token)
             
             # Gemini analysis
             analysis = analyze_clothing_image(img_bytes, mime_type="image/jpeg")
