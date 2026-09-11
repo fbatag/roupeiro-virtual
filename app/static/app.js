@@ -1931,7 +1931,7 @@
   photosReauthBtn.addEventListener("click", async () => {
     try {
       const provider = new firebase.auth.GoogleAuthProvider();
-      provider.addScope("https://www.googleapis.com/auth/photoslibrary.readonly");
+      provider.addScope("https://www.googleapis.com/auth/photoslibrary.readonly.appcreateddata");
       provider.setCustomParameters({ prompt: "consent" });
       const result = await firebase.auth().signInWithPopup(provider);
       if (result.credential && result.credential.accessToken) {
@@ -1947,7 +1947,15 @@
       }
       const msg = String(err.message || err);
       if (msg.includes("policy_enforced") || msg.includes("Proteção Avançada") || msg.includes("Advanced Protection")) {
-        alert("Sua conta Google possui o Programa Proteção Avançada ativado, que restringe o acesso de aplicativos externos aos dados do Google Fotos.\n\nPara cadastrar suas roupas, utilize a opção de upload direto de fotos ou pastas do seu computador/dispositivo!");
+        googlePhotosModal.classList.add("hidden");
+        if (confirm(
+          "🔒 Conta com Programa Proteção Avançada (Advanced Protection) detectada.\n\n" +
+          "Por segurança, o Google bloqueia o acesso direto de aplicativos externos a escopos OAuth do Google Fotos em contas com Proteção Avançada (Erro 400: policy_enforced).\n\n" +
+          "💡 SOLUÇÃO IMEDIATA: Clique em OK para abrir o Seletor de Fotos do seu dispositivo/navegador (que acessa suas fotos do Google Fotos e galeria diretamente sem restrição de OAuth)!"
+        )) {
+          const fileInput = document.getElementById("fileInput");
+          if (fileInput) fileInput.click();
+        }
       } else {
         alert("Não foi possível conectar ao Google Fotos: " + msg);
       }

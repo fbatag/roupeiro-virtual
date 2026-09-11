@@ -203,12 +203,30 @@
         <div class="mt-6 pt-4 border-t border-[#e0e2ec] w-full flex flex-col items-center gap-2 text-[11px] text-[#5e5e5e]">
           <p>Acesso seguro e protegido pelo Firebase Authentication.</p>
           <div class="flex items-center gap-3 font-medium">
-            <a href="/privacy" target="_blank" class="text-[#0b57d0] hover:underline transition">Política de Privacidade</a>
+            <a href="/privacy" target="_blank" class="text-[#0b57d0] hover:underline transition font-semibold">Política de Privacidade (Privacy Policy)</a>
             <span>&bull;</span>
-            <a href="/terms" target="_blank" class="text-[#0b57d0] hover:underline transition">Termos de Serviço</a>
+            <a href="/terms" target="_blank" class="text-[#0b57d0] hover:underline transition font-semibold">Termos de Serviço (Terms of Service)</a>
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Google OAuth Branding Verification / Privacy Summary on Homepage -->
+    <div class="mt-6 p-5 rounded-2xl bg-white border border-[#e0e2ec] shadow-2xs text-xs text-[#444746] space-y-2">
+      <div class="flex items-center justify-between flex-wrap gap-2">
+        <h4 class="font-bold text-[#1f1f1f] flex items-center gap-1.5">
+          <span>🛡️</span>
+          <span>Transparência de Dados &amp; Política de Privacidade (Data Collection &amp; Privacy Policy Summary)</span>
+        </h4>
+        <div class="flex items-center gap-3 text-[11px] font-semibold">
+          <a href="/privacy" class="text-[#0b57d0] hover:underline">Ler Política de Privacidade Completa ↗</a>
+          <span>&bull;</span>
+          <a href="/terms" class="text-[#0b57d0] hover:underline">Termos de Serviço ↗</a>
+        </div>
+      </div>
+      <p class="leading-relaxed">
+        <strong>Coleta e Uso de Dados (Data Collection &amp; Usage):</strong> O aplicativo <strong>Roupeiro Virtual</strong> (<code class="font-mono text-[11px]">https://roupeiro-virtual.fbatagin.demo.altostrat.com</code>) coleta seu endereço de e-mail (<code class="font-mono text-[11px]">userinfo.email</code>) e perfil público (<code class="font-mono text-[11px]">userinfo.profile</code>) exclusivamente para autenticação via Google Firebase Auth e isolamento individual do seu guarda-roupa virtual. As fotos de roupas enviadas são armazenadas com segurança no Google Cloud Storage e classificadas com IA (Gemini) apenas para organização pessoal. Não vendemos nem compartilhamos seus dados com terceiros. O uso das informações recebidas das APIs do Google adere integralmente à <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank" rel="noopener noreferrer" class="text-[#0b57d0] underline">Google API Services User Data Policy</a> (incluindo os requisitos de <em>Limited Use</em>).
+      </p>
     </div>
   </div>
 
@@ -1627,6 +1645,6 @@
   </footer>
 
   <!-- Main Application Logic -->
-  <script src="/static/app.js?v=20260910b"></script>
+  <script src="/static/app.js?v=20260911a"></script>
 </body>
 </html>

@@ -82,8 +82,8 @@
         </h1>
         <p class="text-sm text-[#444746] mt-2">
           <strong>Aplicação:</strong> Roupeiro Virtual &bull; 
-          <strong>Domínio:</strong> <span class="text-[#1f1f1f] font-mono text-xs">roupeiro-virtual.app</span> &bull; 
-          <strong>Última atualização:</strong> 8 de setembro de 2026
+          <strong>Domínio Oficial:</strong> <span class="text-[#1f1f1f] font-mono text-xs">https://roupeiro-virtual.fbatagin.demo.altostrat.com</span> &bull; 
+          <strong>Última atualização:</strong> 11 de setembro de 2026
         </p>
       </div>
 
@@ -91,13 +91,13 @@
       <section class="space-y-4 text-[#444746] leading-relaxed">
         <h2 class="text-xl font-bold text-[#1f1f1f] flex items-center gap-2">
           <span class="w-7 h-7 rounded-lg bg-[#edf2fa] text-[#0b57d0] border border-[#c2d7fa] flex items-center justify-center text-sm">1</span>
-          Introdução e Visão Geral
+          Introdução e Visão Geral (Introduction &amp; Overview)
         </h2>
         <p>
-          O <strong>Roupeiro Virtual</strong> ("nós", "nosso" ou "a aplicação") é uma plataforma de organização e catalogação digital de roupas e guarda-roupa pessoal, desenvolvida e operada pela equipe do <strong>Roupeiro Virtual</strong> (<span class="font-mono text-xs text-[#0b57d0]">suporte@roupeiro-virtual.app</span>).
+          O <strong>Roupeiro Virtual</strong> ("nós", "nosso" ou "a aplicação", acessível em <a href="https://roupeiro-virtual.fbatagin.demo.altostrat.com" class="text-[#0b57d0] underline">https://roupeiro-virtual.fbatagin.demo.altostrat.com</a>) é uma plataforma de organização e catalogação digital de roupas e guarda-roupa pessoal com inteligência artificial, desenvolvida e operada pela equipe do <strong>Roupeiro Virtual</strong> (<span class="font-mono text-xs text-[#0b57d0]">fbatagin@google.com</span>).
         </p>
         <p>
-          Esta Política de Privacidade descreve com total transparência como coletamos, acessamos, utilizamos, armazenamos, protegemos e compartilhamos os dados dos usuários ao utilizar a aplicação, bem como seus direitos e as medidas de segurança adotadas em conformidade com as diretrizes da <strong>Google API Services User Data Policy</strong> e da legislação aplicável de proteção de dados.
+          Esta Política de Privacidade descreve detalhadamente quais dados pessoais e escopos OAuth coletamos, acessamos, utilizamos, armazenamos e protegemos, em total conformidade com as diretrizes da <strong>Google API Services User Data Policy</strong> (incluindo os requisitos de <em>Limited Use</em>) e da Lei Geral de Proteção de Dados (LGPD).
         </p>
       </section>
 
@@ -105,26 +105,26 @@
       <section class="space-y-4 text-[#444746] leading-relaxed">
         <h2 class="text-xl font-bold text-[#1f1f1f] flex items-center gap-2">
           <span class="w-7 h-7 rounded-lg bg-[#edf2fa] text-[#0b57d0] border border-[#c2d7fa] flex items-center justify-center text-sm">2</span>
-          Dados Pessoais Coletados e Acessados
+          Dados Pessoais Coletados e Escopos Google OAuth Acessados (Data Collection &amp; OAuth Scopes)
         </h2>
         <p>
-          O Roupeiro Virtual coleta e acessa apenas as informações estritamente necessárias para o fornecimento dos recursos do aplicativo:
+          O Roupeiro Virtual solicita apenas os escopos mínimos e estritamente necessários para autenticação e funcionamento do guarda-roupa virtual:
         </p>
         <div class="grid sm:grid-cols-2 gap-4 mt-3">
           <div class="p-4 rounded-2xl bg-[#f8fafd] border border-[#e0e2ec]">
             <div class="font-semibold text-[#1f1f1f] mb-1 flex items-center gap-2">
-              <span>🔐</span> Dados da Conta Google (Firebase Auth)
+              <span>🔐</span> Dados de Autenticação Google (<code class="text-[10px] bg-slate-200 px-1 py-0.5 rounded">userinfo.email</code> e <code class="text-[10px] bg-slate-200 px-1 py-0.5 rounded">userinfo.profile</code>)
             </div>
             <p class="text-xs text-[#444746]">
-              Ao efetuar login via <em>Sign in with Google</em>, obtemos seu <strong>Nome completo</strong>, <strong>Endereço de e-mail</strong>, <strong>Foto de perfil</strong> e o identificador único da conta (Google UID). Esses dados são utilizados exclusivamente para autenticação, isolamento do seu roupeiro pessoal e identificação da sua sessão.
+              Ao efetuar login via <em>Sign in with Google</em> (Firebase Authentication), solicitamos os escopos <code class="text-[11px] font-mono">https://www.googleapis.com/auth/userinfo.email</code> e <code class="text-[11px] font-mono">https://www.googleapis.com/auth/userinfo.profile</code> para obter seu <strong>Nome completo</strong>, <strong>Endereço de e-mail principal</strong>, <strong>Foto de perfil pública</strong> e identificador único (UID). Esses dados são usados exclusivamente para identificar sua conta e isolar seu roupeiro pessoal.
             </p>
           </div>
           <div class="p-4 rounded-2xl bg-[#f8fafd] border border-[#e0e2ec]">
             <div class="font-semibold text-[#1f1f1f] mb-1 flex items-center gap-2">
-              <span>📸</span> Google Fotos (Opcional - Escopo Sensível)
+              <span>📸</span> Google Fotos Criadas pelo App (<code class="text-[10px] bg-slate-200 px-1 py-0.5 rounded">photoslibrary.readonly.appcreateddata</code>)
             </div>
             <p class="text-xs text-[#444746]">
-              Caso você opte expressamente por utilizar o recurso de importação de fotos da sua galeria via Google Fotos (<code class="text-[11px] bg-slate-200 px-1 py-0.5 rounded">photoslibrary.readonly</code>), a aplicação acessa apenas as mídias (fotos e metadados de criação) que você visualiza e seleciona explicitamente para adicionar ao seu armário virtual.
+              O escopo <code class="text-[11px] font-mono">https://www.googleapis.com/auth/photoslibrary.readonly.appcreateddata</code> é utilizado de forma opcional apenas para ler e gerenciar fotos de peças de vestuário criadas ou importadas especificamente pelo próprio aplicativo Roupeiro Virtual.
             </p>
           </div>
           <div class="p-4 rounded-2xl bg-[#f8fafd] border border-[#e0e2ec]">
