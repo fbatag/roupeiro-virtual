@@ -1936,9 +1936,12 @@
   const cameraQueueStrip = document.getElementById("cameraQueueStrip");
   const cameraQueueCount = document.getElementById("cameraQueueCount");
   const clearCameraQueueBtn = document.getElementById("clearCameraQueueBtn");
+  const cameraDeviceSelect = document.getElementById("cameraDeviceSelect");
 
   let activeCameraStream = null;
   let cameraFacingMode = "environment"; // defaults to rear camera on mobile, falls back automatically on desktop
+  let selectedCameraDeviceId = "";
+  let availableVideoDevices = [];
   let cameraQueuedFiles = [];
   let currentPendingCameraFile = null;
 
@@ -1949,6 +1952,41 @@
     }
     if (cameraVideoPreview) {
       cameraVideoPreview.srcObject = null;
+    }
+  }
+
+  async function populateCameraDeviceList() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      availableVideoDevices = devices.filter(d => d.kind === "videoinput");
+
+      // Determine currently active deviceId from stream track if available
+      let activeDeviceId = selectedCameraDeviceId;
+      if (activeCameraStream) {
+        const videoTrack = activeCameraStream.getVideoTracks()[0];
+        if (videoTrack && videoTrack.getSettings) {
+          const settings = videoTrack.getSettings();
+          if (settings && settings.deviceId) {
+            activeDeviceId = settings.deviceId;
+            selectedCameraDeviceId = activeDeviceId;
+          }
+        }
+      }
+
+      if (cameraDeviceSelect) {
+        if (availableVideoDevices.length === 0) {
+          cameraDeviceSelect.innerHTML = `<option value="">Padrão do Sistema</option>`;
+        } else {
+          cameraDeviceSelect.innerHTML = availableVideoDevices.map((dev, idx) => {
+            const label = dev.label || `Câmera ${idx + 1}${idx > 0 ? " (USB / Externa)" : ""}`;
+            const isSelected = dev.deviceId && dev.deviceId === activeDeviceId ? "selected" : "";
+            return `<option value="${dev.deviceId}" ${isSelected}>${label}</option>`;
+          }).join("");
+        }
+      }
+    } catch (err) {
+      console.warn("Could not enumerate video devices:", err);
     }
   }
 
@@ -2025,16 +2063,22 @@
     }
 
     try {
-      const constraints = {
-        video: {
-          facingMode: { ideal: cameraFacingMode },
-          width: { ideal: 1920 },
-          height: { ideal: 1080 }
-        },
-        audio: false
+      const videoConstraints = {
+        width: { ideal: 1920 },
+        height: { ideal: 1080 }
       };
 
-      activeCameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+      if (selectedCameraDeviceId) {
+        videoConstraints.deviceId = { exact: selectedCameraDeviceId };
+      } else {
+        videoConstraints.facingMode = { ideal: cameraFacingMode };
+      }
+
+      activeCameraStream = await navigator.mediaDevices.getUserMedia({
+        video: videoConstraints,
+        audio: false
+      });
+
       if (cameraVideoPreview) {
         cameraVideoPreview.srcObject = activeCameraStream;
         await cameraVideoPreview.play().catch(() => {});
@@ -2043,8 +2087,10 @@
         cameraStatusBadge.innerHTML = `<span>🟢</span><span>Câmera Ativa</span>`;
         cameraStatusBadge.className = "text-emerald-700 font-semibold flex items-center gap-1";
       }
+
+      await populateCameraDeviceList();
     } catch (err) {
-      console.warn("Camera access failed with ideal constraints, trying fallback video:true:", err);
+      console.warn("Camera access failed with specific constraints, trying fallback video:true:", err);
       try {
         activeCameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
         if (cameraVideoPreview) {
@@ -2055,6 +2101,7 @@
           cameraStatusBadge.innerHTML = `<span>🟢</span><span>Câmera Ativa</span>`;
           cameraStatusBadge.className = "text-emerald-700 font-semibold flex items-center gap-1";
         }
+        await populateCameraDeviceList();
       } catch (fallbackErr) {
         console.error("Camera getUserMedia error:", fallbackErr);
         if (cameraVideoPreview) cameraVideoPreview.classList.add("hidden");
@@ -2102,9 +2149,29 @@
     cancelCameraBtn.addEventListener("click", closeCameraModal);
   }
 
+  if (cameraDeviceSelect) {
+    cameraDeviceSelect.addEventListener("change", async () => {
+      selectedCameraDeviceId = cameraDeviceSelect.value;
+      await startCameraStream();
+    });
+  }
+
   if (switchCameraFacingBtn) {
     switchCameraFacingBtn.addEventListener("click", async () => {
-      cameraFacingMode = cameraFacingMode === "environment" ? "user" : "environment";
+      await populateCameraDeviceList();
+      if (availableVideoDevices.length > 1) {
+        // Cycle through all connected video devices (Integrated Webcam <-> USB Webcam)
+        const currentIdx = availableVideoDevices.findIndex(d => d.deviceId === selectedCameraDeviceId);
+        const nextIdx = (currentIdx + 1) % availableVideoDevices.length;
+        selectedCameraDeviceId = availableVideoDevices[nextIdx].deviceId;
+        if (cameraDeviceSelect) {
+          cameraDeviceSelect.value = selectedCameraDeviceId;
+        }
+      } else {
+        // Fallback on mobile devices where deviceId list has 1 entry
+        selectedCameraDeviceId = "";
+        cameraFacingMode = cameraFacingMode === "environment" ? "user" : "environment";
+      }
       await startCameraStream();
     });
   }

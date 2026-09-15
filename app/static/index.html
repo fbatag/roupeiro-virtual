@@ -1110,16 +1110,23 @@
         </button>
       </div>
 
-      <!-- Toolbar: Switch Camera & Native Mobile Camera shortcut -->
+      <!-- Toolbar: Select Camera Device (USB / Integrated), Switch & Native Mobile Camera shortcut -->
       <div class="px-6 py-2.5 bg-[#f1f4f9] border-b border-[#e0e2ec] flex items-center justify-between flex-wrap gap-2 text-xs">
-        <div class="flex items-center gap-2">
-          <button id="switchCameraFacingBtn" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-[#c4c7d0] text-[#1f1f1f] font-semibold transition">
+        <div class="flex items-center flex-wrap gap-2">
+          <div class="flex items-center gap-1.5 bg-white border border-[#c4c7d0] rounded-lg px-2.5 py-1">
+            <span>🎥</span>
+            <label for="cameraDeviceSelect" class="font-semibold text-[#444746]">Câmera:</label>
+            <select id="cameraDeviceSelect" class="bg-transparent text-[#1f1f1f] font-semibold focus:outline-none max-w-[220px] sm:max-w-[280px] truncate cursor-pointer">
+              <option value="">Padrão do Sistema</option>
+            </select>
+          </div>
+          <button id="switchCameraFacingBtn" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-[#c4c7d0] text-[#1f1f1f] font-semibold transition" title="Alternar entre as câmeras conectadas (Integrada / USB / Traseira / Frontal)">
             <span>🔄</span>
-            <span>Inverter Câmera (Frontal/Traseira)</span>
+            <span>Trocar Câmera</span>
           </button>
           <button id="openNativeCameraBtn" type="button" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#edf2fa] hover:bg-[#d3e3fd] border border-[#d3e3fd] text-[#0b57d0] font-semibold transition">
             <span>📱</span>
-            <span>Abrir App de Câmera Nativa</span>
+            <span>App Nativo</span>
           </button>
         </div>
         <div id="cameraStatusBadge" class="text-emerald-700 font-semibold flex items-center gap-1">
@@ -1785,6 +1792,6 @@
   </footer>
 
   <!-- Main Application Logic -->
-  <script src="/static/app.js?v=20260915a"></script>
+  <script src="/static/app.js?v=20260915b"></script>
 </body>
 </html>
