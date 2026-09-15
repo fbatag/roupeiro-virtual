@@ -1906,6 +1906,322 @@
     });
   }
 
+  // 4.5 Camera Capture Integration (Desktop Webcam & Mobile Rear/Front Camera)
+  const openCameraModalBtn = document.getElementById("openCameraModalBtn");
+  const cameraCaptureModal = document.getElementById("cameraCaptureModal");
+  const closeCameraModalBtn = document.getElementById("closeCameraModalBtn");
+  const cancelCameraBtn = document.getElementById("cancelCameraBtn");
+  const switchCameraFacingBtn = document.getElementById("switchCameraFacingBtn");
+  const openNativeCameraBtn = document.getElementById("openNativeCameraBtn");
+  const fallbackNativeCameraBtn = document.getElementById("fallbackNativeCameraBtn");
+  const nativeCameraInput = document.getElementById("nativeCameraInput");
+
+  const cameraVideoPreview = document.getElementById("cameraVideoPreview");
+  const cameraCapturedImagePreview = document.getElementById("cameraCapturedImagePreview");
+  const cameraCaptureCanvas = document.getElementById("cameraCaptureCanvas");
+  const cameraErrorBanner = document.getElementById("cameraErrorBanner");
+  const cameraErrorMessage = document.getElementById("cameraErrorMessage");
+  const cameraFramingGuide = document.getElementById("cameraFramingGuide");
+  const cameraStatusBadge = document.getElementById("cameraStatusBadge");
+
+  const cameraLiveControls = document.getElementById("cameraLiveControls");
+  const cameraReviewControls = document.getElementById("cameraReviewControls");
+  const snapPhotoBtn = document.getElementById("snapPhotoBtn");
+  const retakePhotoBtn = document.getElementById("retakePhotoBtn");
+  const addAnotherPhotoBtn = document.getElementById("addAnotherPhotoBtn");
+  const confirmCameraUploadBtn = document.getElementById("confirmCameraUploadBtn");
+  const uploadQueuedPhotosEarlyBtn = document.getElementById("uploadQueuedPhotosEarlyBtn");
+
+  const cameraQueueStripContainer = document.getElementById("cameraQueueStripContainer");
+  const cameraQueueStrip = document.getElementById("cameraQueueStrip");
+  const cameraQueueCount = document.getElementById("cameraQueueCount");
+  const clearCameraQueueBtn = document.getElementById("clearCameraQueueBtn");
+
+  let activeCameraStream = null;
+  let cameraFacingMode = "environment"; // defaults to rear camera on mobile, falls back automatically on desktop
+  let cameraQueuedFiles = [];
+  let currentPendingCameraFile = null;
+
+  function stopCameraStream() {
+    if (activeCameraStream) {
+      activeCameraStream.getTracks().forEach(track => track.stop());
+      activeCameraStream = null;
+    }
+    if (cameraVideoPreview) {
+      cameraVideoPreview.srcObject = null;
+    }
+  }
+
+  function updateCameraQueueUI() {
+    const totalCount = cameraQueuedFiles.length + (currentPendingCameraFile ? 1 : 0);
+    document.querySelectorAll(".camera-total-count").forEach(el => {
+      el.textContent = totalCount;
+    });
+
+    if (cameraQueueCount) {
+      cameraQueueCount.textContent = cameraQueuedFiles.length;
+    }
+
+    if (uploadQueuedPhotosEarlyBtn) {
+      if (cameraQueuedFiles.length > 0 && !currentPendingCameraFile) {
+        uploadQueuedPhotosEarlyBtn.classList.remove("hidden");
+      } else {
+        uploadQueuedPhotosEarlyBtn.classList.add("hidden");
+      }
+    }
+
+    if (cameraQueueStripContainer && cameraQueueStrip) {
+      if (cameraQueuedFiles.length > 0) {
+        cameraQueueStripContainer.classList.remove("hidden");
+        cameraQueueStrip.innerHTML = cameraQueuedFiles.map((item, idx) => `
+          <div class="relative w-14 h-14 rounded-lg overflow-hidden border border-[#c4c7d0] shrink-0 group bg-black">
+            <img src="${item.previewUrl}" class="w-full h-full object-cover" alt="Foto ${idx + 1}" />
+            <button type="button" data-idx="${idx}" class="remove-queued-photo-btn absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-black/70 text-white text-[10px] flex items-center justify-center hover:bg-rose-600">
+              ✕
+            </button>
+          </div>
+        `).join("");
+
+        cameraQueueStrip.querySelectorAll(".remove-queued-photo-btn").forEach(btn => {
+          btn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const idx = parseInt(btn.getAttribute("data-idx"), 10);
+            if (!isNaN(idx) && cameraQueuedFiles[idx]) {
+              URL.revokeObjectURL(cameraQueuedFiles[idx].previewUrl);
+              cameraQueuedFiles.splice(idx, 1);
+              updateCameraQueueUI();
+            }
+          });
+        });
+      } else {
+        cameraQueueStripContainer.classList.add("hidden");
+        cameraQueueStrip.innerHTML = "";
+      }
+    }
+  }
+
+  async function startCameraStream() {
+    stopCameraStream();
+    if (cameraErrorBanner) cameraErrorBanner.classList.add("hidden");
+    if (cameraVideoPreview) cameraVideoPreview.classList.remove("hidden");
+    if (cameraCapturedImagePreview) cameraCapturedImagePreview.classList.add("hidden");
+    if (cameraFramingGuide) cameraFramingGuide.classList.remove("hidden");
+    if (cameraLiveControls) cameraLiveControls.classList.remove("hidden");
+    if (cameraReviewControls) cameraReviewControls.classList.add("hidden");
+    if (snapPhotoBtn) snapPhotoBtn.disabled = false;
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      if (cameraVideoPreview) cameraVideoPreview.classList.add("hidden");
+      if (cameraFramingGuide) cameraFramingGuide.classList.add("hidden");
+      if (cameraErrorBanner) cameraErrorBanner.classList.remove("hidden");
+      if (cameraErrorMessage) {
+        cameraErrorMessage.textContent = "Seu navegador não suporta acesso direto à câmera nesta conexão ou dispositivo. Use o botão abaixo para abrir a câmera do sistema.";
+      }
+      if (cameraStatusBadge) {
+        cameraStatusBadge.innerHTML = `<span>⚠️</span><span>Modo Nativo</span>`;
+        cameraStatusBadge.className = "text-amber-700 font-semibold flex items-center gap-1";
+      }
+      return;
+    }
+
+    try {
+      const constraints = {
+        video: {
+          facingMode: { ideal: cameraFacingMode },
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
+        },
+        audio: false
+      };
+
+      activeCameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+      if (cameraVideoPreview) {
+        cameraVideoPreview.srcObject = activeCameraStream;
+        await cameraVideoPreview.play().catch(() => {});
+      }
+      if (cameraStatusBadge) {
+        cameraStatusBadge.innerHTML = `<span>🟢</span><span>Câmera Ativa</span>`;
+        cameraStatusBadge.className = "text-emerald-700 font-semibold flex items-center gap-1";
+      }
+    } catch (err) {
+      console.warn("Camera access failed with ideal constraints, trying fallback video:true:", err);
+      try {
+        activeCameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+        if (cameraVideoPreview) {
+          cameraVideoPreview.srcObject = activeCameraStream;
+          await cameraVideoPreview.play().catch(() => {});
+        }
+        if (cameraStatusBadge) {
+          cameraStatusBadge.innerHTML = `<span>🟢</span><span>Câmera Ativa</span>`;
+          cameraStatusBadge.className = "text-emerald-700 font-semibold flex items-center gap-1";
+        }
+      } catch (fallbackErr) {
+        console.error("Camera getUserMedia error:", fallbackErr);
+        if (cameraVideoPreview) cameraVideoPreview.classList.add("hidden");
+        if (cameraFramingGuide) cameraFramingGuide.classList.add("hidden");
+        if (cameraErrorBanner) cameraErrorBanner.classList.remove("hidden");
+        if (cameraErrorMessage) {
+          cameraErrorMessage.textContent = "Permissão de câmera negada ou câmera não detectada. Você pode clicar abaixo para tirar foto usando o aplicativo nativo do seu dispositivo.";
+        }
+        if (cameraStatusBadge) {
+          cameraStatusBadge.innerHTML = `<span>🔴</span><span>Sem Acesso</span>`;
+          cameraStatusBadge.className = "text-rose-700 font-semibold flex items-center gap-1";
+        }
+      }
+    }
+  }
+
+  function closeCameraModal() {
+    stopCameraStream();
+    if (currentPendingCameraFile && currentPendingCameraFile.previewUrl) {
+      URL.revokeObjectURL(currentPendingCameraFile.previewUrl);
+    }
+    currentPendingCameraFile = null;
+    cameraQueuedFiles.forEach(item => {
+      if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+    });
+    cameraQueuedFiles = [];
+    updateCameraQueueUI();
+    if (cameraCaptureModal) cameraCaptureModal.classList.add("hidden");
+  }
+
+  if (openCameraModalBtn) {
+    openCameraModalBtn.addEventListener("click", async () => {
+      currentPendingCameraFile = null;
+      cameraQueuedFiles = [];
+      updateCameraQueueUI();
+      if (cameraCaptureModal) cameraCaptureModal.classList.remove("hidden");
+      await startCameraStream();
+    });
+  }
+
+  if (closeCameraModalBtn) {
+    closeCameraModalBtn.addEventListener("click", closeCameraModal);
+  }
+  if (cancelCameraBtn) {
+    cancelCameraBtn.addEventListener("click", closeCameraModal);
+  }
+
+  if (switchCameraFacingBtn) {
+    switchCameraFacingBtn.addEventListener("click", async () => {
+      cameraFacingMode = cameraFacingMode === "environment" ? "user" : "environment";
+      await startCameraStream();
+    });
+  }
+
+  function triggerNativeCameraFallback() {
+    closeCameraModal();
+    if (nativeCameraInput) {
+      nativeCameraInput.value = "";
+      nativeCameraInput.click();
+    }
+  }
+
+  if (openNativeCameraBtn) {
+    openNativeCameraBtn.addEventListener("click", triggerNativeCameraFallback);
+  }
+  if (fallbackNativeCameraBtn) {
+    fallbackNativeCameraBtn.addEventListener("click", triggerNativeCameraFallback);
+  }
+
+  if (nativeCameraInput) {
+    nativeCameraInput.addEventListener("change", (e) => {
+      if (e.target.files && e.target.files.length > 0) {
+        handleFilesUpload(Array.from(e.target.files));
+      }
+    });
+  }
+
+  if (snapPhotoBtn) {
+    snapPhotoBtn.addEventListener("click", () => {
+      if (!cameraVideoPreview || !activeCameraStream) return;
+      const width = cameraVideoPreview.videoWidth || 1280;
+      const height = cameraVideoPreview.videoHeight || 720;
+
+      cameraCaptureCanvas.width = width;
+      cameraCaptureCanvas.height = height;
+      const ctx = cameraCaptureCanvas.getContext("2d");
+      ctx.drawImage(cameraVideoPreview, 0, 0, width, height);
+
+      cameraCaptureCanvas.toBlob((blob) => {
+        if (!blob) return;
+        const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+        const file = new File([blob], `camera_${timestamp}.jpg`, { type: "image/jpeg" });
+        const previewUrl = URL.createObjectURL(blob);
+
+        currentPendingCameraFile = { file, previewUrl };
+
+        if (cameraCapturedImagePreview) {
+          cameraCapturedImagePreview.src = previewUrl;
+          cameraCapturedImagePreview.classList.remove("hidden");
+        }
+        if (cameraVideoPreview) cameraVideoPreview.classList.add("hidden");
+        if (cameraFramingGuide) cameraFramingGuide.classList.add("hidden");
+        if (cameraLiveControls) cameraLiveControls.classList.add("hidden");
+        if (cameraReviewControls) cameraReviewControls.classList.remove("hidden");
+        updateCameraQueueUI();
+      }, "image/jpeg", 0.92);
+    });
+  }
+
+  if (retakePhotoBtn) {
+    retakePhotoBtn.addEventListener("click", () => {
+      if (currentPendingCameraFile && currentPendingCameraFile.previewUrl) {
+        URL.revokeObjectURL(currentPendingCameraFile.previewUrl);
+      }
+      currentPendingCameraFile = null;
+      if (cameraCapturedImagePreview) cameraCapturedImagePreview.classList.add("hidden");
+      if (cameraVideoPreview) cameraVideoPreview.classList.remove("hidden");
+      if (cameraFramingGuide) cameraFramingGuide.classList.remove("hidden");
+      if (cameraReviewControls) cameraReviewControls.classList.add("hidden");
+      if (cameraLiveControls) cameraLiveControls.classList.remove("hidden");
+      updateCameraQueueUI();
+    });
+  }
+
+  if (addAnotherPhotoBtn) {
+    addAnotherPhotoBtn.addEventListener("click", () => {
+      if (currentPendingCameraFile) {
+        cameraQueuedFiles.push(currentPendingCameraFile);
+        currentPendingCameraFile = null;
+      }
+      if (cameraCapturedImagePreview) cameraCapturedImagePreview.classList.add("hidden");
+      if (cameraVideoPreview) cameraVideoPreview.classList.remove("hidden");
+      if (cameraFramingGuide) cameraFramingGuide.classList.remove("hidden");
+      if (cameraReviewControls) cameraReviewControls.classList.add("hidden");
+      if (cameraLiveControls) cameraLiveControls.classList.remove("hidden");
+      updateCameraQueueUI();
+    });
+  }
+
+  if (clearCameraQueueBtn) {
+    clearCameraQueueBtn.addEventListener("click", () => {
+      cameraQueuedFiles.forEach(item => {
+        if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+      });
+      cameraQueuedFiles = [];
+      updateCameraQueueUI();
+    });
+  }
+
+  async function uploadAllCapturedCameraPhotos() {
+    const filesToUpload = cameraQueuedFiles.map(item => item.file);
+    if (currentPendingCameraFile && currentPendingCameraFile.file) {
+      filesToUpload.push(currentPendingCameraFile.file);
+    }
+    closeCameraModal();
+    if (filesToUpload.length > 0) {
+      await handleFilesUpload(filesToUpload);
+    }
+  }
+
+  if (confirmCameraUploadBtn) {
+    confirmCameraUploadBtn.addEventListener("click", uploadAllCapturedCameraPhotos);
+  }
+  if (uploadQueuedPhotosEarlyBtn) {
+    uploadQueuedPhotosEarlyBtn.addEventListener("click", uploadAllCapturedCameraPhotos);
+  }
+
   // 5. Google Photos Integration
   let pickerPollInterval = null;
   let currentPickerUri = null;
