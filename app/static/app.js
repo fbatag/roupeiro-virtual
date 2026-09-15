@@ -1912,9 +1912,6 @@
   const closeCameraModalBtn = document.getElementById("closeCameraModalBtn");
   const cancelCameraBtn = document.getElementById("cancelCameraBtn");
   const switchCameraFacingBtn = document.getElementById("switchCameraFacingBtn");
-  const openNativeCameraBtn = document.getElementById("openNativeCameraBtn");
-  const fallbackNativeCameraBtn = document.getElementById("fallbackNativeCameraBtn");
-  const nativeCameraInput = document.getElementById("nativeCameraInput");
 
   const cameraVideoPreview = document.getElementById("cameraVideoPreview");
   const cameraCapturedImagePreview = document.getElementById("cameraCapturedImagePreview");
@@ -2173,29 +2170,6 @@
         cameraFacingMode = cameraFacingMode === "environment" ? "user" : "environment";
       }
       await startCameraStream();
-    });
-  }
-
-  function triggerNativeCameraFallback() {
-    closeCameraModal();
-    if (nativeCameraInput) {
-      nativeCameraInput.value = "";
-      nativeCameraInput.click();
-    }
-  }
-
-  if (openNativeCameraBtn) {
-    openNativeCameraBtn.addEventListener("click", triggerNativeCameraFallback);
-  }
-  if (fallbackNativeCameraBtn) {
-    fallbackNativeCameraBtn.addEventListener("click", triggerNativeCameraFallback);
-  }
-
-  if (nativeCameraInput) {
-    nativeCameraInput.addEventListener("change", (e) => {
-      if (e.target.files && e.target.files.length > 0) {
-        handleFilesUpload(Array.from(e.target.files));
-      }
     });
   }
 
