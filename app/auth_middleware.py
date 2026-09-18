@@ -41,11 +41,17 @@ async def get_current_user(authorization: str = Header(None)) -> dict:
         if uid:
             email = claims.get("email", "")
             name = claims.get("name") or (email.split("@")[0] if email else "Usuário Google")
+            picture = claims.get("picture", "")
+            try:
+                from app.firestore_service import register_user_profile
+                register_user_profile(uid, email, name, picture)
+            except Exception:
+                pass
             return {
                 "uid": uid,
                 "email": email,
                 "name": name,
-                "picture": claims.get("picture", "")
+                "picture": picture
             }
     except Exception as e:
         logger.debug(f"Firebase token verification failed: {e}")
@@ -58,11 +64,17 @@ async def get_current_user(authorization: str = Header(None)) -> dict:
             if uid:
                 email = claims.get("email", "")
                 name = claims.get("name") or (email.split("@")[0] if email else "Usuário Google")
+                picture = claims.get("picture", "")
+                try:
+                    from app.firestore_service import register_user_profile
+                    register_user_profile(uid, email, name, picture)
+                except Exception:
+                    pass
                 return {
                     "uid": uid,
                     "email": email,
                     "name": name,
-                    "picture": claims.get("picture", "")
+                    "picture": picture
                 }
         except Exception as e:
             logger.debug(f"OAuth2 ID token verification (aud={aud}) failed: {e}")
@@ -77,11 +89,17 @@ async def get_current_user(authorization: str = Header(None)) -> dict:
                 if uid:
                     email = data.get("email", "")
                     name = data.get("name") or (email.split("@")[0] if email else "Usuário Google")
+                    picture = data.get("picture", "")
+                    try:
+                        from app.firestore_service import register_user_profile
+                        register_user_profile(uid, email, name, picture)
+                    except Exception:
+                        pass
                     return {
                         "uid": uid,
                         "email": email,
                         "name": name,
-                        "picture": data.get("picture", "")
+                        "picture": picture
                     }
     except Exception as e:
         logger.debug(f"Tokeninfo validation failed: {e}")

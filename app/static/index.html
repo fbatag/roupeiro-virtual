@@ -91,7 +91,11 @@
           </div>
 
           <!-- Authenticated: User Badge & Menu -->
-          <div id="authControls" class="hidden flex items-center gap-3">
+          <div id="authControls" class="hidden flex items-center gap-2 sm:gap-3">
+            <button type="button" id="openExportWardrobeHeaderBtn" title="Exportar guarda-roupa para outro usuário cadastrado" class="px-3.5 py-1.5 rounded-full bg-[#edf2fa] hover:bg-[#d3e3fd] text-[#0b57d0] border border-[#c2d7fa] text-xs font-bold transition flex items-center gap-1.5 shadow-2xs">
+              <span>📤</span>
+              <span class="hidden sm:inline">Exportar Guarda-Roupa</span>
+            </button>
             <div class="flex items-center gap-2 pl-1.5 pr-3.5 py-1 rounded-full bg-white border border-[#e0e2ec] shadow-2xs">
               <img id="userAvatar" src="" alt="Avatar" class="w-7 h-7 rounded-full object-cover bg-slate-200">
               <div class="text-left hidden md:block">
@@ -232,6 +236,32 @@
 
   <!-- MAIN CONTENT CONTAINER (PROTECTED: ONLY SHOWN WHEN AUTHENTICATED) -->
   <main id="appProtectedContent" class="hidden flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- BANNER DE NOTIFICAÇÃO: GUARDA-ROUPA RECEBIDO DE OUTRO USUÁRIO -->
+    <div id="incomingExportsNotificationBanner" class="hidden bg-gradient-to-r from-emerald-900 via-teal-800 to-emerald-700 rounded-2xl p-5 text-white shadow-lg border border-emerald-400/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div class="flex items-start sm:items-center gap-3.5">
+        <div class="w-12 h-12 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center text-2xl shrink-0 border border-white/25 shadow-inner">
+          🎁
+        </div>
+        <div>
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-400/20 border border-emerald-300/30 text-[11px] font-bold text-emerald-100 mb-1">
+            <span>✨ Guarda-Roupa Compartilhado com Você</span>
+          </div>
+          <h4 id="incomingBannerTitle" class="text-base sm:text-lg font-bold text-white leading-snug">
+            Você recebeu um guarda-roupa exportado!
+          </h4>
+          <p id="incomingBannerSubtitle" class="text-xs text-emerald-100 mt-0.5">
+            Clique ao lado para revisar as peças e decidir se deseja adicioná-las ao seu guarda-roupa.
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+        <button type="button" id="openIncomingExportBannerBtn" class="w-full sm:w-auto px-5 py-2.5 rounded-full bg-white hover:bg-emerald-50 text-emerald-950 font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2">
+          <span>👀</span>
+          <span>Revisar &amp; Adicionar Peças</span>
+        </button>
+      </div>
+    </div>
 
     <!-- HERO & UPLOAD SECTION (Cloud Style Panel) -->
     <section class="gc-panel p-6 sm:p-8 relative overflow-hidden">
@@ -536,10 +566,16 @@
           <div class="flex items-center gap-2 flex-wrap" id="categoryTabsContainer">
             <!-- Dynamically populated tabs: Todas, Camisas, Calças, etc. -->
           </div>
-          <button type="button" id="openNewCategoryModalBtn" class="gc-btn-secondary shrink-0 px-3.5 py-1.5 text-xs self-start sm:self-auto" title="Criar nova categoria/tipo de peça">
-            <span>➕🏷️</span>
-            <span>Nova Categoria</span>
-          </button>
+          <div class="flex items-center gap-2 shrink-0 self-start sm:self-auto flex-wrap">
+            <button type="button" id="openExportWardrobeModalBtn" class="px-3.5 py-1.5 rounded-full bg-[#edf2fa] hover:bg-[#d3e3fd] text-[#0b57d0] border border-[#c2d7fa] text-xs font-bold transition flex items-center gap-1.5 shadow-2xs" title="Exportar guarda-roupa para outro usuário cadastrado">
+              <span>📤</span>
+              <span>Exportar Guarda-Roupa</span>
+            </button>
+            <button type="button" id="openNewCategoryModalBtn" class="gc-btn-secondary shrink-0 px-3.5 py-1.5 text-xs" title="Criar nova categoria/tipo de peça">
+              <span>➕🏷️</span>
+              <span>Nova Categoria</span>
+            </button>
+          </div>
         </div>
 
       </div>
@@ -1764,6 +1800,165 @@
     </div>
   </div>
 
+  <!-- MODAL EXPORTAR GUARDA-ROUPA PARA OUTRO USUÁRIO -->
+  <div id="exportWardrobeModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-lg w-full border border-[#e0e2ec] shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-[#e0e2ec] flex items-center justify-between bg-[#f8fafd] shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-[#edf2fa] border border-[#c2d7fa] flex items-center justify-center text-xl shadow-sm">
+            📤
+          </div>
+          <div>
+            <h4 class="text-base font-bold text-[#1f1f1f]">Exportar Guarda-Roupa</h4>
+            <p class="text-xs text-[#444746]">Compartilhe suas peças com outro usuário cadastrado</p>
+          </div>
+        </div>
+        <button type="button" id="closeExportWardrobeModalBtn" class="w-8 h-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200 flex items-center justify-center transition font-bold">
+          ❌
+        </button>
+      </div>
+
+      <!-- Body -->
+      <form id="exportWardrobeForm" class="p-6 space-y-4 overflow-y-auto custom-scroll">
+        <div class="p-3.5 bg-[#edf2fa] border border-[#c2d7fa] rounded-2xl flex items-start gap-2.5 text-xs text-[#1f1f1f]">
+          <span class="text-base shrink-0">💡</span>
+          <span>Informe o e-mail de um usuário <strong>já cadastrado</strong> no Roupeiro Virtual. Quando ele entrar na aplicação, verá o guarda-roupa exportado e poderá adicioná-lo ao seu!</span>
+        </div>
+
+        <!-- E-mail do Destinatário -->
+        <div>
+          <label for="exportTargetEmailInput" class="block text-xs font-bold text-[#1f1f1f] mb-1.5">
+            E-mail do Usuário Destinatário <span class="text-rose-600">*</span>
+          </label>
+          <input
+            type="email"
+            id="exportTargetEmailInput"
+            required
+            placeholder="exemplo@gmail.com"
+            class="w-full px-3.5 py-2.5 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/30 font-medium"
+          >
+        </div>
+
+        <!-- Filtro de Peças a Exportar -->
+        <div>
+          <div class="flex items-center justify-between mb-1.5">
+            <label for="exportCategoryFilterSelect" class="block text-xs font-bold text-[#1f1f1f]">
+              Quais peças deseja exportar?
+            </label>
+            <span id="exportPiecesCountBadge" class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#d3e3fd] text-[#041e49]">
+              0 peças
+            </span>
+          </div>
+          <select
+            id="exportCategoryFilterSelect"
+            class="w-full px-3.5 py-2.5 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/30 bg-white font-medium text-[#1f1f1f]"
+          >
+            <option value="">📦 Todo o meu guarda-roupa</option>
+          </select>
+        </div>
+
+        <!-- Mensagem Opcional -->
+        <div>
+          <label for="exportMessageInput" class="block text-xs font-bold text-[#1f1f1f] mb-1.5">
+            Mensagem para o destinatário <span class="text-[#5e5e5e] font-normal">(opcional)</span>
+          </label>
+          <textarea
+            id="exportMessageInput"
+            rows="2"
+            maxlength="400"
+            placeholder="Ex: Segue meu guarda-roupa para você importar no seu perfil!"
+            class="w-full px-3.5 py-2 text-sm border border-[#e0e2ec] rounded-xl focus:outline-none focus:ring-2 focus:ring-[#0b57d0]/30"
+          ></textarea>
+        </div>
+
+        <!-- Status / Feedback Box -->
+        <div id="exportFeedbackBox" class="hidden p-3.5 rounded-2xl text-xs font-medium"></div>
+
+        <!-- Footer -->
+        <div class="pt-3 border-t border-[#e0e2ec] flex items-center justify-end gap-2">
+          <button type="button" id="cancelExportWardrobeBtn" class="gc-btn-secondary px-4 py-2 text-xs">
+            Cancelar
+          </button>
+          <button type="submit" id="confirmExportWardrobeBtn" class="gc-btn-primary px-5 py-2.5 text-xs font-bold flex items-center gap-1.5">
+            <span>📤</span>
+            <span>Exportar Guarda-Roupa</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL RECEBER / IMPORTAR GUARDA-ROUPA EXPORTADO POR OUTRO USUÁRIO -->
+  <div id="incomingExportModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] border border-[#e0e2ec] shadow-2xl overflow-hidden flex flex-col">
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-[#e0e2ec] flex items-center justify-between bg-gradient-to-r from-emerald-900 via-teal-800 to-emerald-700 text-white shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-white/15 border border-white/25 flex items-center justify-center text-2xl shadow-inner">
+            🎁
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h4 class="text-base sm:text-lg font-bold text-white">Guarda-Roupa Recebido!</h4>
+              <span id="incomingExportQueueBadge" class="hidden px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-300 text-slate-900">1 de 1</span>
+            </div>
+            <p id="incomingExportSenderSubtitle" class="text-xs text-emerald-100">
+              Enviado por outro usuário do Roupeiro Virtual
+            </p>
+          </div>
+        </div>
+        <button type="button" id="closeIncomingExportModalBtn" class="w-8 h-8 rounded-lg text-white/80 hover:text-white hover:bg-white/15 flex items-center justify-center transition font-bold" title="Fechar por enquanto">
+          ❌
+        </button>
+      </div>
+
+      <!-- Sender Info & Selection Controls Bar -->
+      <div class="px-6 py-3.5 bg-[#f8fafd] border-b border-[#e0e2ec] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+        <div class="space-y-1">
+          <div id="incomingExportSenderDetails" class="text-xs font-semibold text-[#1f1f1f]"></div>
+          <div id="incomingExportMessageBanner" class="hidden text-xs text-[#0b57d0] bg-[#edf2fa] border border-[#c2d7fa] px-3 py-1.5 rounded-xl italic"></div>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0 flex-wrap">
+          <span id="incomingSelectedCountText" class="text-xs font-bold text-[#0b57d0] bg-[#edf2fa] px-3 py-1 rounded-full border border-[#c2d7fa]">
+            0 selecionadas
+          </span>
+          <button type="button" id="selectAllIncomingItemsBtn" class="px-3 py-1 rounded-full text-xs font-semibold bg-white hover:bg-slate-100 text-[#1f1f1f] border border-[#e0e2ec] transition">
+            Marcar Todas
+          </button>
+          <button type="button" id="deselectAllIncomingItemsBtn" class="px-3 py-1 rounded-full text-xs font-semibold bg-white hover:bg-slate-100 text-[#5e5e5e] border border-[#e0e2ec] transition">
+            Desmarcar Todas
+          </button>
+        </div>
+      </div>
+
+      <!-- Items Preview Grid -->
+      <div class="p-6 overflow-y-auto flex-1 custom-scroll bg-white">
+        <div id="incomingExportItemsGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <!-- Dynamically populated cards -->
+        </div>
+      </div>
+
+      <!-- Footer: Accept or Decline -->
+      <div class="px-6 py-4 border-t border-[#e0e2ec] bg-[#f8fafd] flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
+        <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
+          <button type="button" id="declineIncomingExportBtn" class="px-4 py-2.5 rounded-full text-xs font-bold text-rose-700 bg-rose-50 hover:bg-rose-100 border border-rose-200 transition flex items-center gap-1.5">
+            <span>🗑️</span>
+            <span>Recusar Guarda-Roupa</span>
+          </button>
+          <button type="button" id="postponeIncomingExportBtn" class="gc-btn-secondary px-4 py-2.5 text-xs">
+            Decidir Depois
+          </button>
+        </div>
+        <button type="button" id="acceptIncomingExportBtn" class="w-full sm:w-auto px-6 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-md transition flex items-center justify-center gap-2">
+          <span>✅</span>
+          <span>Adicionar ao Meu Guarda-Roupa</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- FOOTER -->
   <footer class="mt-auto border-t border-[#e0e2ec] bg-white py-6">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#444746]">
@@ -1784,6 +1979,6 @@
   </footer>
 
   <!-- Main Application Logic -->
-  <script src="/static/app.js?v=20260915c"></script>
+  <script src="/static/app.js?v=20260918a"></script>
 </body>
 </html>

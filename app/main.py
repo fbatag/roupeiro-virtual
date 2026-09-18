@@ -43,7 +43,12 @@ from app.firestore_service import (
     update_shopping_item,
     delete_shopping_item,
     remove_shopping_item_across_trips,
-    convert_shopping_to_wardrobe_across_trips
+    convert_shopping_to_wardrobe_across_trips,
+    find_registered_user_by_email,
+    create_wardrobe_export,
+    list_incoming_wardrobe_exports,
+    accept_wardrobe_export,
+    decline_wardrobe_export
 )
 from app.photos_service import (
     list_google_photos,
@@ -956,6 +961,128 @@ async def delete_shopping_catalog_item(item_id: str, user: dict = Depends(get_cu
     if not success:
         raise HTTPException(status_code=404, detail="Item de compra não encontrado")
     return {"status": "deleted", "id": item_id}
+
+# -------------------------------------------------------------
+# Wardrobe Export & Import Between Registered Users
+# -------------------------------------------------------------
+
+class WardrobeExportRequest(BaseModel):
+    target_email: str
+    item_ids: Optional[list[str]] = None
+    message: Optional[str] = ""
+
+class WardrobeAcceptExportRequest(BaseModel):
+    selected_item_ids: Optional[list[str]] = None
+
+
+@app.post("/api/wardrobe/export")
+async def export_wardrobe_to_user(
+    payload: WardrobeExportRequest,
+    user: dict = Depends(get_current_user)
+):
+    """
+    Exports the current user's wardrobe to another registered user identified by target_email.
+    Validates that target_email belongs to a user already registered in the application.
+    """
+    target_email = (payload.target_email or "").strip()
+    if not target_email or "@" not in target_email:
+        raise HTTPException(status_code=400, detail="Por favor, informe um endereço de e-mail válido.")
+
+    sender_email = (user.get("email") or "").strip().lower()
+    if target_email.lower() == sender_email:
+        raise HTTPException(status_code=400, detail="Você não pode exportar o guarda-roupa para a sua própria conta.")
+
+    target_user = find_registered_user_by_email(target_email)
+    if not target_user:
+        raise HTTPException(
+            status_code=404,
+            detail=(
+                f"O usuário '{target_email}' não foi encontrado como cadastrado na aplicação. "
+                "Para receber o guarda-roupa, o destinatário precisa ter feito login no Roupeiro Virtual pelo menos uma vez."
+            )
+        )
+
+    if target_user.get("uid") == user.get("uid"):
+        raise HTTPException(status_code=400, detail="Você não pode exportar o guarda-roupa para a sua própria conta.")
+
+    try:
+        export_doc = create_wardrobe_export(
+            sender=user,
+            target_user=target_user,
+            item_ids=payload.item_ids,
+            message=payload.message or ""
+        )
+        return {
+            "status": "exported",
+            "export_id": export_doc["id"],
+            "recipient_email": target_user["email"],
+            "recipient_name": target_user.get("name", target_user["email"]),
+            "items_count": export_doc["items_count"]
+        }
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        logger.error(f"Error exporting wardrobe from {user['uid']} to {target_email}: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao exportar guarda-roupa: {str(e)}")
+
+
+@app.get("/api/wardrobe/exports/incoming")
+async def get_incoming_wardrobe_exports(user: dict = Depends(get_current_user)):
+    """
+    Lists pending wardrobe exports waiting for the authenticated user to review and accept/decline.
+    """
+    try:
+        exports = list_incoming_wardrobe_exports(uid=user["uid"], email=user.get("email", ""))
+        return {"exports": exports}
+    except Exception as e:
+        logger.error(f"Error listing incoming exports for {user['uid']}: {e}")
+        raise HTTPException(status_code=500, detail="Erro ao buscar guarda-roupas recebidos.")
+
+
+@app.post("/api/wardrobe/exports/{export_id}/accept")
+async def accept_incoming_wardrobe_export(
+    export_id: str,
+    payload: WardrobeAcceptExportRequest,
+    user: dict = Depends(get_current_user)
+):
+    """
+    Accepts an incoming wardrobe export and adds the selected items to the current user's wardrobe.
+    """
+    try:
+        result = accept_wardrobe_export(
+            recipient=user,
+            export_id=export_id,
+            selected_item_ids=payload.selected_item_ids
+        )
+        return result
+    except PermissionError as pe:
+        raise HTTPException(status_code=403, detail=str(pe))
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        logger.error(f"Error accepting wardrobe export {export_id} for {user['uid']}: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao importar guarda-roupa: {str(e)}")
+
+
+@app.post("/api/wardrobe/exports/{export_id}/decline")
+async def decline_incoming_wardrobe_export(
+    export_id: str,
+    user: dict = Depends(get_current_user)
+):
+    """
+    Declines/dismisses a pending wardrobe export so it is no longer shown on login.
+    """
+    try:
+        result = decline_wardrobe_export(recipient=user, export_id=export_id)
+        return result
+    except PermissionError as pe:
+        raise HTTPException(status_code=403, detail=str(pe))
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        logger.error(f"Error declining wardrobe export {export_id} for {user['uid']}: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao recusar exportação: {str(e)}")
+
 
 # Mount static frontend
 static_dir = os.path.join(os.path.dirname(__file__), "static")

@@ -41,3 +41,23 @@ def delete_blob(path: str):
             logger.info(f"Deleted gs://{BUCKET_NAME}/{path}")
     except Exception as e:
         logger.warning(f"Failed to delete blob {path}: {e}")
+
+
+def copy_blob(source_path: str, dest_path: str) -> bool:
+    """Copies a blob within the GCS bucket to a new destination path."""
+    if not source_path or not dest_path:
+        return False
+    try:
+        client = get_storage_client()
+        bucket = client.bucket(BUCKET_NAME)
+        source_blob = bucket.blob(source_path)
+        if not source_blob.exists():
+            logger.warning(f"Source blob does not exist for copy: {source_path}")
+            return False
+        bucket.copy_blob(source_blob, bucket, dest_path)
+        logger.info(f"Copied gs://{BUCKET_NAME}/{source_path} -> gs://{BUCKET_NAME}/{dest_path}")
+        return True
+    except Exception as e:
+        logger.warning(f"Failed to copy blob {source_path} -> {dest_path}: {e}")
+        return False
+

@@ -405,6 +405,7 @@
             authToken = await user.getIdToken();
             showAuthenticatedApp(user);
             await loadWardrobe();
+            await checkIncomingWardrobeExports(true);
           } else {
             currentUser = null;
             authToken = null;
@@ -4358,6 +4359,428 @@
       handleFilesUpload(Array.from(e.target.files), uploadTargetCategory);
       e.target.value = "";
       uploadTargetCategory = null;
+    }
+  });
+
+  // =========================================================================
+  // EXPORTAR GUARDA-ROUPA & RECEBER GUARDA-ROUPA EXPORTADO
+  // =========================================================================
+  const openExportWardrobeHeaderBtn = document.getElementById("openExportWardrobeHeaderBtn");
+  const openExportWardrobeModalBtn = document.getElementById("openExportWardrobeModalBtn");
+  const exportWardrobeModal = document.getElementById("exportWardrobeModal");
+  const closeExportWardrobeModalBtn = document.getElementById("closeExportWardrobeModalBtn");
+  const cancelExportWardrobeBtn = document.getElementById("cancelExportWardrobeBtn");
+  const exportWardrobeForm = document.getElementById("exportWardrobeForm");
+  const exportTargetEmailInput = document.getElementById("exportTargetEmailInput");
+  const exportCategoryFilterSelect = document.getElementById("exportCategoryFilterSelect");
+  const exportPiecesCountBadge = document.getElementById("exportPiecesCountBadge");
+  const exportMessageInput = document.getElementById("exportMessageInput");
+  const exportFeedbackBox = document.getElementById("exportFeedbackBox");
+  const confirmExportWardrobeBtn = document.getElementById("confirmExportWardrobeBtn");
+
+  const incomingExportsNotificationBanner = document.getElementById("incomingExportsNotificationBanner");
+  const incomingBannerTitle = document.getElementById("incomingBannerTitle");
+  const incomingBannerSubtitle = document.getElementById("incomingBannerSubtitle");
+  const openIncomingExportBannerBtn = document.getElementById("openIncomingExportBannerBtn");
+
+  const incomingExportModal = document.getElementById("incomingExportModal");
+  const closeIncomingExportModalBtn = document.getElementById("closeIncomingExportModalBtn");
+  const postponeIncomingExportBtn = document.getElementById("postponeIncomingExportBtn");
+  const incomingExportQueueBadge = document.getElementById("incomingExportQueueBadge");
+  const incomingExportSenderSubtitle = document.getElementById("incomingExportSenderSubtitle");
+  const incomingExportSenderDetails = document.getElementById("incomingExportSenderDetails");
+  const incomingExportMessageBanner = document.getElementById("incomingExportMessageBanner");
+  const incomingSelectedCountText = document.getElementById("incomingSelectedCountText");
+  const selectAllIncomingItemsBtn = document.getElementById("selectAllIncomingItemsBtn");
+  const deselectAllIncomingItemsBtn = document.getElementById("deselectAllIncomingItemsBtn");
+  const incomingExportItemsGrid = document.getElementById("incomingExportItemsGrid");
+  const acceptIncomingExportBtn = document.getElementById("acceptIncomingExportBtn");
+  const declineIncomingExportBtn = document.getElementById("declineIncomingExportBtn");
+
+  let pendingIncomingExports = [];
+  let activeIncomingExportIndex = 0;
+  let selectedIncomingItemIds = new Set();
+
+  function getExportableItemsByFilter() {
+    const selectedCat = exportCategoryFilterSelect ? exportCategoryFilterSelect.value : "";
+    if (!selectedCat) {
+      return wardrobeItems || [];
+    }
+    return (wardrobeItems || []).filter(item => item.categoria === selectedCat);
+  }
+
+  function updateExportPiecesCounter() {
+    const list = getExportableItemsByFilter();
+    if (exportPiecesCountBadge) {
+      exportPiecesCountBadge.textContent = `${list.length} ${list.length === 1 ? "peça" : "peças"}`;
+    }
+  }
+
+  function openExportWardrobeModal() {
+    if (!wardrobeItems || wardrobeItems.length === 0) {
+      alert("Seu guarda-roupa está vazio. Adicione peças antes de exportar para outro usuário.");
+      return;
+    }
+
+    if (exportFeedbackBox) {
+      exportFeedbackBox.classList.add("hidden");
+      exportFeedbackBox.textContent = "";
+    }
+
+    // Populate category options with counts
+    if (exportCategoryFilterSelect) {
+      const catCounts = {};
+      (wardrobeItems || []).forEach(it => {
+        const cat = it.categoria || "Outros";
+        catCounts[cat] = (catCounts[cat] || 0) + 1;
+      });
+
+      let optionsHtml = `<option value="">📦 Todo o meu guarda-roupa (${wardrobeItems.length} peças)</option>`;
+      Object.keys(catCounts).sort().forEach(cat => {
+        optionsHtml += `<option value="${escapeHtml(cat)}">🏷️ Apenas categoria: ${escapeHtml(cat)} (${catCounts[cat]} peças)</option>`;
+      });
+      exportCategoryFilterSelect.innerHTML = optionsHtml;
+    }
+
+    updateExportPiecesCounter();
+    exportWardrobeModal?.classList.remove("hidden");
+    setTimeout(() => exportTargetEmailInput?.focus(), 80);
+  }
+
+  function closeExportWardrobeModal() {
+    exportWardrobeModal?.classList.add("hidden");
+  }
+
+  openExportWardrobeHeaderBtn?.addEventListener("click", openExportWardrobeModal);
+  openExportWardrobeModalBtn?.addEventListener("click", openExportWardrobeModal);
+  closeExportWardrobeModalBtn?.addEventListener("click", closeExportWardrobeModal);
+  cancelExportWardrobeBtn?.addEventListener("click", closeExportWardrobeModal);
+  exportCategoryFilterSelect?.addEventListener("change", updateExportPiecesCounter);
+
+  exportWardrobeForm?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const targetEmail = (exportTargetEmailInput?.value || "").trim().toLowerCase();
+    if (!targetEmail || !targetEmail.includes("@")) {
+      alert("Por favor, informe um e-mail válido de um usuário já cadastrado.");
+      return;
+    }
+
+    const filteredItems = getExportableItemsByFilter();
+    if (filteredItems.length === 0) {
+      alert("Nenhuma peça encontrada no filtro selecionado para exportar.");
+      return;
+    }
+
+    const selectedCat = exportCategoryFilterSelect ? exportCategoryFilterSelect.value : "";
+    const itemIds = selectedCat ? filteredItems.map(it => it.id) : null;
+    const message = (exportMessageInput?.value || "").trim();
+
+    if (confirmExportWardrobeBtn) {
+      confirmExportWardrobeBtn.disabled = true;
+      confirmExportWardrobeBtn.innerHTML = `<span>⏳</span><span>Verificando e Exportando...</span>`;
+    }
+    if (exportFeedbackBox) {
+      exportFeedbackBox.classList.add("hidden");
+    }
+
+    try {
+      const resp = await authFetch("/api/wardrobe/export", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          target_email: targetEmail,
+          item_ids: itemIds,
+          message: message
+        })
+      });
+
+      const data = await resp.json().catch(() => ({}));
+      if (resp.ok) {
+        if (exportFeedbackBox) {
+          exportFeedbackBox.className = "p-3.5 rounded-2xl text-xs font-semibold bg-emerald-50 border border-emerald-200 text-emerald-900";
+          exportFeedbackBox.innerHTML = `✅ ${escapeHtml(data.message || "Guarda-roupa exportado com sucesso!")}`;
+          exportFeedbackBox.classList.remove("hidden");
+        }
+        if (exportTargetEmailInput) exportTargetEmailInput.value = "";
+        if (exportMessageInput) exportMessageInput.value = "";
+        setTimeout(() => {
+          closeExportWardrobeModal();
+        }, 2200);
+      } else {
+        const errMsg = data.detail || data.message || "Erro ao exportar guarda-roupa.";
+        if (exportFeedbackBox) {
+          exportFeedbackBox.className = "p-3.5 rounded-2xl text-xs font-semibold bg-rose-50 border border-rose-200 text-rose-800";
+          exportFeedbackBox.innerHTML = `⚠️ ${escapeHtml(errMsg)}`;
+          exportFeedbackBox.classList.remove("hidden");
+        } else {
+          alert(errMsg);
+        }
+      }
+    } catch (err) {
+      console.error("Erro ao exportar guarda-roupa:", err);
+      alert("Erro de conexão ao exportar o guarda-roupa.");
+    } finally {
+      if (confirmExportWardrobeBtn) {
+        confirmExportWardrobeBtn.disabled = false;
+        confirmExportWardrobeBtn.innerHTML = `<span>📤</span><span>Exportar Guarda-Roupa</span>`;
+      }
+    }
+  });
+
+  // =========================================================================
+  // VERIFICAÇÃO E IMPORTAÇÃO DE GUARDA-ROUPA RECEBIDO NO LOGIN
+  // =========================================================================
+  async function checkIncomingWardrobeExports(autoOpenModal = false) {
+    if (!currentUser) return;
+    try {
+      const resp = await authFetch("/api/wardrobe/exports/incoming");
+      if (!resp.ok) return;
+      const data = await resp.json();
+      pendingIncomingExports = data.exports || [];
+      activeIncomingExportIndex = 0;
+
+      updateIncomingExportsBanner();
+
+      if (pendingIncomingExports.length > 0 && autoOpenModal) {
+        openIncomingExportModal(0);
+      }
+    } catch (err) {
+      console.warn("Erro ao verificar guarda-roupas recebidos:", err);
+    }
+  }
+
+  function updateIncomingExportsBanner() {
+    if (!incomingExportsNotificationBanner) return;
+    if (!pendingIncomingExports || pendingIncomingExports.length === 0) {
+      incomingExportsNotificationBanner.classList.add("hidden");
+      return;
+    }
+
+    const firstExp = pendingIncomingExports[0];
+    const senderLabel = firstExp.sender_name
+      ? `${firstExp.sender_name} (${firstExp.sender_email})`
+      : firstExp.sender_email;
+    const totalExports = pendingIncomingExports.length;
+    const itemsCount = firstExp.items_count || (firstExp.items ? firstExp.items.length : 0);
+
+    if (incomingBannerTitle) {
+      if (totalExports === 1) {
+        incomingBannerTitle.textContent = `🎁 ${senderLabel} exportou um guarda-roupa com ${itemsCount} ${itemsCount === 1 ? "peça" : "peças"} para você!`;
+      } else {
+        incomingBannerTitle.textContent = `🎁 Você tem ${totalExports} guarda-roupas exportados aguardando sua confirmação!`;
+      }
+    }
+    if (incomingBannerSubtitle) {
+      incomingBannerSubtitle.textContent = firstExp.message
+        ? `Mensagem de ${firstExp.sender_name || firstExp.sender_email}: "${firstExp.message}"`
+        : "Clique em 'Revisar & Adicionar Peças' para escolher se deseja adicioná-lo ao seu guarda-roupa.";
+    }
+
+    incomingExportsNotificationBanner.classList.remove("hidden");
+  }
+
+  function updateIncomingSelectionCountUI() {
+    const count = selectedIncomingItemIds.size;
+    if (incomingSelectedCountText) {
+      incomingSelectedCountText.textContent = `${count} ${count === 1 ? "peça selecionada" : "peças selecionadas"}`;
+    }
+    if (acceptIncomingExportBtn) {
+      acceptIncomingExportBtn.disabled = count === 0;
+      acceptIncomingExportBtn.classList.toggle("opacity-50", count === 0);
+      acceptIncomingExportBtn.innerHTML = `<span>✅</span><span>Adicionar ${count} ${count === 1 ? "Peça" : "Peças"} ao Meu Guarda-Roupa</span>`;
+    }
+  }
+
+  function openIncomingExportModal(index = 0) {
+    if (!pendingIncomingExports || pendingIncomingExports.length === 0) return;
+    activeIncomingExportIndex = Math.max(0, Math.min(index, pendingIncomingExports.length - 1));
+    const currentExport = pendingIncomingExports[activeIncomingExportIndex];
+    const items = currentExport.items || [];
+
+    // Select all items by default
+    selectedIncomingItemIds = new Set(items.map(it => it.id));
+
+    if (incomingExportQueueBadge) {
+      if (pendingIncomingExports.length > 1) {
+        incomingExportQueueBadge.textContent = `${activeIncomingExportIndex + 1} de ${pendingIncomingExports.length}`;
+        incomingExportQueueBadge.classList.remove("hidden");
+      } else {
+        incomingExportQueueBadge.classList.add("hidden");
+      }
+    }
+
+    const senderName = currentExport.sender_name || currentExport.sender_email;
+    if (incomingExportSenderSubtitle) {
+      incomingExportSenderSubtitle.textContent = `Enviado por ${senderName} (${currentExport.sender_email})`;
+    }
+    if (incomingExportSenderDetails) {
+      incomingExportSenderDetails.innerHTML = `👤 De: <strong>${escapeHtml(senderName)}</strong> &lt;${escapeHtml(currentExport.sender_email)}&gt; &bull; <strong>${items.length}</strong> ${items.length === 1 ? "peça disponível" : "peças disponíveis"}`;
+    }
+    if (incomingExportMessageBanner) {
+      if (currentExport.message) {
+        incomingExportMessageBanner.textContent = `💬 "${currentExport.message}"`;
+        incomingExportMessageBanner.classList.remove("hidden");
+      } else {
+        incomingExportMessageBanner.classList.add("hidden");
+      }
+    }
+
+    renderIncomingExportItemsGrid(items);
+    updateIncomingSelectionCountUI();
+    incomingExportModal?.classList.remove("hidden");
+  }
+
+  function renderIncomingExportItemsGrid(items) {
+    if (!incomingExportItemsGrid) return;
+    if (!items || items.length === 0) {
+      incomingExportItemsGrid.innerHTML = `<div class="col-span-full text-center py-8 text-xs text-slate-500">Nenhuma peça encontrada nesta exportação.</div>`;
+      return;
+    }
+
+    incomingExportItemsGrid.innerHTML = items.map(item => {
+      const isSelected = selectedIncomingItemIds.has(item.id);
+      const imgSrc = item.imagem_original_url || "";
+      const cat = item.categoria || "Outros";
+      const cor = item.cor_predominante || "Multicor";
+      const hex = item.cor_hex || "#94a3b8";
+      const desc = item.descricao || cat;
+
+      return `
+        <div
+          class="incoming-export-card cursor-pointer rounded-2xl border-2 transition-all overflow-hidden flex flex-col bg-white shadow-2xs ${isSelected ? "border-emerald-600 ring-2 ring-emerald-500/20" : "border-slate-200 opacity-65"}"
+          data-item-id="${escapeHtml(item.id)}"
+        >
+          <div class="relative aspect-square bg-slate-100 overflow-hidden">
+            <img src="${escapeHtml(imgSrc)}" alt="${escapeHtml(desc)}" class="w-full h-full object-cover" loading="lazy">
+            <div class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-900/75 text-white backdrop-blur-xs">
+              ${escapeHtml(cat)}
+            </div>
+            <div class="absolute top-2.5 right-2.5 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shadow-md ${isSelected ? "bg-emerald-600 text-white" : "bg-white/90 text-slate-400 border border-slate-300"}">
+              ${isSelected ? "✓" : ""}
+            </div>
+          </div>
+          <div class="p-3 space-y-1 flex-1 flex flex-col justify-between">
+            <p class="text-xs font-bold text-[#1f1f1f] line-clamp-2 leading-snug">${escapeHtml(desc)}</p>
+            <div class="flex items-center gap-1.5 pt-1">
+              <span class="w-3 h-3 rounded-full border border-slate-300 shrink-0" style="background-color: ${escapeHtml(hex)};"></span>
+              <span class="text-[11px] text-[#5e5e5e] truncate">${escapeHtml(cor)}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    incomingExportItemsGrid.querySelectorAll(".incoming-export-card").forEach(card => {
+      card.addEventListener("click", () => {
+        const id = card.getAttribute("data-item-id");
+        if (!id) return;
+        if (selectedIncomingItemIds.has(id)) {
+          selectedIncomingItemIds.delete(id);
+        } else {
+          selectedIncomingItemIds.add(id);
+        }
+        renderIncomingExportItemsGrid(items);
+        updateIncomingSelectionCountUI();
+      });
+    });
+  }
+
+  openIncomingExportBannerBtn?.addEventListener("click", () => openIncomingExportModal(0));
+  closeIncomingExportModalBtn?.addEventListener("click", () => incomingExportModal?.classList.add("hidden"));
+  postponeIncomingExportBtn?.addEventListener("click", () => incomingExportModal?.classList.add("hidden"));
+
+  selectAllIncomingItemsBtn?.addEventListener("click", () => {
+    const currentExport = pendingIncomingExports[activeIncomingExportIndex];
+    if (!currentExport) return;
+    const items = currentExport.items || [];
+    selectedIncomingItemIds = new Set(items.map(it => it.id));
+    renderIncomingExportItemsGrid(items);
+    updateIncomingSelectionCountUI();
+  });
+
+  deselectAllIncomingItemsBtn?.addEventListener("click", () => {
+    const currentExport = pendingIncomingExports[activeIncomingExportIndex];
+    if (!currentExport) return;
+    selectedIncomingItemIds.clear();
+    renderIncomingExportItemsGrid(currentExport.items || []);
+    updateIncomingSelectionCountUI();
+  });
+
+  acceptIncomingExportBtn?.addEventListener("click", async () => {
+    const currentExport = pendingIncomingExports[activeIncomingExportIndex];
+    if (!currentExport) return;
+    if (selectedIncomingItemIds.size === 0) {
+      alert("Selecione pelo menos uma peça para adicionar ao seu guarda-roupa.");
+      return;
+    }
+
+    acceptIncomingExportBtn.disabled = true;
+    acceptIncomingExportBtn.innerHTML = `<span>⏳</span><span>Importando peças para o seu guarda-roupa...</span>`;
+
+    try {
+      const resp = await authFetch(`/api/wardrobe/exports/${encodeURIComponent(currentExport.id)}/accept`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          selected_item_ids: Array.from(selectedIncomingItemIds)
+        })
+      });
+
+      const data = await resp.json().catch(() => ({}));
+      if (resp.ok) {
+        alert(`🎉 ${data.message || "Peças adicionadas com sucesso ao seu guarda-roupa!"}`);
+        pendingIncomingExports.splice(activeIncomingExportIndex, 1);
+        updateIncomingExportsBanner();
+        await updateSummaryStats();
+        await loadWardrobe();
+
+        if (pendingIncomingExports.length > 0) {
+          openIncomingExportModal(0);
+        } else {
+          incomingExportModal?.classList.add("hidden");
+        }
+      } else {
+        alert("Erro ao adicionar guarda-roupa: " + (data.detail || data.message || "Tente novamente."));
+        updateIncomingSelectionCountUI();
+      }
+    } catch (err) {
+      console.error("Erro ao aceitar guarda-roupa exportado:", err);
+      alert("Erro de conexão ao importar o guarda-roupa.");
+      updateIncomingSelectionCountUI();
+    }
+  });
+
+  declineIncomingExportBtn?.addEventListener("click", async () => {
+    const currentExport = pendingIncomingExports[activeIncomingExportIndex];
+    if (!currentExport) return;
+
+    const senderName = currentExport.sender_name || currentExport.sender_email;
+    if (!confirm(`Deseja realmente recusar e descartar o guarda-roupa enviado por ${senderName}?`)) {
+      return;
+    }
+
+    declineIncomingExportBtn.disabled = true;
+    try {
+      const resp = await authFetch(`/api/wardrobe/exports/${encodeURIComponent(currentExport.id)}/decline`, {
+        method: "POST"
+      });
+      if (resp.ok) {
+        pendingIncomingExports.splice(activeIncomingExportIndex, 1);
+        updateIncomingExportsBanner();
+        if (pendingIncomingExports.length > 0) {
+          openIncomingExportModal(0);
+        } else {
+          incomingExportModal?.classList.add("hidden");
+        }
+      } else {
+        const data = await resp.json().catch(() => ({}));
+        alert("Erro ao recusar exportação: " + (data.detail || data.message));
+      }
+    } catch (err) {
+      console.error("Erro ao recusar exportação:", err);
+      alert("Erro ao recusar exportação.");
+    } finally {
+      declineIncomingExportBtn.disabled = false;
     }
   });
 
